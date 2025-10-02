@@ -1,0 +1,9 @@
+package com.arkanoid.core.entities;
+
+import javafx.scene.paint.Color;
+
+public class StrongBrick extends BaseBrick {
+    public StrongBrick(double x, double y, double width, double height) {
+        super(x, y, width, height, 3, Color.PURPLE);
+    }
+}
