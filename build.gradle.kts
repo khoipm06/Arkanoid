@@ -29,7 +29,7 @@ application {
 
 javafx {
     version = "21.0.5"
-    modules = listOf("javafx.controls", "javafx.graphics")
+    modules = listOf("javafx.controls", "javafx.graphics", "javafx.controls", "javafx.fxml")
 }
 
 dependencies {
