@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class MainMenuView {
@@ -127,6 +128,7 @@ public class MainMenuView {
 
                 ModeSelectView popupController = loader.getController();
                 popupController.setMainController(this);
+                popupController.setStage((Stage) root.getScene().getWindow());
 
                 double rootWidth = root.getPrefWidth();
                 double rootHeight = root.getPrefHeight();

@@ -7,12 +7,14 @@ public class Paddle extends MovableObject {
     private double minX;
     private double maxX;
     private Color color;
+    private final double originalWidth;
 
     public Paddle(double x, double y, double width, double height, double speed, double minX, double maxX) {
         super(x, y, width, height, speed);
         this.minX = minX;
         this.maxX = maxX;
         this.color = Color.BLUE;
+        this.originalWidth = width;
     }
 
     public void moveLeft(double deltaTime) {
@@ -56,6 +58,13 @@ public class Paddle extends MovableObject {
     public void expand(double amount) {
         width += amount;
         x -= amount / 2;
+        constrainToBounds();
+    }
+
+    public void resetSize() {
+        double centerX = getCenterX(); // Giữ nguyên vị trí giữa
+        width = originalWidth;
+        x = centerX - width / 2;
         constrainToBounds();
     }
 }

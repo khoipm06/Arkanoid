@@ -7,13 +7,18 @@ public class Ball extends MovableObject {
     private double radius;
     private Color color;
     private double minX, minY, maxX, maxY;
+    private boolean attachedToPaddle = false;
+
 
     public Ball(double x, double y, double radius, double speed) {
         super(x - radius, y - radius, radius * 2, radius * 2, speed);
         this.radius = radius;
         this.color = Color.RED;
-        this.velocityX = speed * 0.7;
-        this.velocityY = -speed;
+//        this.velocityX = speed * 0.7;
+//        this.velocityY = -speed;
+        this.velocityX = 0;
+        this.velocityY = 0;
+        attachedToPaddle = true;
     }
 
     public void setBounds(double minX, double minY, double maxX, double maxY) {
@@ -27,6 +32,14 @@ public class Ball extends MovableObject {
     public void update(double deltaTime) {
         move(deltaTime);
         checkWallCollision();
+    }
+
+    public void launch() {
+        if (attachedToPaddle) {
+            attachedToPaddle = false;
+            velocityY = -Math.abs(speed); // bay lên trên
+            velocityX = 0;                // bay thẳng, hoặc bạn có thể random nhẹ
+        }
     }
 
     private void checkWallCollision() {
@@ -84,5 +97,13 @@ public class Ball extends MovableObject {
 
     public double getRadius() {
         return radius;
+    }
+
+    public boolean isAttachedToPaddle() {
+        return attachedToPaddle;
+    }
+
+    public void setAttachedToPaddle(boolean attachedToPaddle) {
+        this.attachedToPaddle = attachedToPaddle;
     }
 }

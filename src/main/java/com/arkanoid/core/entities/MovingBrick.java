@@ -12,7 +12,7 @@ public class MovingBrick extends BaseBrick {
         super(x, y, width, height, 2, Color.CYAN);
         this.minX = minX;
         this.maxX = maxX;
-        this.moveSpeed = 100;
+        this.moveSpeed = 50;
         this.velocityX = moveSpeed;
     }
 

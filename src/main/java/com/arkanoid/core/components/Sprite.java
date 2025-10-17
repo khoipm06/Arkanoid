@@ -29,6 +29,18 @@ public class Sprite {
         return height;
     }
 
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
     public boolean isLoaded() {
         return image != null;
     }

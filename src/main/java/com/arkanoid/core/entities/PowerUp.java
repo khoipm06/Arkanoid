@@ -1,7 +1,9 @@
 package com.arkanoid.core.entities;
 
+import javafx.animation.PauseTransition;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 public abstract class PowerUp extends MovableObject {
     protected double lifetime;
@@ -35,6 +37,7 @@ public abstract class PowerUp extends MovableObject {
     }
 
     public abstract void applyEffect(Paddle paddle);
+    public abstract void removeEffect(Paddle paddle);
 
     public boolean isCollected() {
         return collected;
@@ -51,6 +54,16 @@ public abstract class PowerUp extends MovableObject {
         if (!collected && intersects(paddle)) {
             setCollected(true);
             applyEffect(paddle);
+            PauseTransition pause = new PauseTransition(Duration.seconds(2));
+
+            // Khi hết 2 giây, tắt hiệu ứng
+            pause.setOnFinished(e -> {
+                removeEffect(paddle);
+                setCollected(false);
+            });
+
+            // Bắt đầu đếm ngược
+            pause.play();
             return true;
         }
         return false;

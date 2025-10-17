@@ -1,9 +1,13 @@
 package com.arkanoid.ui.view;
 
+
+import com.arkanoid.GameApplication;
+import com.arkanoid.ui.GameScene;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 public class ModeSelectView {
     @FXML
@@ -16,11 +20,17 @@ public class ModeSelectView {
     private AnchorPane root;
 
     private MainMenuView mainController;
+    private Stage stage;
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
 
     @FXML
     public void onSinglePlayerClick(MouseEvent event) {
-        System.out.println("Single Player");
-        SceneManager.switchTo("singlePlayerScene");
+        GameScene gameScene = new GameScene(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT);
+        stage.setScene(gameScene.getScene());
+        gameScene.start();
     }
     @FXML
     public void onMultiPlayerClick(MouseEvent event) {

@@ -2,6 +2,7 @@ package com.arkanoid.ui;
 
 import com.arkanoid.core.entities.Ball;
 import com.arkanoid.core.entities.Brick;
+import com.arkanoid.core.entities.Paddle;
 import com.arkanoid.core.entities.PowerUp;
 import com.arkanoid.systems.GameManager;
 import javafx.animation.AnimationTimer;
@@ -77,6 +78,15 @@ public class GameScene {
                 gameManager.togglePause();
                 pauseOverlay.setVisible(gameManager.getCurrentState() == GameManager.GameState.PAUSED);
                 return;
+            }
+
+            if (key == KeyCode.SPACE) {
+                for (Ball ball : gameManager.getBalls()) {
+                    if (ball.isAttachedToPaddle()) {
+                        ball.launch();
+                    }
+                }
+                return; // tránh thêm SPACE vào pressedKeys
             }
             
             pressedKeys.add(key);
@@ -163,59 +173,10 @@ public class GameScene {
     }
 
     private void showGameOver() {
-        VBox gameOverBox = new VBox(20);
-        gameOverBox.setAlignment(Pos.CENTER);
-        gameOverBox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.9);");
-        gameOverBox.setPrefSize(canvas.getWidth(), canvas.getHeight());
-
-        Text gameOverText = new Text("GAME OVER");
-        gameOverText.setFont(Font.font("Arial", 60));
-        gameOverText.setFill(Color.RED);
-
-        Text scoreText = new Text("Final Score: " + gameManager.getPlayer().getState().getScore());
-        scoreText.setFont(Font.font("Arial", 30));
-        scoreText.setFill(Color.WHITE);
-
-        Text instructionText = new Text("Click to return to menu");
-        instructionText.setFont(Font.font("Arial", 20));
-        instructionText.setFill(Color.LIGHTGRAY);
-
-        gameOverBox.getChildren().addAll(gameOverText, scoreText, instructionText);
-        
-        gameOverBox.setOnMouseClicked(e -> {
-            MainMenuScene menuScene = new MainMenuScene(stage, canvas.getWidth(), canvas.getHeight());
-            stage.setScene(menuScene.getScene());
-        });
-        
-        root.getChildren().add(gameOverBox);
     }
 
     private void showLevelComplete() {
-        VBox completeBox = new VBox(20);
-        completeBox.setAlignment(Pos.CENTER);
-        completeBox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.9);");
-        completeBox.setPrefSize(canvas.getWidth(), canvas.getHeight());
 
-        Text completeText = new Text("LEVEL COMPLETE!");
-        completeText.setFont(Font.font("Arial", 60));
-        completeText.setFill(Color.GREEN);
-
-        Text scoreText = new Text("Score: " + gameManager.getPlayer().getState().getScore());
-        scoreText.setFont(Font.font("Arial", 30));
-        scoreText.setFill(Color.WHITE);
-
-        Text instructionText = new Text("Click to return to menu");
-        instructionText.setFont(Font.font("Arial", 20));
-        instructionText.setFill(Color.LIGHTGRAY);
-
-        completeBox.getChildren().addAll(completeText, scoreText, instructionText);
-        
-        completeBox.setOnMouseClicked(e -> {
-            MainMenuScene menuScene = new MainMenuScene(stage, canvas.getWidth(), canvas.getHeight());
-            stage.setScene(menuScene.getScene());
-        });
-        
-        root.getChildren().add(completeBox);
     }
 
     public Scene getScene() {
