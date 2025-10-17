@@ -30,24 +30,13 @@ public class MainMenuView {
     @FXML
     private Label welcome;
     @FXML
-    private ImageView backgroundImage;
-    @FXML
     private Button profile;
     @FXML
     private Button leaderBoard;
 
     @FXML
-    private ImageView startGameImage;
-
-    @FXML
     public void initialize() {
         try {
-            Image bg = new Image(getClass().getResource("/images/background.png").toExternalForm());
-            backgroundImage.setImage(bg);
-
-            Image startNormal = new Image(getClass().getResource("/images/start_normal.png").toExternalForm());
-            startGameImage.setImage(startNormal);
-
             applyIntroEffect();
             Platform.runLater(() -> applyShineEffect(welcome));
         } catch (Exception e) {

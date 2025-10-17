@@ -10,7 +10,7 @@ public class SettingView {
     private Slider volumeSlider;
 
     @FXML
-    private Label volumeLabel;
+    private Label valueLabel;
     @FXML
     private Button okButton;
     @FXML
@@ -22,7 +22,7 @@ public class SettingView {
     public void initialize() {
         // Khi kéo slider, cập nhật label
         volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            volumeLabel.setText(newVal.intValue() + "%");
+            valueLabel.setText(newVal.intValue() + "%");
         });
     }
     // OK: lưu âm lượng và quay lại màn hình chính
