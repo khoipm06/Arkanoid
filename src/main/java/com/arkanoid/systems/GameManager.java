@@ -4,6 +4,7 @@ import com.arkanoid.core.entities.*;
 import com.arkanoid.core.physics.CollisionDetector;
 import com.arkanoid.systems.level.LevelManager;
 import com.arkanoid.systems.player.Player;
+import com.arkanoid.systems.sound.SoundManager;
 import javafx.scene.input.KeyCode;
 
 import java.util.ArrayList;
@@ -42,6 +43,8 @@ public class GameManager {
         Paddle paddle = new Paddle(gameWidth / 2 - 50, gameHeight - 50, 100, 15, 400, 0, gameWidth);
         player = new Player("Player1", 1, paddle);
         playerManager.addPlayer(1, player);
+
+//        SoundManager.playBackground("background.mp3", true);
 
         double ballRadius = 8;
         double ballSpeed = 300;

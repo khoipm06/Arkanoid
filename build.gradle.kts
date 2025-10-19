@@ -29,13 +29,15 @@ application {
 
 javafx {
     version = "21.0.5"
-    modules = listOf("javafx.controls", "javafx.graphics", "javafx.controls", "javafx.fxml")
-}
-
-dependencies {
-    implementation("com.google.code.gson:gson:2.10.1")
+    modules = listOf("javafx.controls", "javafx.graphics", "javafx.fxml", "javafx.media")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+dependencies {
+    implementation("com.google.code.gson:gson:2.10.1")
+//    implementation("org.openjfx:javafx-controls:21")
+//    implementation("org.openjfx:javafx-fxml:21")
+//    implementation("org.openjfx:javafx-media:21")
 }

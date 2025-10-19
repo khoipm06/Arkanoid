@@ -1,5 +1,6 @@
 package com.arkanoid;
 
+import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.view.SceneManager;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -32,6 +33,8 @@ public class GameApplication extends Application {
         SceneManager.switchTo("mainMenuView");
         primaryStage.setTitle("Arkanoid Game");
         primaryStage.show();
+
+        SoundManager.playBackground("background.mp3", true);
     }
 
     public static void main(String[] args) {
