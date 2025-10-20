@@ -1,5 +1,6 @@
 package com.arkanoid.core.entities;
 
+import com.arkanoid.systems.sound.SoundManager;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -59,6 +60,7 @@ public class Ball extends MovableObject {
 
     public void checkPaddleCollision(Paddle paddle) {
         if (intersects(paddle) && velocityY > 0) {
+            SoundManager.playSound("paddleBounce.wav");
             y = paddle.getY() - height;
             
             double hitPosition = (getCenterX() - paddle.getCenterX()) / (paddle.getWidth() / 2);

@@ -1,6 +1,8 @@
 #root {
-    -fx-background-color:
-        linear-gradient(to bottom right, #202020, #000033);
+    -fx-background-image: url("images/background.png");
+        -fx-background-size: cover;
+         -fx-background-repeat: no-repeat;
+        -fx-background-position: center center;
 }
 
 #startGame {
@@ -8,10 +10,16 @@
     -fx-pref-width: 180px;
     -fx-pref-height: 70px;
 
+    -fx-background-image: url("images/startGame.png");
+        -fx-background-size: 180px 70px;           /* ảnh phủ kín */
+        -fx-background-repeat: no-repeat;
+        -fx-background-position: center;
+
     /* 2. Tạo Gradient (Màu chuyển sắc) cho nền */
-    -fx-background-color:
+    /*-fx-background-color:
         linear-gradient(to bottom, #7FFF00, #4C9E00); /* Từ xanh sáng -> xanh đậm */
 
+-fx-background-color: transparent;
     /* 3. Bo góc */
     -fx-background-radius: 15; /* Bo tròn 15 pixel */
 
@@ -25,21 +33,29 @@
 }
 
 #shopButton {
-    -fx-pref-width: 70px;
-    -fx-pref-height: 31px;
+    -fx-pref-width: 50px;
+    -fx-pref-height: 50px;
 
+    -fx-background-image: url("images/shop.png");
+    -fx-background-size: 51px 51px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
     /* Nền chính: Màu xanh dương đậm */
-    -fx-background-color: #004488;
     -fx-background-radius: 5;
 
     /* Thêm một lớp nền khác mỏng hơn để tạo viền sáng 3D */
-    -fx-border-color: #33CCFF;
+   /* -fx-border-color: #33CCFF;
     -fx-border-width: 2px;
     -fx-border-radius: 5;
     -fx-border-insets: -2px; /* Đẩy viền ra ngoài một chút */
 
-    -fx-text-fill: white;
-    -fx-font-size: 14px;
+   -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 3, 0.0, 0, 1);
+
+       /* Kiểu chữ */
+       -fx-text-fill: white;
+       -fx-font-size: 14px;
+       -fx-font-weight: bold;
 }
 
 #shopButton:hover {
@@ -47,15 +63,20 @@
     -fx-background-color: #0055AA;
     -fx-border-color: #66FFFF;
 }
+
 #quitButton {
     /* Kích thước (dựa trên FXML của bạn) */
     -fx-pref-width: 180.0px;
     -fx-pref-height: 70.0px;
 
     /* Gradient màu đỏ (từ đậm sang nhạt) */
-    -fx-background-color:
-        linear-gradient(to bottom, #FF6347, #CD5C5C); /* Tomato -> IndianRed */
+    /* Tomato -> IndianRed */
 
+    -fx-background-image: url("images/exit.png");
+        -fx-background-size: 180px 70px;
+        -fx-background-repeat: no-repeat;
+        -fx-background-position: center;
+        -fx-background-color: transparent;
     /* Bo góc nhẹ */
     -fx-background-radius: 10;
 
@@ -81,12 +102,60 @@
 
 #profileButton, #settingButton, #leaderBoardButton {
     /* Kích thước (dựa trên FXML của bạn) */
-    -fx-pref-width: 76.0px;
-    -fx-pref-height: 31.0px;
+    -fx-pref-width: 50px;
+    -fx-pref-height: 50px;
 
+    -fx-background-image: url("images/player.png");
+    -fx-background-size: 51px 51px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
     /* Gradient màu xanh dương (tương tự Shop) */
-    -fx-background-color:
-        linear-gradient(to bottom, #1E90FF, #4169E1); /* DodgerBlue -> RoyalBlue */
+     /* DodgerBlue -> RoyalBlue */
+-fx-background-color: transparent;
+    -fx-background-radius: 5;
+
+    /* Đổ bóng nhẹ */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 3, 0.0, 0, 1);
+
+    /* Kiểu chữ */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+#settingButton {
+    /* Kích thước (dựa trên FXML của bạn) */
+    -fx-pref-width: 50px;
+    -fx-pref-height: 50px;
+
+    -fx-background-image: url("images/setting.png");
+    -fx-background-size: 51px 51px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    /* Gradient màu xanh dương (tương tự Shop) */
+    -fx-background-color: transparent; /* DodgerBlue -> RoyalBlue */
+
+    -fx-background-radius: 5;
+
+    /* Đổ bóng nhẹ */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 3, 0.0, 0, 1);
+
+    /* Kiểu chữ */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+ #leaderBoardButton {
+    /* Kích thước (dựa trên FXML của bạn) */
+    -fx-pref-width: 50px;
+    -fx-pref-height: 50px;
+
+    -fx-background-image: url("images/leaderBoard.png");
+    -fx-background-size: 51px 51px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+
+    -fx-background-color: transparent;
 
     -fx-background-radius: 5;
 
