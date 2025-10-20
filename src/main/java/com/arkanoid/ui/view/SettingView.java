@@ -1,5 +1,6 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.systems.sound.SoundManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -31,6 +32,8 @@ public class SettingView {
         savedVolume = (int) volumeSlider.getValue();
         System.out.println("Volume saved: " + savedVolume + "%");
 
+        SoundManager.playSound("Accept.wav");
+
         // quay lại màn hình chính (đóng cửa sổ Setting)
         SceneManager.switchTo("mainMenuView");
     }
@@ -40,6 +43,8 @@ public class SettingView {
     private void onCancelClick() {
         volumeSlider.setValue(savedVolume); // quay lại giá trị cũ
         System.out.println("Volume reverted to: " + savedVolume + "%");
+
+        SoundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("mainMenuView");
         // không đóng cửa sổ, vẫn ở màn hình Setting

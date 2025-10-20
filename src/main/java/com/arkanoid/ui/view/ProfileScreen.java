@@ -1,5 +1,6 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.systems.sound.SoundManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -7,18 +8,16 @@ import javafx.scene.layout.AnchorPane;
 
 public class ProfileScreen {
     @FXML
-    private AnchorPane authPane; // Đặt ID này trong FXML của bạn
+    private AnchorPane authPane;
 
     @FXML
-    private Label usernameLabel; // Thêm Label cho username trong FXML của bạn
+    private Label usernameLabel;
 
     @FXML
-    private Label highScoreLabel; // Thêm Label cho high score
+    private Label highScoreLabel;
 
-    // Phương thức được gọi khi Controller được load (optional)
     @FXML
     public void initialize() {
-        // Hiển thị thông tin người dùng khi màn hình được tải
         SessionManager.User user = SessionManager.getCurrentUser();
         if (user != null) {
             // Giả sử bạn đã thêm fx:id="usernameLabel" cho Label hiển thị username
@@ -27,19 +26,19 @@ public class ProfileScreen {
         }
     }
 
-    // Xử lý nút "back"
     @FXML
     void onBackClick(MouseEvent event) {
-        // Ví dụ: Quay lại màn hình chính Home
+
+        SoundManager.playSound("Accept.wav");
+
         SceneManager.switchTo("mainMenuView");
     }
 
-    // Xử lý nút "Log out"
     @FXML
     void onLogOutClick(MouseEvent event) {
         SessionManager.logout();
+        SoundManager.playSound("Accept.wav");
 
-        // Chuyển về màn hình Auth
         SceneManager.switchTo("mainMenuView");
     }
 }

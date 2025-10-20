@@ -1,5 +1,6 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.systems.sound.SoundManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -23,6 +24,9 @@ public class SignUpView {
 
     @FXML
     public void onSignUpClick() {
+
+        SoundManager.playSound("Accept.wav");
+
         String username = userNameField.getText();
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
@@ -53,6 +57,9 @@ public class SignUpView {
 
     @FXML
     public void onCancelClick(MouseEvent event) {
+
+        SoundManager.playSound("Accept.wav");
+
         userNameField.clear();
         passwordField.clear();
         confirmPasswordField.clear();
@@ -60,6 +67,8 @@ public class SignUpView {
     }
     @FXML
     public void onSignInLinkClick(MouseEvent event) {
+        SoundManager.playSound("Accept.wav");
+
         SceneManager.switchTo("signIn");
     }
 }

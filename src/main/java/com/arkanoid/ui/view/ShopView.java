@@ -1,5 +1,6 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.systems.sound.SoundManager;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -54,19 +55,27 @@ public class ShopView {
 
     @FXML
     public void onBallShopClick(MouseEvent event) {
+
+        SoundManager.playSound("Accept.wav");
+
         System.out.println("Shop ball");
     }
     @FXML
     public void onPaddleShopClick(MouseEvent event) {
+        SoundManager.playSound("Accept.wav");
+
         System.out.println("Paddle Shop");
     }
 
     @FXML
     public void onBackClick(MouseEvent event) {
+        SoundManager.playSound("Accept.wav");
+
         SceneManager.switchTo("mainMenuView");
     }
 
     public void onDepositClick(MouseEvent event) {
+        SoundManager.playSound("Accept.wav");
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Nạp tiền");
         dialog.setHeaderText("Nhập số tiền bạn muốn nạp:");

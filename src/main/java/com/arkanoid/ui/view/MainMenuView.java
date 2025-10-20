@@ -1,5 +1,6 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.systems.sound.SoundManager;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -86,20 +87,31 @@ public class MainMenuView {
     @FXML
     public void onSettingClick(MouseEvent event) {
         System.out.println("setting");
+
+        SoundManager.playSound("Accept.wav");
+
         SceneManager.switchTo("settingView");
     }
     @FXML
     public void onQuitClick(MouseEvent event) {
+
+        SoundManager.playSound("Accept.wav");
         System.out.println("Quit");
     }
     @FXML
     public void onShopClick(MouseEvent event) {
         System.out.println("Shop");
+
+        SoundManager.playSound("Accept.wav");
+
         SceneManager.switchTo("shopView");
     }
 
     public void onProfileClick(MouseEvent event) {
         System.out.println("Profile");
+
+        SoundManager.playSound("Accept.wav");
+
         Main.switchToProfileOrAuth();
     }
 
@@ -114,6 +126,8 @@ public class MainMenuView {
             if (modePopup == null) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com.arkanoid.ui.view/ModeSelectView.fxml"));
                 modePopup = loader.load();
+
+                SoundManager.playSound("Accept.wav");
 
                 ModeSelectView popupController = loader.getController();
                 popupController.setMainController(this);
@@ -150,10 +164,16 @@ public class MainMenuView {
     }
 
     public void closeModePopup() {
+
+        SoundManager.playSound("Accept.wav");
+
         root.getChildren().remove(modePopup);
     }
 
     public void onLeaderBoardClick(MouseEvent event) {
+
+        SoundManager.playSound("Accept.wav");
+
         System.out.println("leaderBoard");
     }
 }
