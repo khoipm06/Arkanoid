@@ -15,13 +15,9 @@
         -fx-background-repeat: no-repeat;
         -fx-background-position: center;
 
-    /* 2. Tạo Gradient (Màu chuyển sắc) cho nền */
-    /*-fx-background-color:
-        linear-gradient(to bottom, #7FFF00, #4C9E00); /* Từ xanh sáng -> xanh đậm */
-
--fx-background-color: transparent;
+    -fx-background-color: transparent;
     /* 3. Bo góc */
-    -fx-background-radius: 15; /* Bo tròn 15 pixel */
+    -fx-background-radius: 15;
 
     /* 4. Thêm đổ bóng (tạo chiều sâu) */
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0.0, 0, 1);
@@ -43,12 +39,6 @@
     -fx-background-color: transparent;
     /* Nền chính: Màu xanh dương đậm */
     -fx-background-radius: 5;
-
-    /* Thêm một lớp nền khác mỏng hơn để tạo viền sáng 3D */
-   /* -fx-border-color: #33CCFF;
-    -fx-border-width: 2px;
-    -fx-border-radius: 5;
-    -fx-border-insets: -2px; /* Đẩy viền ra ngoài một chút */
 
    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 3, 0.0, 0, 1);
 

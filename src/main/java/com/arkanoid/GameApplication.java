@@ -29,6 +29,7 @@ public class GameApplication extends Application {
         SceneManager.loadScene("authScreen", "AuthScreen.fxml");
         SceneManager.loadScene("signIn", "SignIn.fxml");
         SceneManager.loadScene("signUpView", "SignUpView.fxml");
+        SceneManager.loadScene("map", "Map.fxml");
 
         SceneManager.switchTo("mainMenuView");
         primaryStage.setTitle("Arkanoid Game");

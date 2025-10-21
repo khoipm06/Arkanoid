@@ -1,12 +1,14 @@
 package com.arkanoid.systems.level;
 
 import com.arkanoid.core.entities.Brick;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.arkanoid.core.entities.NormalBrick;
+import com.google.gson.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,21 +22,24 @@ public class LevelManager {
     }
 
     public List<Brick> loadLevel(int levelNumber) {
-        try {
-            String levelFile = "/levels/level" + levelNumber + ".json";
-            InputStream is = getClass().getResourceAsStream(levelFile);
-            
-            if (is == null) {
-                return createDefaultLevel();
+        List<Brick> bricks = new ArrayList<>();
+        try (InputStream inputStream = getClass().getResourceAsStream("/levels/level" + levelNumber + ".json")) {
+            if (inputStream == null) {
+                System.out.println(" Không tìm thấy file level" + levelNumber);
+                return bricks;
             }
+            JsonObject json = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
+            JsonArray brickArray = json.getAsJsonArray("bricks");
 
-            Gson gson = new Gson();
-            JsonObject levelData = gson.fromJson(new InputStreamReader(is), JsonObject.class);
-            
-            return parseLevelData(levelData);
+            for (JsonElement element : brickArray) {
+                JsonObject brickData = element.getAsJsonObject();
+                Brick brick = entityFactory.createBrick(brickData);
+                if (brick != null) bricks.add(brick);
+            }
         } catch (Exception e) {
-            return createDefaultLevel();
+            e.printStackTrace();
         }
+        return bricks;
     }
 
     private List<Brick> parseLevelData(JsonObject levelData) {
@@ -95,4 +100,32 @@ public class LevelManager {
     public int getCurrentLevel() {
         return currentLevel;
     }
+
+    public List<Brick> loadLevelFromFile(String mapPath) {
+        List<Brick> bricks = new ArrayList<>();
+        try (InputStream input = getClass().getResourceAsStream(mapPath)) {
+            if (input == null) {
+                System.err.println("Không tìm thấy file map: " + mapPath);
+                return bricks;
+            }
+
+            String json = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+            JSONObject data = new JSONObject(json);
+            JSONArray layout = data.getJSONArray("layout");
+
+            for (int row = 0; row < layout.length(); row++) {
+                String line = layout.getString(row);
+                for (int col = 0; col < line.length(); col++) {
+                    if (line.charAt(col) == '1') {
+                        bricks.add(new NormalBrick(col * 40, row * 20, 40, 20));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bricks;
+    }
+
+
 }

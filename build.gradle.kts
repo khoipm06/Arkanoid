@@ -37,6 +37,7 @@ tasks.withType<Test> {
 }
 dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation("org.json:json:20240303")
 //    implementation("org.openjfx:javafx-controls:21")
 //    implementation("org.openjfx:javafx-fxml:21")
 //    implementation("org.openjfx:javafx-media:21")

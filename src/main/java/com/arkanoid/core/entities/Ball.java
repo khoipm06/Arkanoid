@@ -3,12 +3,16 @@ package com.arkanoid.core.entities;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
+
+import java.io.InputStream;
 
 public class Ball extends MovableObject {
     private double radius;
     private Color color;
     private double minX, minY, maxX, maxY;
     private boolean attachedToPaddle = false;
+    private Image ballImage;
 
 
     public Ball(double x, double y, double radius, double speed) {
@@ -20,6 +24,8 @@ public class Ball extends MovableObject {
         this.velocityX = 0;
         this.velocityY = 0;
         attachedToPaddle = true;
+
+        loadDefaultImage();
     }
 
     public void setBounds(double minX, double minY, double maxX, double maxY) {
@@ -76,10 +82,29 @@ public class Ball extends MovableObject {
         }
     }
 
+    private void loadDefaultImage() {
+        try (InputStream stream = getClass().getResourceAsStream("/images/ball1.png")) {
+            if (stream != null) {
+                this.ballImage = new Image(stream);
+            } else {
+                System.err.println("Cảnh báo: Không tìm thấy file ảnh ball.png trong /images/. Dùng màu mặc định.");
+            }
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tải ảnh Ball: " + e.getMessage());
+        }
+    }
+
     @Override
     public void render(GraphicsContext gc) {
-        gc.setFill(color);
-        gc.fillOval(x, y, width, height);
+        if (ballImage != null) {
+            gc.drawImage(ballImage, x, y, width, height);
+        } else {
+            gc.setFill(color);
+            gc.fillOval(x, y, width, height);
+        }
+    }
+    public void setBallImage(Image image) {
+        this.ballImage = image;
     }
 
     public boolean isOutOfBounds() {

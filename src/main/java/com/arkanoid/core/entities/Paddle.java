@@ -2,12 +2,15 @@ package com.arkanoid.core.entities;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
+
 
 public class Paddle extends MovableObject {
     private double minX;
     private double maxX;
     private Color color;
     private final double originalWidth;
+    private Image paddleImage;
 
     public Paddle(double x, double y, double width, double height, double speed, double minX, double maxX) {
         super(x, y, width, height, speed);
@@ -43,12 +46,19 @@ public class Paddle extends MovableObject {
         constrainToBounds();
     }
 
+    public void setPaddleImage(Image image) {
+        this.paddleImage = image;
+    }
     @Override
     public void render(GraphicsContext gc) {
-        gc.setFill(color);
-        gc.fillRect(x, y, width, height);
-        gc.setStroke(Color.WHITE);
-        gc.strokeRect(x, y, width, height);
+        if (paddleImage != null) {
+            gc.drawImage(paddleImage, x, y, width, height);
+        } else {
+            gc.setFill(color);
+            gc.fillRect(x, y, width, height);
+            gc.setStroke(Color.WHITE);
+            gc.strokeRect(x, y, width, height);
+        }
     }
 
     public void setColor(Color color) {

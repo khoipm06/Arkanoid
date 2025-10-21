@@ -1,62 +1,65 @@
-package com.arkanoid.ui.view;
+    package com.arkanoid.ui.view;
 
 
-import com.arkanoid.GameApplication;
-import com.arkanoid.systems.sound.SoundManager;
-import com.arkanoid.ui.GameScene;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
+    import com.arkanoid.GameApplication;
+    import com.arkanoid.systems.sound.SoundManager;
+    import com.arkanoid.ui.GameScene;
+    import javafx.fxml.FXML;
+    import javafx.fxml.FXMLLoader;
+    import javafx.scene.Parent;
+    import javafx.scene.Scene;
+    import javafx.scene.Node;
+    import javafx.scene.control.Button;
+    import javafx.scene.input.MouseEvent;
+    import javafx.scene.layout.AnchorPane;
+    import javafx.stage.Stage;
 
-public class ModeSelectView {
-    @FXML
-    private Button singlePlayer;
-    @FXML
-    private Button multiPlayer;
-    @FXML
-    private Button back;
-    @FXML
-    private AnchorPane root;
+    import java.io.IOException;
 
-    private MainMenuView mainController;
-    private Stage stage;
+    public class ModeSelectView {
+        @FXML
+        private Button singlePlayer;
+        @FXML
+        private Button multiPlayer;
+        @FXML
+        private Button back;
+        @FXML
+        private AnchorPane root;
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
+        private MainMenuView mainController;
+        private Stage stage;
 
-    @FXML
-    public void onSinglePlayerClick(MouseEvent event) {
-        GameScene gameScene = new GameScene(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT);
-        stage.setScene(gameScene.getScene());
-
-        SoundManager.playSound("Accept.wav");
-
-        gameScene.start();
-    }
-    @FXML
-    public void onMultiPlayerClick(MouseEvent event) {
-        System.out.println("Multi Player");
-
-        SoundManager.playSound("Accept.wav");
-
-        SceneManager.switchTo("multiPlayerScene");
-    }
-    @FXML
-    public void onBackClick(MouseEvent event) {
-        System.out.println("Quay lại menu chính");
-
-        SoundManager.playSound("Accept.wav");
-
-        if (mainController != null) {
-            mainController.closeModePopup();
+        public void setStage(Stage stage) {
+            this.stage = stage;
         }
-        
-    }
 
-    public void setMainController(MainMenuView controller) {
-        this.mainController = controller;
+        @FXML
+        private void onSinglePlayerClick(MouseEvent event) throws IOException {
+            SoundManager.playSound("Accept.wav");
+            SceneManager.switchTo("map");
+        }
+
+        @FXML
+        public void onMultiPlayerClick(MouseEvent event) {
+            System.out.println("Multi Player");
+
+            SoundManager.playSound("Accept.wav");
+
+            SceneManager.switchTo("multiPlayerScene");
+        }
+        @FXML
+        public void onBackClick(MouseEvent event) {
+            System.out.println("Quay lại menu chính");
+
+            SoundManager.playSound("Accept.wav");
+
+            if (mainController != null) {
+                mainController.closeModePopup();
+            }
+
+        }
+
+        public void setMainController(MainMenuView controller) {
+            this.mainController = controller;
+        }
     }
-}

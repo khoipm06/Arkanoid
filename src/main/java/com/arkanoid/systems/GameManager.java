@@ -25,8 +25,9 @@ public class GameManager {
     private Player player;
     private double gameWidth;
     private double gameHeight;
+    private int levelNumber;
 
-    public GameManager(double gameWidth, double gameHeight) {
+    public GameManager(double gameWidth, double gameHeight, int levelNumber) {
         this.gameWidth = gameWidth;
         this.gameHeight = gameHeight;
         this.currentState = GameState.MENU;
@@ -35,30 +36,31 @@ public class GameManager {
         this.balls = new ArrayList<>();
         this.bricks = new ArrayList<>();
         this.powerUps = new ArrayList<>();
+        this.levelManager = new LevelManager();
+        this.levelNumber = levelNumber;
+        this.bricks = levelManager.loadLevel(levelNumber);
+        Paddle paddle = new Paddle(gameWidth / 2 - 50, gameHeight - 50, 100, 15, 400, 0, gameWidth);
+        player = new Player("Player1", 1, paddle);
+        playerManager.addPlayer(1, player);
     }
 
     public void startGame() {
         currentState = GameState.PLAYING;
-        
-        Paddle paddle = new Paddle(gameWidth / 2 - 50, gameHeight - 50, 100, 15, 400, 0, gameWidth);
-        player = new Player("Player1", 1, paddle);
-        playerManager.addPlayer(1, player);
-
-//        SoundManager.playBackground("background.mp3", true);
 
         double ballRadius = 8;
         double ballSpeed = 300;
+
+        Paddle paddle = player.getPaddle();
         double ballX = paddle.getX() + paddle.getWidth() / 2;
         double ballY = paddle.getY() - ballRadius * 2;
         Ball ball = new Ball(ballX, ballY, ballRadius, ballSpeed);
         ball.setBounds(0, 0, gameWidth, gameHeight);
         balls.add(ball);
-        
-        loadLevel(1);
     }
 
     public void loadLevel(int levelNumber) {
-        bricks = levelManager.loadLevel(levelNumber);
+        String mapPath = "/levels/level" + levelNumber + ".json";
+        bricks = levelManager.loadLevelFromFile(mapPath);
         powerUps.clear();
     }
 
@@ -70,7 +72,6 @@ public class GameManager {
 
         for (Ball ball : balls) {
             if (ball.isAttachedToPaddle()) {
-                // Ball di chuyển theo paddle khi chưa launch
                 ball.setX(paddle.getX() + paddle.getWidth() / 2 - ball.getRadius());
                 ball.setY(paddle.getY() - ball.getRadius() * 2);
             }
