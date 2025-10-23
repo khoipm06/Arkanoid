@@ -26,18 +26,31 @@ public class Map {
     private int currentMapIndex = 0;
     private java.util.List<String> mapImages;
     private List<String> mapFiles;
+    private static int unlockedLevel = 3;
 
+    public static void setUnlockedLevel(int level) {
+        if (level > unlockedLevel) {
+            unlockedLevel = level;
+            System.out.println("Đã mở khóa map " + unlockedLevel);
+        }
+    }
+
+    public static int getUnlockedLevel() {
+        return unlockedLevel;
+    }
     public void initialize() {
         mapImages = new ArrayList<>();
         mapFiles = new ArrayList<>();
 
-        mapImages.add("/maps/map1_preview.png");
-        mapImages.add("/maps/map2_preview.png");
-        mapImages.add("/maps/map3_preview.png");
+        mapImages.add("/images/map1_preview.png");
+        mapImages.add("/images/map2_preview.png");
+        mapImages.add("/images/map3_preview.png");
 
-        mapFiles.add("/maps/map1.txt");
-        mapFiles.add("/maps/map2.txt");
-        mapFiles.add("/maps/map3.txt");
+        mapFiles.add("/levels/level1.json");
+        mapFiles.add("/levels/level2.json");
+        mapFiles.add("/levels/level3.json");
+
+
 
         updatePreview();
     }
@@ -47,17 +60,26 @@ public class Map {
 
     @FXML
     public void onNextMapButtonClick(MouseEvent event) {
-        System.out.println("next map");
         SoundManager.playSound("Accept.wav");
-        currentMapIndex = (currentMapIndex + 1) % mapImages.size();
-        updatePreview();
+        if (currentMapIndex < mapImages.size() - 1) {
+            currentMapIndex++;
+            updatePreview();
+        } else {
+            System.out.println("Đang ở map cuối cùng rồi!");
+        }
+
     }
+
     @FXML
     public void onPreMapButtonClick(MouseEvent event) {
         System.out.println("pre map");
         SoundManager.playSound("Accept.wav");
-        currentMapIndex = (currentMapIndex - 1 + mapImages.size()) % mapImages.size();
-        updatePreview();
+        if (currentMapIndex > 0) {
+            currentMapIndex--;
+            updatePreview();
+        } else {
+            System.out.println("Đang ở map đầu tiên rồi!");
+        }
     }
 
     @FXML
@@ -93,6 +115,13 @@ public class Map {
             }
         } else {
             System.err.println("LỖI: Không tìm thấy tệp ảnh tại đường dẫn: " + imagePath);
+        }
+        if (currentMapIndex + 1 > unlockedLevel) {
+            mapView.setOpacity(0.4);
+            playGameButton.setDisable(true);
+        } else {
+            mapView.setOpacity(1.0);
+            playGameButton.setDisable(false);
         }
     }
 }

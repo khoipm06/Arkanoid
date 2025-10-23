@@ -39,7 +39,7 @@ public class GameManager {
         this.levelManager = new LevelManager();
         this.levelNumber = levelNumber;
         this.bricks = levelManager.loadLevel(levelNumber);
-        Paddle paddle = new Paddle(gameWidth / 2 - 50, gameHeight - 50, 100, 15, 400, 0, gameWidth);
+        Paddle paddle = new Paddle(gameWidth / 2 - 30, gameHeight - 30, 100, 25, 400, 0, gameWidth);
         player = new Player("Player1", 1, paddle);
         playerManager.addPlayer(1, player);
     }
@@ -172,5 +172,8 @@ public class GameManager {
     public List<PowerUp> getPowerUps() { return powerUps; }
     public Player getPlayer() { return player; }
     public PlayerManager getPlayerManager() { return playerManager; }
+    public int getLevelNumber() {
+        return levelNumber;
+    }
 
 }

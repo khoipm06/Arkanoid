@@ -69,23 +69,23 @@ public class LevelManager {
             for (int col = 0; col < 10; col++) {
                 double x = startX + col * (brickWidth + gap);
                 double y = startY + row * (brickHeight + gap);
-                
+
                 String type = "normal";
                 if (row == 0) type = "strong";
                 if (row == 2 && col % 3 == 0) type = "moving";
-                
+
                 JsonObject brickData = new JsonObject();
                 brickData.addProperty("type", type);
                 brickData.addProperty("x", x);
                 brickData.addProperty("y", y);
                 brickData.addProperty("width", brickWidth);
                 brickData.addProperty("height", brickHeight);
-                
+
                 if (type.equals("moving")) {
                     brickData.addProperty("minX", 0);
                     brickData.addProperty("maxX", 800);
                 }
-                
+
                 bricks.add(entityFactory.createBrick(brickData));
             }
         }

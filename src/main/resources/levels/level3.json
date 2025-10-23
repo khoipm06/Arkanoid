@@ -1,0 +1,42 @@
+{
+  "levelNumber": 3,
+  "bricks": [
+    {"type": "strong", "x": 200, "y": 50, "width": 60, "height": 20},
+    {"type": "strong", "x": 265, "y": 50, "width": 60, "height": 20},
+    {"type": "strong", "x": 330, "y": 50, "width": 60, "height": 20},
+    {"type": "strong", "x": 395, "y": 50, "width": 60, "height": 20},
+    {"type": "strong", "x": 460, "y": 50, "width": 60, "height": 20},
+    {"type": "strong", "x": 525, "y": 50, "width": 60, "height": 20},
+
+    {"type": "normal", "x": 135, "y": 75, "width": 60, "height": 20},
+    {"type": "normal", "x": 200, "y": 75, "width": 60, "height": 20},
+    {"type": "normal", "x": 265, "y": 75, "width": 60, "height": 20},
+    {"type": "normal", "x": 330, "y": 75, "width": 60, "height": 20},
+    {"type": "normal", "x": 395, "y": 75, "width": 60, "height": 20},
+    {"type": "normal", "x": 460, "y": 75, "width": 60, "height": 20},
+    {"type": "normal", "x": 525, "y": 75, "width": 60, "height": 20},
+    {"type": "normal", "x": 590, "y": 75, "width": 60, "height": 20},
+
+    {"type": "moving", "x": 135, "y": 100, "width": 60, "height": 20, "minX": 100, "maxX": 700},
+    {"type": "moving", "x": 265, "y": 100, "width": 60, "height": 20, "minX": 100, "maxX": 700},
+    {"type": "moving", "x": 395, "y": 100, "width": 60, "height": 20, "minX": 100, "maxX": 700},
+    {"type": "moving", "x": 525, "y": 100, "width": 60, "height": 20, "minX": 100, "maxX": 700},
+
+    {"type": "normal", "x": 70, "y": 125, "width": 60, "height": 20},
+    {"type": "normal", "x": 135, "y": 125, "width": 60, "height": 20},
+    {"type": "strong", "x": 200, "y": 125, "width": 60, "height": 20},
+    {"type": "strong", "x": 265, "y": 125, "width": 60, "height": 20},
+    {"type": "normal", "x": 330, "y": 125, "width": 60, "height": 20},
+    {"type": "normal", "x": 395, "y": 125, "width": 60, "height": 20},
+    {"type": "strong", "x": 460, "y": 125, "width": 60, "height": 20},
+    {"type": "strong", "x": 525, "y": 125, "width": 60, "height": 20},
+    {"type": "normal", "x": 590, "y": 125, "width": 60, "height": 20},
+    {"type": "normal", "x": 655, "y": 125, "width": 60, "height": 20},
+
+    {"type": "moving", "x": 100, "y": 150, "width": 60, "height": 20, "minX": 50, "maxX": 750},
+    {"type": "moving", "x": 250, "y": 150, "width": 60, "height": 20, "minX": 50, "maxX": 750},
+    {"type": "moving", "x": 400, "y": 150, "width": 60, "height": 20, "minX": 50, "maxX": 750},
+    {"type": "moving", "x": 550, "y": 150, "width": 60, "height": 20, "minX": 50, "maxX": 750},
+    {"type": "moving", "x": 700, "y": 150, "width": 60, "height": 20, "minX": 50, "maxX": 750}
+  ]
+}
