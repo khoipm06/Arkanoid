@@ -10,6 +10,7 @@ import javafx.scene.input.KeyCode;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 public class GameManager {
     public enum GameState {
@@ -91,11 +92,13 @@ public class GameManager {
         while (powerUpIterator.hasNext()) {
             PowerUp powerUp = powerUpIterator.next();
             powerUp.update(deltaTime);
-            
-            if (powerUp.checkPaddleCollision(player.getPaddle())) {
+
+            PowerUp collectedPowerUp = powerUp.checkPaddleCollision(player.getPaddle());
+            if (collectedPowerUp != null) {
                 player.getState().addScore(50);
+                applyPowerUpEffect(collectedPowerUp, player.getPaddle());
             }
-            
+
             if (!powerUp.isActive() || powerUp.getY() > gameHeight) {
                 powerUpIterator.remove();
             }
@@ -174,6 +177,40 @@ public class GameManager {
     public PlayerManager getPlayerManager() { return playerManager; }
     public int getLevelNumber() {
         return levelNumber;
+    }
+
+    private void applyPowerUpEffect(PowerUp powerUp, Paddle paddle) {
+        if (powerUp instanceof ExplosiveBallPowerUp) {
+            for (Ball ball : balls) {
+                ball.setExplosive(true);
+            }
+        }
+        // Other power-up effects will be added here
+        else if (powerUp instanceof RowClearPowerUp) {
+            Random random = new Random();
+            boolean clearRow = random.nextBoolean(); // true for row, false for column
+
+            int maxRow = bricks.stream().mapToInt(Brick::getRow).max().orElse(0);
+            int maxCol = bricks.stream().mapToInt(Brick::getCol).max().orElse(0);
+
+            if (clearRow) {
+                int rowToClear = random.nextInt(maxRow + 1);
+                for (Brick brick : bricks) {
+                    if (!brick.isDestroyed() && brick.getRow() == rowToClear) {
+                        brick.destroy();
+                        onBrickDestroyed(brick);
+                    }
+                }
+            } else {
+                int colToClear = random.nextInt(maxCol + 1);
+                for (Brick brick : bricks) {
+                    if (!brick.isDestroyed() && brick.getCol() == colToClear) {
+                        brick.destroy();
+                        onBrickDestroyed(brick);
+                    }
+                }
+            }
+        }
     }
 
 }
