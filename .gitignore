@@ -43,6 +43,7 @@
 .gradle/
 .idea/
 build/
+.vscode/
 
 # CMake
 cmake-build-*/
