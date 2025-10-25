@@ -13,6 +13,7 @@ public class Ball extends MovableObject {
     private double minX, minY, maxX, maxY;
     private boolean attachedToPaddle = false;
     private Image ballImage;
+    private boolean isExplosive = false;
 
 
     public Ball(double x, double y, double radius, double speed) {
@@ -132,5 +133,13 @@ public class Ball extends MovableObject {
 
     public void setAttachedToPaddle(boolean attachedToPaddle) {
         this.attachedToPaddle = attachedToPaddle;
+    }
+
+    public boolean isExplosive() {
+        return isExplosive;
+    }
+
+    public void setExplosive(boolean explosive) {
+        isExplosive = explosive;
     }
 }
