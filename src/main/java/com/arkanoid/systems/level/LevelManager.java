@@ -2,9 +2,10 @@ package com.arkanoid.systems.level;
 
 import com.arkanoid.core.entities.Brick;
 import com.arkanoid.core.entities.NormalBrick;
-import com.google.gson.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,8 +36,10 @@ public class LevelManager {
                 JsonObject brickData = element.getAsJsonObject();
                 double x = brickData.get("x").getAsDouble();
                 double y = brickData.get("y").getAsDouble();
-                double brickWidth = brickData.get("width").getAsDouble(); // Assuming brickWidth is available in data or fixed
-                double brickHeight = brickData.get("height").getAsDouble(); // Assuming brickHeight is available in data or fixed
+                double brickWidth = brickData.get("width").getAsDouble(); // Assuming brickWidth is available in data or
+                                                                          // fixed
+                double brickHeight = brickData.get("height").getAsDouble(); // Assuming brickHeight is available in data
+                                                                            // or fixed
                 double startX = 50; // Based on createDefaultLevel
                 double startY = 50; // Based on createDefaultLevel
                 double gap = 5; // Based on createDefaultLevel
@@ -44,8 +47,9 @@ public class LevelManager {
                 int row = (int) ((y - startY) / (brickHeight + gap));
                 int col = (int) ((x - startX) / (brickWidth + gap));
 
-                Brick brick = entityFactory.createBrick(brickData, row ,col);
-                if (brick != null) bricks.add(brick);
+                Brick brick = entityFactory.createBrick(brickData, row, col);
+                if (brick != null)
+                    bricks.add(brick);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,8 +96,12 @@ public class LevelManager {
                 double y = startY + row * (brickHeight + gap);
 
                 String type = "normal";
-                if (row == 0) type = "strong";
-                if (row == 2 && col % 3 == 0) type = "moving";
+                if (row == 0) {
+                    type = "strong";
+                }
+                if (row == 2 && col % 3 == 0) {
+                    type = "moving";
+                }
 
                 JsonObject brickData = new JsonObject();
                 brickData.addProperty("type", type);
@@ -107,7 +115,7 @@ public class LevelManager {
                     brickData.addProperty("maxX", 800);
                 }
 
-                bricks.add(entityFactory.createBrick(brickData, row ,col));
+                bricks.add(entityFactory.createBrick(brickData, row, col));
             }
         }
 
@@ -124,29 +132,30 @@ public class LevelManager {
 
     public List<Brick> loadLevelFromFile(String mapPath) {
         List<Brick> bricks = new ArrayList<>();
-        try (InputStream input = getClass().getResourceAsStream(mapPath)) {
-            if (input == null) {
-                System.err.println("Không tìm thấy file map: " + mapPath);
+        try (InputStream inputStream = getClass().getResourceAsStream(mapPath)) {
+            if (inputStream == null) {
+                System.err.println("Could not find level file: " + mapPath);
                 return bricks;
             }
+            JsonObject json = JsonParser.parseReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).getAsJsonObject();
+            JsonArray brickArray = json.getAsJsonArray("bricks");
 
-            String json = new String(input.readAllBytes(), StandardCharsets.UTF_8);
-            JSONObject data = new JSONObject(json);
-            JSONArray layout = data.getJSONArray("layout");
-
-            for (int row = 0; row < layout.length(); row++) {
-                String line = layout.getString(row);
-                for (int col = 0; col < line.length(); col++) {
-                    if (line.charAt(col) == '1') {
-                        bricks.add(new NormalBrick(col * 40, row * 20, 40, 20, row, col, "/iamges/while.png"));
-                    }
-                }
+            for (JsonElement element : brickArray) {
+                JsonObject brickData = element.getAsJsonObject();
+                double x = brickData.get("x").getAsDouble();
+                double y = brickData.get("y").getAsDouble();
+                double brickWidth = brickData.get("width").getAsDouble();
+                double brickHeight = brickData.get("height").getAsDouble();
+                
+                // Row and col are not essential for loading, can be calculated differently if needed.
+                // Passing 0 for now.
+                Brick brick = entityFactory.createBrick(brickData, 0, 0);
+                if (brick != null)
+                    bricks.add(brick);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return bricks;
     }
-
-
 }

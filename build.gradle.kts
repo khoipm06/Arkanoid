@@ -2,6 +2,7 @@ plugins {
     java
     application
     id("org.openjfx.javafxplugin") version "0.1.0"
+    id("com.gradleup.shadow") version "9.2.2"
 }
 
 group = "com.arkanoid"
@@ -36,10 +37,15 @@ javafx {
 dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.xerial:sqlite-jdbc:3.45.1.0")
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
+    implementation("org.slf4j:slf4j-simple:2.0.13")
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.openjfx:javafx-controls:21.0.5")
-    testImplementation("org.openjfx:javafx-fxml:21.0.5")
-    testImplementation("org.openjfx:javafx-graphics:21.0.5")
+    testImplementation("org.openjfx:javafx-controls:21.0.9")
+        testImplementation("org.openjfx:javafx-fxml:21.0.9")
+        testImplementation("org.openjfx:javafx-graphics:21.0.9")
+    }
+    
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

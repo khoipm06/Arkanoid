@@ -1,0 +1,143 @@
+@startuml
+' Simplified Arkanoid Game Architecture
+
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "com.arkanoid" {
+
+  class GameApplication {
+    + start(Stage)
+  }
+
+  package "ui" {
+    class SceneManager {
+      + {static} loadScene(String, String)
+      + {static} switchTo(String)
+    }
+    class GameScene {
+      - gameManager: GameManager
+      + start()
+      + render()
+    }
+    class TwoPlayerGameView {
+      - gameManager: GameManager
+      + initialize()
+      + render()
+    }
+  }
+
+  package "systems" {
+    class GameManager {
+      - currentState: GameState
+      - players: List<Player>
+      - bricks: List<Brick>
+      + startSinglePlayerGame()
+      + startTwoPlayer()
+      + update(double)
+    }
+    class PlayerManager {
+      - players: Map<Integer, Player>
+      + createMultiplayerSession(): List<Player>
+      + handleInput(KeyCode, boolean, double)
+    }
+    class LevelManager {
+      + loadLevel(int): List<Brick>
+    }
+    class SoundManager {
+      + {static} playSound(String)
+    }
+  }
+
+  package "systems.player" {
+    class Player {
+      - profile: PlayerProfile
+      - state: PlayerState
+      - paddle: Paddle
+      - ball: Ball
+    }
+    class PlayerState {
+      - score: int
+      - lives: int
+      + addScore(int)
+      + loseLife()
+    }
+  }
+
+  package "core.entities" {
+    abstract class GameObject {
+      # x: double
+      # y: double
+      + update(double)
+      + render(GraphicsContext)
+    }
+    abstract class MovableObject extends GameObject {
+      # velocityX: double
+      # velocityY: double
+    }
+    class Paddle extends MovableObject {
+      + moveLeft()
+      + moveRight()
+    }
+    class Ball extends MovableObject {
+      + launch()
+      + checkPaddleCollision(Paddle)
+    }
+    class Brick extends GameObject {
+      - health: int
+      + hit()
+    }
+    class PowerUp extends MovableObject {
+      + applyEffect(Player)
+    }
+  }
+
+  package "core.physics" {
+    class CollisionDetector {
+      + {static} checkBallBrickCollisions(...)
+    }
+  }
+
+  package "database" {
+    class DatabaseManager {
+      + {static} initialize()
+      + getConnection(): Connection
+    }
+    class PlayerProfileManager {
+      + savePlayerProfile(PlayerProfile)
+      + loadPlayerProfile(String): PlayerProfile
+    }
+  }
+}
+
+' Relationships
+GameApplication --> SceneManager
+SceneManager --> GameScene
+SceneManager --> TwoPlayerGameView
+
+GameScene o-- GameManager
+TwoPlayerGameView o-- GameManager
+
+GameManager o-- PlayerManager
+GameManager o-- LevelManager
+GameManager "1" *-- "1..*" Player
+
+Player *-- Paddle
+Player *-- Ball
+Player o-- PlayerState
+
+LevelManager ..> Brick : creates
+
+GameManager ..> CollisionDetector : uses
+CollisionDetector ..> Brick
+CollisionDetector ..> Ball
+
+PlayerProfileManager o-- DatabaseManager
+
+MovableObject <|-- Paddle
+MovableObject <|-- Ball
+MovableObject <|-- PowerUp
+GameObject <|-- Brick
+GameObject <|-- MovableObject
+
+@enduml
