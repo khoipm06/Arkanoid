@@ -9,14 +9,18 @@ public abstract class BaseBrick extends GameObject implements Brick {
     protected Color color;
     protected boolean destroyed;
     protected double powerUpChance;
+    protected int row;
+    protected int col;
 
-    public BaseBrick(double x, double y, double width, double height, int hitPoints, Color color) {
+    public BaseBrick(double x, double y, double width, double height, int hitPoints, Color color, int row, int col) {
         super(x, y, width, height);
         this.hitPoints = hitPoints;
         this.maxHitPoints = hitPoints;
         this.color = color;
         this.destroyed = false;
         this.powerUpChance = 0.2;
+        this.row = row;
+        this.col = col;
     }
 
     @Override
@@ -26,6 +30,12 @@ public abstract class BaseBrick extends GameObject implements Brick {
             destroyed = true;
             active = false;
         }
+    }
+
+    @Override
+    public void destroy() {
+        destroyed = true;
+        active = false;
     }
 
     @Override
@@ -57,17 +67,28 @@ public abstract class BaseBrick extends GameObject implements Brick {
         return null;
     }
 
+    public int getRow() {
+        return row;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+
     private PowerUp createRandomPowerUp() {
         double random = Math.random();
         double centerX = getCenterX();
         double centerY = getCenterY();
         
-        if (random < 0.4) {
+        if (random < 0.3) {
             return new ExpandPaddlePowerUp(centerX, centerY);
-        } else if (random < 0.7) {
+        } else if (random < 0.6) {
             return new MultiBallPowerUp(centerX, centerY);
-        } else {
+        } else if (random < 0.8) {
             return new ExplosiveBallPowerUp(centerX, centerY);
+        } else {
+            return new RowClearPowerUp(centerX, centerY);
         }
     }
 }
