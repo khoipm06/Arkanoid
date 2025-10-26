@@ -23,7 +23,7 @@ class CollisionDetectorTest {
 
     @Test
     void testBallBrickCollision() {
-        Brick brick = new NormalBrick(100, 105, 50, 20, 0, 0);
+        Brick brick = new NormalBrick(100, 105, 50, 20, 0, 0, null);
         bricks.add(brick);
 
         CollisionDetector.checkBallBrickCollisions(ball, bricks, b -> {},
@@ -35,8 +35,8 @@ class CollisionDetectorTest {
     @Test
     void testExplosiveBallBrickCollision() {
         ball.setExplosive(true);
-        Brick brick1 = new NormalBrick(100, 105, 50, 20, 0, 0);
-        Brick brick2 = new NormalBrick(110, 105, 50, 20, 0, 1);
+        Brick brick1 = new NormalBrick(100, 105, 50, 20, 0, 0, null);
+        Brick brick2 = new NormalBrick(110, 105, 50, 20, 0, 1, null);
         bricks.add(brick1);
         bricks.add(brick2);
 
