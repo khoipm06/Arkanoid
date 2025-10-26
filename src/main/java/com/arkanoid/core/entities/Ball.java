@@ -19,8 +19,8 @@ public class Ball extends MovableObject {
         super(x - radius, y - radius, radius * 2, radius * 2, speed);
         this.radius = radius;
         this.color = Color.RED;
-//        this.velocityX = speed * 0.7;
-//        this.velocityY = -speed;
+        // this.velocityX = speed * 0.7;
+        // this.velocityY = -speed;
         this.velocityX = 0;
         this.velocityY = 0;
         attachedToPaddle = true;
@@ -44,8 +44,8 @@ public class Ball extends MovableObject {
     public void launch() {
         if (attachedToPaddle) {
             attachedToPaddle = false;
-            velocityY = -Math.abs(speed); // bay lên trên
-            velocityX = 0;                // bay thẳng, hoặc bạn có thể random nhẹ
+            velocityY = -Math.abs(speed);
+            velocityX = 0;
         }
     }
 
@@ -87,10 +87,10 @@ public class Ball extends MovableObject {
             if (stream != null) {
                 this.ballImage = new Image(stream);
             } else {
-                System.err.println("Cảnh báo: Không tìm thấy file ảnh ball.png trong /images/. Dùng màu mặc định.");
+                System.err.println("Warning: Could not find ball.png in /images/. Using default color.");
             }
         } catch (Exception e) {
-            System.err.println("Lỗi khi tải ảnh Ball: " + e.getMessage());
+            System.err.println("Error loading Ball image: " + e.getMessage());
         }
     }
 

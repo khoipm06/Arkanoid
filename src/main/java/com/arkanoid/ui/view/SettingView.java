@@ -21,12 +21,10 @@ public class SettingView {
 
     @FXML
     public void initialize() {
-        // Khi kéo slider, cập nhật label
         volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             valueLabel.setText(newVal.intValue() + "%");
         });
     }
-    // OK: lưu âm lượng và quay lại màn hình chính
     @FXML
     private void onOKClick() {
         savedVolume = (int) volumeSlider.getValue();
@@ -34,19 +32,16 @@ public class SettingView {
 
         SoundManager.playSound("Accept.wav");
 
-        // quay lại màn hình chính (đóng cửa sổ Setting)
         SceneManager.switchTo("mainMenuView");
     }
 
-    // Cancel: hủy chỉnh, giữ nguyên màn hình Setting
     @FXML
     private void onCancelClick() {
-        volumeSlider.setValue(savedVolume); // quay lại giá trị cũ
+        volumeSlider.setValue(savedVolume);
         System.out.println("Volume reverted to: " + savedVolume + "%");
 
         SoundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("mainMenuView");
-        // không đóng cửa sổ, vẫn ở màn hình Setting
     }
 }

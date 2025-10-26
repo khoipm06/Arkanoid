@@ -31,7 +31,7 @@ public class Map {
     public static void setUnlockedLevel(int level) {
         if (level > unlockedLevel) {
             unlockedLevel = level;
-            System.out.println("Đã mở khóa map " + unlockedLevel);
+            System.out.println("Unlocked map " + unlockedLevel);
         }
     }
 
@@ -65,7 +65,7 @@ public class Map {
             currentMapIndex++;
             updatePreview();
         } else {
-            System.out.println("Đang ở map cuối cùng rồi!");
+            System.out.println("Already at the last map!");
         }
 
     }
@@ -78,7 +78,7 @@ public class Map {
             currentMapIndex--;
             updatePreview();
         } else {
-            System.out.println("Đang ở map đầu tiên rồi!");
+            System.out.println("Already at the first map!");
         }
     }
 
@@ -114,7 +114,7 @@ public class Map {
                 e.printStackTrace();
             }
         } else {
-            System.err.println("LỖI: Không tìm thấy tệp ảnh tại đường dẫn: " + imagePath);
+            System.err.println("ERROR: Could not find image file at path: " + imagePath);
         }
         if (currentMapIndex + 1 > unlockedLevel) {
             mapView.setOpacity(0.4);

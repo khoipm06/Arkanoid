@@ -41,7 +41,7 @@ public class MainMenuView {
             applyIntroEffect();
             Platform.runLater(() -> applyShineEffect(welcome));
         } catch (Exception e) {
-            System.err.println("Không thể tải ảnh nền: background.png");
+            System.err.println("Could not load background image: background.png");
             e.printStackTrace();
         }
     }
@@ -136,16 +136,13 @@ public class MainMenuView {
                 double rootWidth = root.getPrefWidth();
                 double rootHeight = root.getPrefHeight();
 
-                // Lấy kích thước của Pop-up (sau khi tải, nó là AnchorPane)
                 AnchorPane popupPane = (AnchorPane)modePopup;
                 double popupWidth = popupPane.getPrefWidth();
                 double popupHeight = popupPane.getPrefHeight();
 
-                // Tính toán vị trí X và Y để căn giữa
                 double centerX = (rootWidth - popupWidth) / 2 + 50;
                 double centerY = (rootHeight - popupHeight) / 2 - 30;
 
-                // Thiết lập vị trí
                 modePopup.setLayoutX(centerX);
                 modePopup.setLayoutY(centerY);
             }

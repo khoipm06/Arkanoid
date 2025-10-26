@@ -56,13 +56,11 @@ public abstract class PowerUp extends MovableObject {
             applyEffect(paddle);
             PauseTransition pause = new PauseTransition(Duration.seconds(2));
 
-            // Khi hết 2 giây, tắt hiệu ứng
             pause.setOnFinished(e -> {
                 removeEffect(paddle);
                 setCollected(false);
             });
 
-            // Bắt đầu đếm ngược
             pause.play();
             return true;
         }

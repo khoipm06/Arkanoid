@@ -10,7 +10,7 @@
 
 <AnchorPane prefHeight="587.0" prefWidth="744.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.SignUpView">
    <children>
-      <Label layoutX="239.0" layoutY="80.0" prefHeight="43.0" prefWidth="266.0" text="Đăng kí tài khoản">
+      <Label layoutX="239.0" layoutY="80.0" prefHeight="43.0" prefWidth="266.0" text="Register account">
          <font>
             <Font size="29.0" />
          </font>

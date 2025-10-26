@@ -72,7 +72,7 @@ public class Paddle extends MovableObject {
     }
 
     public void resetSize() {
-        double centerX = getCenterX(); // Giữ nguyên vị trí giữa
+        double centerX = getCenterX();
         width = originalWidth;
         x = centerX - width / 2;
         constrainToBounds();

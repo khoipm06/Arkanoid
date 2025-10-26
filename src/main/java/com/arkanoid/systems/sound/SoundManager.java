@@ -22,7 +22,7 @@ public class SoundManager {
             if (loop) backgroundMusic.setCycleCount(MediaPlayer.INDEFINITE);
             backgroundMusic.play();
         } else {
-            System.out.println("Không tìm thấy file nhạc: " + fileName);
+            System.out.println("Could not find music file: " + fileName);
         }
     }
 
@@ -43,7 +43,7 @@ public class SoundManager {
         if (clip != null) {
             clip.play();
         } else {
-            System.out.println("Không tìm thấy sound effect: " + fileName);
+            System.out.println("Could not find sound effect: " + fileName);
         }
     }
 }
