@@ -11,6 +11,21 @@ import java.util.Map;
 public class SoundManager {
     private static MediaPlayer backgroundMusic;
     private static final Map<String, AudioClip> soundEffects = new HashMap<>();
+    private static double currentVolume = 0.6;
+
+    public static void setVolume(double volume) {
+        currentVolume = volume;
+        if (backgroundMusic != null) {
+            backgroundMusic.setVolume(currentVolume);
+        }
+        for (AudioClip clip : soundEffects.values()) {
+            clip.setVolume(currentVolume);
+        }
+    }
+
+    public static double getVolume() {
+        return currentVolume;
+    }
 
     public static void playBackground(String fileName, boolean loop) {
         stopBackground();
@@ -18,7 +33,7 @@ public class SoundManager {
         if (resource != null) {
             Media media = new Media(resource.toString());
             backgroundMusic = new MediaPlayer(media);
-            backgroundMusic.setVolume(0.6);
+            backgroundMusic.setVolume(currentVolume);
             if (loop) backgroundMusic.setCycleCount(MediaPlayer.INDEFINITE);
             backgroundMusic.play();
         } else {

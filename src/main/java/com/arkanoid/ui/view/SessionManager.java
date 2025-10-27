@@ -1,23 +1,68 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.systems.player.PlayerProfile;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class SessionManager {
     private static Map<String, String> users = new HashMap<>();
     private static User currentUser = null;
+    private static PlayerProfile activeProfile;
 
-    // Lớp User giả định, bạn có thể thay thế bằng lớp User thực tế của mình
     public static class User {
         private String username;
+        private int money;
+        private Map<String, Boolean> ownedSkins = new HashMap<>();
+        private String equippedSkin = "Default";
         public User(String username) {
+
             this.username = username;
+            this.money = 1000;
+            ownedSkins.put("Default", true);
         }
 
         public String getUsername() {
             return username;
         }
-        // Thêm getters cho các trường khác
+        public int getMoney() {
+            return money;
+        }
+
+        public void setMoney(int money) {
+            this.money = money;
+        }
+
+        public void addMoney(int amount) {
+            this.money += amount;
+        }
+
+        public boolean spendMoney(int amount) {
+            if (this.money >= amount) {
+                this.money -= amount;
+                return true;
+            }
+            return false;
+        }
+        public void addOwnedSkin(String skin) {
+            ownedSkins.put(skin, true);
+        }
+
+        public boolean hasSkin(String skin) {
+            return ownedSkins.getOrDefault(skin, false);
+        }
+
+        public String getEquippedSkin() {
+            return equippedSkin;
+        }
+
+        public void setEquippedSkin(String skin) {
+            this.equippedSkin = skin;
+        }
+
+        public Map<String, Boolean> getOwnedSkins() {
+            return ownedSkins;
+        }
     }
 
     public static boolean register(String username, String password) {
@@ -41,17 +86,42 @@ public class SessionManager {
         currentUser = user;
     }
 
-    /**
-     * Đăng xuất người dùng
-     */
+
     public static void logout() {
         currentUser = null;
     }
 
-    /**
-     * Lấy thông tin người dùng hiện tại
-     */
     public static User getCurrentUser() {
         return currentUser;
+    }
+    public static void setEquippedSkin(String skin) {
+        if (currentUser != null) {
+            currentUser.setEquippedSkin(skin);
+        }
+    }
+
+    public static String getEquippedSkin() {
+        if (currentUser != null) {
+            return currentUser.getEquippedSkin();
+        }
+        return "Default";
+    }
+
+    public static PlayerProfile getActiveProfile() {
+        if (activeProfile == null) {
+            activeProfile = new PlayerProfile("player1");
+        }
+        return activeProfile;
+    }
+
+    public static void setActiveProfile(PlayerProfile profile) {
+        activeProfile = profile;
+    }
+    public static void savePlayer(PlayerProfile player) {
+        if (currentUser != null) {
+            System.out.println("💾 Đã lưu user: " + currentUser.getUsername() +
+                    " | Tiền: " + currentUser.getMoney() +
+                    " | Skin đang dùng: " + currentUser.getEquippedSkin());
+        }
     }
 }

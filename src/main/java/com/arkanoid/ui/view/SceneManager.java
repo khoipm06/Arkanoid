@@ -11,6 +11,7 @@ import java.util.Map;
 public class SceneManager {
     private static Stage mainStage;
     private static final Map<String, Scene> scenes = new HashMap<>();
+    private static final Map<String, Object> controllers = new HashMap<>();
 
     public static void setStage(Stage stage) {
         mainStage = stage;
@@ -20,6 +21,7 @@ public class SceneManager {
         FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource("/com.arkanoid.ui.view/" + fxmlPath));
         Scene scene = new Scene(loader.load());
         scenes.put(name, scene);
+        controllers.put(name, loader.getController());
     }
 
     public static void switchTo(String name) {
@@ -28,5 +30,9 @@ public class SceneManager {
         } else {
             System.out.println("Scene not found: " + name);
         }
+    }
+
+    public static Object getController(String name) {
+        return controllers.get(name);
     }
 }

@@ -5,12 +5,17 @@
     import com.arkanoid.core.entities.Paddle;
     import com.arkanoid.core.entities.PowerUp;
     import com.arkanoid.systems.GameManager;
+    import com.arkanoid.ui.view.Pause;
+    import com.arkanoid.ui.view.SceneManager;
     import javafx.animation.AnimationTimer;
+    import javafx.fxml.FXMLLoader;
     import javafx.geometry.Pos;
     import javafx.scene.Scene;
     import javafx.scene.canvas.Canvas;
     import javafx.scene.canvas.GraphicsContext;
+    import javafx.scene.control.Button;
     import javafx.scene.input.KeyCode;
+    import javafx.scene.layout.AnchorPane;
     import javafx.scene.layout.StackPane;
     import javafx.scene.layout.VBox;
     import javafx.scene.paint.Color;
@@ -20,6 +25,7 @@
     import javafx.scene.image.Image;
 
 
+    import java.io.IOException;
     import java.io.InputStream;
     import java.util.HashSet;
     import java.util.Set;
@@ -36,6 +42,7 @@
         private VBox pauseOverlay;
         private StackPane root;
         private Image backgroundImage;
+
 
         public GameScene(Stage stage, double width, double height, int levelNumber) {
             this.stage = stage;
@@ -79,8 +86,29 @@
 
             this.scene = new Scene(root, width, height);
             setupInputHandlers();
+            stage.setScene(scene);
+
+        }
+        public void hidePauseOverlay() {
+            if (pauseOverlay != null) {
+                pauseOverlay.setVisible(false);
+            }
         }
 
+        private void showPauseScene() {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Pause.fxml"));
+                AnchorPane pauseRoot = loader.load();
+
+                Pause pauseController = loader.getController();
+                pauseController.init(this, stage, gameManager);
+
+                Scene pauseScene = new Scene(pauseRoot, stage.getWidth(), stage.getHeight());
+                stage.setScene(pauseScene);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         private VBox createPauseOverlay() {
             VBox overlay = new VBox(20);
             overlay.setAlignment(Pos.CENTER);
@@ -91,11 +119,25 @@
             pausedText.setFont(Font.font("Arial", 50));
             pausedText.setFill(Color.WHITE);
 
-            Text instructionText = new Text("Press ESC to Resume");
-            instructionText.setFont(Font.font("Arial", 20));
-            instructionText.setFill(Color.LIGHTGRAY);
+            Button resumeBtn = new Button("Resume");
+            resumeBtn.setOnAction(e -> {
+                gameManager.resume();
+                pauseOverlay.setVisible(false);
+            });
 
-            overlay.getChildren().addAll(pausedText, instructionText);
+            Button newGameBtn = new Button("New Game");
+            newGameBtn.setOnAction(e -> {
+                GameScene newScene = new GameScene(stage, stage.getWidth(), stage.getHeight(), gameManager.getLevelNumber());
+                newScene.start();
+                stage.setScene(newScene.getScene());
+            });
+
+            Button quitBtn = new Button("Quit");
+            quitBtn.setOnAction(e -> {
+                SceneManager.switchTo("mainMenuView");
+            });
+
+            overlay.getChildren().addAll(pausedText, resumeBtn, newGameBtn, quitBtn);
             return overlay;
         }
 
@@ -104,7 +146,7 @@
                 KeyCode key = event.getCode();
 
                 if (key == KeyCode.ESCAPE) {
-                    gameManager.togglePause();
+                    gameManager.pause();
                     pauseOverlay.setVisible(gameManager.getCurrentState() == GameManager.GameState.PAUSED);
                     return;
                 }

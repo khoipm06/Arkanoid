@@ -96,8 +96,8 @@ public class MainMenuView {
     public void onQuitClick(MouseEvent event) {
 
         SoundManager.playSound("Accept.wav");
-        System.out.println("Quit");
-    }
+        Platform.exit(); // thoát toàn bộ ứng dụng
+        System.exit(0);    }
     @FXML
     public void onShopClick(MouseEvent event) {
         System.out.println("Shop");
