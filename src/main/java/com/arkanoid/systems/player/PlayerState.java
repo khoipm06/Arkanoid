@@ -23,6 +23,10 @@ public class PlayerState {
         score += points;
     }
 
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
     public int getLives() {
         return lives;
     }

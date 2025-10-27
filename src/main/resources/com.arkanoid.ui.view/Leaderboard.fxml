@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="root" prefHeight="600.0" prefWidth="800.0" stylesheets="@../leaderboard.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.LeaderboardController">
+<AnchorPane fx:id="root" prefHeight="600.0" prefWidth="800.0" stylesheets="@../leaderboard.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.LeaderboardController">
    <children>
       <Label fx:id="titleLabel" alignment="CENTER" layoutX="232.0" layoutY="39.0" prefHeight="62.0" prefWidth="335.0" text="LEADERBOARD">
          <font>
