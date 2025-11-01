@@ -1,6 +1,7 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.systems.GameManager;
+import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.GameScene;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -27,6 +28,7 @@ public class Pause {
 
     @FXML
     public void onNewGameClick(MouseEvent event) {
+        SoundManager.playSound("Accept.wav");
         int currentLevel = gameManager.getLevelNumber();
         GameScene newScene = new GameScene(stage, stage.getWidth(), stage.getHeight(), currentLevel);
         newScene.start();
@@ -34,11 +36,13 @@ public class Pause {
     }
     @FXML
     public void onResumeClick(MouseEvent event) {
+        SoundManager.playSound("Accept.wav");
         gameManager.resume();
         gameScene.hidePauseOverlay();
     }
     @FXML
     public void onQuitClick(MouseEvent event) {
+        SoundManager.playSound("Accept.wav");
         SceneManager.switchTo("mainMenuView");
     }
 }

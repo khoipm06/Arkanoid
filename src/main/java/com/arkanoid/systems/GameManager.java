@@ -231,5 +231,12 @@ public class GameManager {
     public int getLevelNumber() {
         return levelNumber;
     }
+    public int getScore() {
+        return player.getState().getScore();
+    }
+
+//    public int getHighestScore() {
+//        return playerManager.getHighestScore();
+//    }
 
 }

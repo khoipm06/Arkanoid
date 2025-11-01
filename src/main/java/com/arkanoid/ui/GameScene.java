@@ -5,12 +5,12 @@
     import com.arkanoid.core.entities.Bullet;
     import com.arkanoid.core.entities.PowerUp;
     import com.arkanoid.systems.GameManager;
-    import com.arkanoid.ui.view.Pause;
-    import com.arkanoid.ui.view.SceneManager;
-    import com.arkanoid.ui.view.SessionManager;
+    import com.arkanoid.ui.view.*;
     import javafx.animation.AnimationTimer;
+    import javafx.application.Platform;
     import javafx.fxml.FXMLLoader;
     import javafx.geometry.Pos;
+    import javafx.scene.Parent;
     import javafx.scene.Scene;
     import javafx.scene.canvas.Canvas;
     import javafx.scene.canvas.GraphicsContext;
@@ -30,6 +30,7 @@
     import java.io.InputStream;
     import java.util.HashSet;
     import java.util.Set;
+
 
     public class GameScene {
         private Scene scene;
@@ -116,35 +117,101 @@
             }
         }
         private VBox createPauseOverlay() {
-            VBox overlay = new VBox(20);
+//            VBox overlay = new VBox(20);
+//            overlay.setAlignment(Pos.CENTER);
+//            overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
+//            overlay.setPrefSize(canvas.getWidth(), canvas.getHeight());
+//
+//            Text pausedText = new Text("PAUSED");
+//            pausedText.setFont(Font.font("Arial", 50));
+//            pausedText.setFill(Color.WHITE);
+//
+//            Button resumeBtn = new Button("Resume");
+//            resumeBtn.setOnAction(e -> {
+//                gameManager.resume();
+//                pauseOverlay.setVisible(false);
+//            });
+//
+//            Button newGameBtn = new Button("New Game");
+//            newGameBtn.setOnAction(e -> {
+//                GameScene newScene = new GameScene(stage, stage.getWidth(), stage.getHeight(), gameManager.getLevelNumber());
+//                newScene.start();
+//                stage.setScene(newScene.getScene());
+//            });
+//
+//            Button quitBtn = new Button("Quit");
+//            quitBtn.setOnAction(e -> {
+//                SceneManager.switchTo("mainMenuView");
+//            });
+//
+//            overlay.getChildren().addAll(pausedText, resumeBtn, newGameBtn, quitBtn);
+//            return overlay;
+            VBox overlay = new VBox(30);
             overlay.setAlignment(Pos.CENTER);
-            overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
-            overlay.setPrefSize(canvas.getWidth(), canvas.getHeight());
+            overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.75);"
+                    + "-fx-padding: 40;"
+                    + "-fx-border-radius: 20;"
+                    + "-fx-background-radius: 20;");
+            overlay.setPrefSize(canvas.getWidth() * 0.8, canvas.getHeight() * 0.6);
 
+            // Chữ PAUSED đẹp
             Text pausedText = new Text("PAUSED");
-            pausedText.setFont(Font.font("Arial", 50));
+            pausedText.setFont(Font.font("Arial Black", 60));
             pausedText.setFill(Color.WHITE);
+            pausedText.setStroke(Color.LIGHTBLUE);
+            pausedText.setStrokeWidth(2);
 
+            // Nút Resume
             Button resumeBtn = new Button("Resume");
+            stylePauseButton(resumeBtn);
             resumeBtn.setOnAction(e -> {
                 gameManager.resume();
                 pauseOverlay.setVisible(false);
             });
 
+            // Nút New Game
             Button newGameBtn = new Button("New Game");
+            stylePauseButton(newGameBtn);
             newGameBtn.setOnAction(e -> {
                 GameScene newScene = new GameScene(stage, stage.getWidth(), stage.getHeight(), gameManager.getLevelNumber());
                 newScene.start();
                 stage.setScene(newScene.getScene());
             });
 
+            // Nút Quit
             Button quitBtn = new Button("Quit");
+            stylePauseButton(quitBtn);
             quitBtn.setOnAction(e -> {
                 SceneManager.switchTo("mainMenuView");
             });
 
             overlay.getChildren().addAll(pausedText, resumeBtn, newGameBtn, quitBtn);
             return overlay;
+        }
+        private void stylePauseButton(Button button) {
+            button.setStyle("-fx-background-color: linear-gradient(to bottom right, #1e3c72, #2a5298);"
+                    + "-fx-text-fill: white;"
+                    + "-fx-font-size: 20px;"
+                    + "-fx-font-weight: bold;"
+                    + "-fx-background-radius: 15;"
+                    + "-fx-border-radius: 15;"
+                    + "-fx-border-color: white;"
+                    + "-fx-border-width: 2;"
+                    + "-fx-cursor: hand;");
+            button.setPrefWidth(200);
+            button.setPrefHeight(50);
+
+            // Hiệu ứng hover
+            button.setOnMouseEntered(e -> button.setStyle("-fx-background-color: linear-gradient(to bottom right, #2a5298, #1e3c72);"
+                    + "-fx-text-fill: yellow;"
+                    + "-fx-font-size: 22px;"
+                    + "-fx-font-weight: bold;"
+                    + "-fx-background-radius: 15;"
+                    + "-fx-border-radius: 15;"
+                    + "-fx-border-color: white;"
+                    + "-fx-border-width: 2;"
+                    + "-fx-cursor: hand;"));
+            button.setOnMouseExited(e -> stylePauseButton(button));
         }
 
         private void setupInputHandlers() {
@@ -187,6 +254,7 @@
                     handleInput(deltaTime);
                     update(deltaTime);
                     render();
+
                 }
             };
 
@@ -204,12 +272,35 @@
         private void update(double deltaTime) {
             gameManager.update(deltaTime);
 
+//            if (gameManager.getCurrentState() == GameManager.GameState.GAME_OVER) {
+//                gameLoop.stop();
+//                showGameOver();
+//            } else if (gameManager.getCurrentState() == GameManager.GameState.LEVEL_COMPLETE) {
+//                gameLoop.stop();
+//                showLevelComplete();
+//            }
             if (gameManager.getCurrentState() == GameManager.GameState.GAME_OVER) {
                 gameLoop.stop();
-                showGameOver();
-            } else if (gameManager.getCurrentState() == GameManager.GameState.LEVEL_COMPLETE) {
+                Platform.runLater(() -> {
+                    int highest = 0;
+                    SceneManager.showGameOver(
+                            gameManager.getLevelNumber(),
+                            gameManager.getScore(),
+                            highest);
+                });
+                return;
+            }
+
+            if (gameManager.getCurrentState() == GameManager.GameState.LEVEL_COMPLETE) {
                 gameLoop.stop();
-                showLevelComplete();
+                Platform.runLater(() -> {
+                    int highest = 0;
+                    SceneManager.showWinLevel(
+                            gameManager.getLevelNumber(),
+                            gameManager.getScore(),
+                            highest);
+                });
+                return;
             }
         }
 
@@ -256,10 +347,11 @@
             gc.fillText(livesText, canvas.getWidth() - 100, 25);
         }
 
-        private void showGameOver() {
-        }
+//        private void showGameOver() {
+//        }
+//
+//        private void showLevelComplete() {}
 
-        private void showLevelComplete() {}
 
         public Scene getScene() {
             return scene;
