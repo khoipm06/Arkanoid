@@ -32,6 +32,7 @@ public class GameApplication extends Application {
         SceneManager.loadScene("map", "Map.fxml");
         SceneManager.loadScene("pause", "Pause.fxml");
         SceneManager.loadScene("shopBall", "ShopBall.fxml");
+        SceneManager.loadScene("shopPaddle", "ShopPaddle.fxml");
 
         SceneManager.switchTo("mainMenuView");
         primaryStage.setTitle("Arkanoid Game");

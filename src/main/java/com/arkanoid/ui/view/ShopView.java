@@ -1,6 +1,7 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.core.entities.Ball;
+import com.arkanoid.core.entities.Paddle;
 import com.arkanoid.systems.player.PlayerProfile;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.animation.PauseTransition;
@@ -95,7 +96,20 @@ public class ShopView {
     public void onPaddleShopClick(MouseEvent event) {
         SoundManager.playSound("Accept.wav");
 
-        System.out.println("Paddle Shop");
+        PlayerProfile player = SessionManager.getActiveProfile();
+        PlayerProfile.setCurrentPlayer(player);
+
+        Paddle paddle = new Paddle(0, 0, 120, 20);
+        paddle.equipSkin(player.getEquippedPaddleSkin());
+
+        ShopPaddle shopPaddleController = (ShopPaddle) SceneManager.getController("shopPaddle");
+        if (shopPaddleController != null) {
+            shopPaddleController.setPlayer(paddle);
+        } else {
+            System.out.println("Không tìm thấy controller shopPaddle!");
+        }
+
+        SceneManager.switchTo("shopPaddle");
     }
 
     @FXML

@@ -2,11 +2,11 @@
 
     import com.arkanoid.core.entities.Ball;
     import com.arkanoid.core.entities.Brick;
-    import com.arkanoid.core.entities.Paddle;
     import com.arkanoid.core.entities.PowerUp;
     import com.arkanoid.systems.GameManager;
     import com.arkanoid.ui.view.Pause;
     import com.arkanoid.ui.view.SceneManager;
+    import com.arkanoid.ui.view.SessionManager;
     import javafx.animation.AnimationTimer;
     import javafx.fxml.FXMLLoader;
     import javafx.geometry.Pos;
@@ -49,6 +49,11 @@
             this.pressedKeys = new HashSet<>();
 
             this.gameManager = new GameManager(width, height, levelNumber);
+            if (gameManager.getPlayer() != null) {
+                String equippedSkin = SessionManager.getCurrentUser().getEquippedPaddleSkin();
+                System.out.println("🎨 Skin paddle đang dùng: " + equippedSkin);
+                gameManager.getPlayer().getPaddle().equipSkin(equippedSkin);
+            }
 
             try (InputStream streamBackGround = getClass().getResourceAsStream("/images/backgroundGame.png")) {
                 if (streamBackGround != null) {
@@ -60,19 +65,19 @@
                 System.err.println("Lỗi khi tải ảnh nền: " + e.getMessage());
             }
 
-            InputStream stream = getClass().getResourceAsStream("/images/p101.png");
-            if (stream == null) {
-                System.out.println("Không tìm thấy file ảnh!");
-            } else {
-                Image paddleImg = new Image(stream);
-                // Sau khi Player được khởi tạo trong GameManager, dòng này sẽ chạy thành công
-                if (gameManager.getPlayer() != null) {
-                    gameManager.getPlayer().getPaddle().setPaddleImage(paddleImg);
-                } else {
-                    // Dòng này sẽ không in ra nữa nếu bạn đã sửa GameManager
-                    System.out.println("Lỗi: Player chưa được khởi tạo!");
-                }
-            }
+//            InputStream stream = getClass().getResourceAsStream("/images/paddle_Default.png");
+//            if (stream == null) {
+//                System.out.println("Không tìm thấy file ảnh!");
+//            } else {
+//                Image paddleImg = new Image(stream);
+//                // Sau khi Player được khởi tạo trong GameManager, dòng này sẽ chạy thành công
+//                if (gameManager.getPlayer() != null) {
+//                    gameManager.getPlayer().getPaddle().setPaddleImage(paddleImg);
+//                } else {
+//                    // Dòng này sẽ không in ra nữa nếu bạn đã sửa GameManager
+//                    System.out.println("Lỗi: Player chưa được khởi tạo!");
+//                }
+//            }
 
             root = new StackPane();
 

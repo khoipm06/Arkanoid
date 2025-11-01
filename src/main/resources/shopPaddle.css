@@ -2,15 +2,15 @@
     -fx-background-color: linear-gradient(to bottom right, #12043b, #3b0a45, #000010);
 }
 
-/* --- Tiêu đề Shop Ball --- */
+/* --- Label mặc định --- */
 .label {
     -fx-text-fill: #b0c7ff;
     -fx-font-weight: bold;
     -fx-effect: dropshadow(gaussian, rgba(0,255,255,0.4), 8, 0.3, 0, 0);
 }
 
-/* --- Tiêu đề chính “Shop Ball” --- */
-.label[text="Shop Ball"] {
+/* --- Tiêu đề chính “Shop Paddle” (đổi từ Shop Ball) --- */
+.label[text="Shop Paddle"] {
     -fx-text-fill: #00ffff;
     -fx-font-size: 30px;
     -fx-font-weight: bold;
@@ -24,7 +24,7 @@
     -fx-effect: dropshadow(gaussian, rgba(255,255,150,0.6), 10, 0.3, 0, 0);
 }
 
-/* --- Nút chung (Mua, Trang bị) --- */
+/* --- Nút chung (Buy / Equip) --- */
 .button {
     -fx-background-radius: 10;
     -fx-background-color: linear-gradient(to bottom, #1b2735, #090a0f);
@@ -59,7 +59,7 @@
     -fx-effect: dropshadow(gaussian, rgba(0,255,255,0.8), 10, 0.3, 0, 0);
 }
 
-#back:hover {
+#backHome:hover {
     -fx-scale-x: 1.1;
     -fx-scale-y: 1.1;
     -fx-effect: dropshadow(gaussian, rgba(0,255,255,1), 15, 0.5, 0, 0);

@@ -17,6 +17,7 @@
         private Image ballImage;
         private static final Map<String, Image> SKINS = new HashMap<>();
         private static String currentSkin = "Default";
+
         static {
             loadSkins();
         }

@@ -4,15 +4,15 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="325.0" prefWidth="298.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.ModeSelectView">
+<AnchorPane prefHeight="349.0" prefWidth="331.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.ModeSelectView">
    <children>
-      <Button layoutX="100.0" layoutY="40.0" mnemonicParsing="false" onMouseClicked="#onSinglePlayerClick" prefHeight="51.0" prefWidth="98.0" text="Single Player" />
-      <Button layoutX="100.0" layoutY="127.0" mnemonicParsing="false" onMouseClicked="#onMultiPlayerClick" prefHeight="51.0" prefWidth="98.0" text="Multi Player">
+      <Button layoutX="116.0" layoutY="62.0" mnemonicParsing="false" onMouseClicked="#onSinglePlayerClick" prefHeight="51.0" prefWidth="98.0" text="Single Player" />
+      <Button layoutX="116.0" layoutY="149.0" mnemonicParsing="false" onMouseClicked="#onMultiPlayerClick" prefHeight="51.0" prefWidth="98.0" text="Multi Player">
          <font>
             <Font size="13.0" />
          </font>
       </Button>
-      <Button layoutX="100.0" layoutY="215.0" mnemonicParsing="false" onMouseClicked="#onBackClick" prefHeight="51.0" prefWidth="98.0" text="Back">
+      <Button layoutX="116.0" layoutY="238.0" mnemonicParsing="false" onMouseClicked="#onBackClick" prefHeight="51.0" prefWidth="98.0" text="Back">
          <font>
             <Font size="18.0" />
          </font>
