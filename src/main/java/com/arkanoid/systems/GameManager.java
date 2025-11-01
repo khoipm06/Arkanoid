@@ -27,6 +27,10 @@ public class GameManager {
     private double gameHeight;
     private int levelNumber;
 
+    private List<Bullet> bullets;
+    private double gunFireCooldown = 0.0; // thời gian đếm ngược tới lần bắn tiếp theo (giây)
+    private static final double GUN_FIRE_INTERVAL = 0.2; // 0.2s ~ 5 viên/s
+
     public GameManager(double gameWidth, double gameHeight, int levelNumber) {
         this.gameWidth = gameWidth;
         this.gameHeight = gameHeight;
@@ -36,6 +40,7 @@ public class GameManager {
         this.balls = new ArrayList<>();
         this.bricks = new ArrayList<>();
         this.powerUps = new ArrayList<>();
+        this.bullets = new ArrayList<>();
         this.levelManager = new LevelManager();
         this.levelNumber = levelNumber;
         this.bricks = levelManager.loadLevel(levelNumber);
@@ -62,6 +67,7 @@ public class GameManager {
         String mapPath = "/levels/level" + levelNumber + ".json";
         bricks = levelManager.loadLevelFromFile(mapPath);
         powerUps.clear();
+        bullets.clear();
     }
 
     public void update(double deltaTime) {
@@ -121,6 +127,55 @@ public class GameManager {
         if (bricks.isEmpty()) {
             currentState = GameState.LEVEL_COMPLETE;
         }
+        if (paddle.isGunMode()) {
+            gunFireCooldown -= deltaTime;
+            if (gunFireCooldown <= 0.0) {
+                // spawn 2 bullets (left & right)
+                double bulletW = 6;
+                double bulletH = 12;
+                double speed = -300; // pixels / s (bay lên)
+                Bullet left = new Bullet(paddle.getLeftGunX(), paddle.getGunY(), bulletW, bulletH, speed);
+                Bullet right = new Bullet(paddle.getRightGunX(), paddle.getGunY(), bulletW, bulletH, speed);
+                bullets.add(left);
+                bullets.add(right);
+                gunFireCooldown = GUN_FIRE_INTERVAL;
+            }
+        } else {
+            // reset cooldown to allow immediate fire when re-activated
+            gunFireCooldown = 0.0;
+        }
+
+        // update bullets
+        Iterator<Bullet> bulletIt = bullets.iterator();
+        while (bulletIt.hasNext()) {
+            Bullet b = bulletIt.next();
+            b.update(deltaTime);
+
+            // check out of bounds (ở trên màn hình)
+            if (b.isOutOfBounds(gameHeight)) {
+                bulletIt.remove();
+                continue;
+            }
+
+            // check collision with bricks
+            boolean hit = false;
+            for (Brick brick : bricks) {
+                if (brick.isDestroyed()) continue;
+                if (b.intersects((com.arkanoid.core.entities.GameObject) brick)) {
+                    brick.hit();
+                    if (brick.isDestroyed()) {
+                        onBrickDestroyed(brick);
+                    } else {
+                        // nếu brick chưa destroyed, bạn có thể thêm hiệu ứng nhỏ (không bắt buộc)
+                    }
+                    hit = true;
+                    break;
+                }
+            }
+            if (hit) {
+                bulletIt.remove();
+            }
+        }
     }
 
     private void onBrickDestroyed(Brick brick) {
@@ -170,6 +225,7 @@ public class GameManager {
     public List<Ball> getBalls() { return balls; }
     public List<Brick> getBricks() { return bricks; }
     public List<PowerUp> getPowerUps() { return powerUps; }
+    public List<Bullet> getBullets() {return bullets; }
     public Player getPlayer() { return player; }
     public PlayerManager getPlayerManager() { return playerManager; }
     public int getLevelNumber() {

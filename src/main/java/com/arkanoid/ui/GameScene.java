@@ -2,6 +2,7 @@
 
     import com.arkanoid.core.entities.Ball;
     import com.arkanoid.core.entities.Brick;
+    import com.arkanoid.core.entities.Bullet;
     import com.arkanoid.core.entities.PowerUp;
     import com.arkanoid.systems.GameManager;
     import com.arkanoid.ui.view.Pause;
@@ -230,6 +231,9 @@
 
             for (PowerUp powerUp : gameManager.getPowerUps()) {
                 powerUp.render(gc);
+            }
+            for (Bullet bullet : gameManager.getBullets()) {
+                bullet.render(gc);
             }
 
             if (gameManager.getPlayer() != null) {

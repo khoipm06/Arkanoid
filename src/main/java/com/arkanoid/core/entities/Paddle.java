@@ -18,6 +18,9 @@ public class Paddle extends MovableObject {
     private static final Map<String, Image> paddleSkins = new HashMap<>();
     private static String currentSkin = "paddle_Default";
 
+    private boolean gunMode = false;
+    private long gunExpiryNano = -1;
+
     static {
         loadSkins();
     }
@@ -75,6 +78,15 @@ public class Paddle extends MovableObject {
             gc.setStroke(Color.WHITE);
             gc.strokeRect(x, y, width, height);
         }
+        if (isGunMode()) {
+            double gunW = 6, gunH = 12;
+            gc.setFill(Color.SILVER);
+            gc.fillRect(getLeftGunX(), getGunY(), gunW, gunH);
+            gc.fillRect(getRightGunX(), getGunY(), gunW, gunH);
+            gc.setStroke(Color.BLACK);
+            gc.strokeRect(getLeftGunX(), getGunY(), gunW, gunH);
+            gc.strokeRect(getRightGunX(), getGunY(), gunW, gunH);
+        }
     }
 
     public void setColor(Color color) {
@@ -126,6 +138,37 @@ public class Paddle extends MovableObject {
 
     public static String getCurrentSkin() {
         return currentSkin;
+    }
+
+    public boolean isGunMode() {
+        return gunMode && (gunExpiryNano == -1 || System.nanoTime() <= gunExpiryNano);
+    }
+
+    public void setGunMode(boolean mode) {
+        this.gunMode = mode;
+        if (!mode) {
+            this.gunExpiryNano = -1;
+        }
+    }
+
+    public void setGunExpiry(long expiryNano) {
+        this.gunExpiryNano = expiryNano;
+    }
+
+    public long getGunExpiry() {
+        return gunExpiryNano;
+    }
+
+    public double getLeftGunX() {
+        return x + 4; // offset nhỏ để đạn không nằm sát viền
+    }
+
+    public double getRightGunX() {
+        return x + width - 4 - 4; // offset: width - margin - bulletWidth
+    }
+
+    public double getGunY() {
+        return y - 10; // phía trên paddle
     }
 
 }
