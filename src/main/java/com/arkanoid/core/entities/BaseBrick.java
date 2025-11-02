@@ -62,13 +62,12 @@ public abstract class BaseBrick extends GameObject implements Brick {
         double centerX = getCenterX();
         double centerY = getCenterY();
         
-//        if (random < 0.4) {
-//            return new ExpandPaddlePowerUp(centerX, centerY);
-//        } else if (random < 0.7) {
-//            return new MultiBallPowerUp(centerX, centerY);
-//        } else {
-//            return new ExplosiveBallPowerUp(centerX, centerY);
-//        }
-        return new GunPaddlePowerUp(centerX, centerY);
+        if (random < 0.4) {
+            return new ExpandPaddlePowerUp(centerX, centerY);
+        } else if (random < 0.7) {
+            return new MultiBallPowerUp(centerX, centerY);
+        } else {
+            return new ExplosiveBallPowerUp(centerX, centerY);
+        }
     }
 }
