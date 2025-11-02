@@ -29,7 +29,11 @@ application {
 
 javafx {
     version = "21.0.5"
-    modules = listOf("javafx.controls", "javafx.graphics", "javafx.fxml", "javafx.media")
+    modules = listOf("javafx.controls", "javafx.graphics", "javafx.controls", "javafx.fxml")
+}
+
+dependencies {
+    implementation("com.google.code.gson:gson:2.10.1")
 }
 
 tasks.withType<Test> {
