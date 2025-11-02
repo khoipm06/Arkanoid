@@ -1,0 +1,61 @@
+#root, #authRoot {
+    -fx-background-color: linear-gradient(to bottom right, #202020, #000033);
+}
+
+#backButton {
+    /* Kích thước: Đặt đồng nhất, ví dụ 50x50 */
+    -fx-pref-width: 50px;
+    -fx-pref-height: 50px;
+
+    /* Tải và ÉP ẢNH */
+    -fx-background-image: url("/images/back.png");
+    -fx-background-size: 50px 50px; /* Ép ảnh vừa với nút */
+
+    /* Loại bỏ giao diện mặc định */
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-padding: 0;
+    -fx-text-fill: transparent;
+}
+
+#backButton:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.4), 10, 0.0, 0, 0);
+    -fx-cursor: hand;
+}
+
+#backButton:pressed {
+    -fx-translate-y: 1px;
+    -fx-effect: none;
+}
+
+#signInButton, #signUpButton {
+    /* Kích thước: Đảm bảo khớp với Pref Width/Height trong FXML */
+    -fx-pref-width: 130px;
+    -fx-pref-height: 55px;
+
+    /* Màu nền gradient */
+    -fx-background-color:
+        linear-gradient(to bottom, #1E90FF, #0055AA); /* Xanh dương */
+
+    /* Bo góc và đổ bóng */
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0.0, 0, 1);
+
+    /* Kiểu chữ */
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+#signInButton:hover, #signUpButton:hover {
+    -fx-background-color:
+        linear-gradient(to bottom, #4682B4, #103F6D); /* Màu sáng hơn khi hover */
+    -fx-cursor: hand;
+}
+
+#signInButton:pressed, #signUpButton:pressed {
+    -fx-translate-y: 1px;
+    -fx-effect: none;
+}

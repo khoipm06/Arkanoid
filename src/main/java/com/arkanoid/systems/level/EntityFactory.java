@@ -30,6 +30,7 @@ public class EntityFactory {
             case "expand" -> new ExpandPaddlePowerUp(x, y);
             case "multiball" -> new MultiBallPowerUp(x, y);
             case "explosive" -> new ExplosiveBallPowerUp(x, y);
+            case "gun" -> new GunPaddlePowerUp(x, y);
             default -> null;
         };
     }

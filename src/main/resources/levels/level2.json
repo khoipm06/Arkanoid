@@ -1,0 +1,41 @@
+{
+  "levelNumber": 2,
+  "bricks": [
+    {"type": "strong", "x": 80, "y": 60, "width": 60, "height": 20},
+    {"type": "strong", "x": 160, "y": 60, "width": 60, "height": 20},
+    {"type": "strong", "x": 240, "y": 60, "width": 60, "height": 20},
+    {"type": "strong", "x": 320, "y": 60, "width": 60, "height": 20},
+    {"type": "strong", "x": 400, "y": 60, "width": 60, "height": 20},
+    {"type": "strong", "x": 480, "y": 60, "width": 60, "height": 20},
+    {"type": "strong", "x": 560, "y": 60, "width": 60, "height": 20},
+    {"type": "strong", "x": 640, "y": 60, "width": 60, "height": 20},
+
+    {"type": "normal", "x": 120, "y": 90, "width": 60, "height": 20},
+    {"type": "normal", "x": 200, "y": 90, "width": 60, "height": 20},
+    {"type": "normal", "x": 280, "y": 90, "width": 60, "height": 20},
+    {"type": "normal", "x": 360, "y": 90, "width": 60, "height": 20},
+    {"type": "normal", "x": 440, "y": 90, "width": 60, "height": 20},
+    {"type": "normal", "x": 520, "y": 90, "width": 60, "height": 20},
+    {"type": "normal", "x": 600, "y": 90, "width": 60, "height": 20},
+
+    {"type": "moving", "x": 80, "y": 120, "width": 60, "height": 20, "minX": 60, "maxX": 740},
+    {"type": "moving", "x": 240, "y": 120, "width": 60, "height": 20, "minX": 100, "maxX": 700},
+    {"type": "moving", "x": 400, "y": 120, "width": 60, "height": 20, "minX": 140, "maxX": 660},
+    {"type": "moving", "x": 560, "y": 120, "width": 60, "height": 20, "minX": 180, "maxX": 620},
+
+    {"type": "normal", "x": 160, "y": 150, "width": 60, "height": 20},
+    {"type": "normal", "x": 240, "y": 150, "width": 60, "height": 20},
+    {"type": "normal", "x": 320, "y": 150, "width": 60, "height": 20},
+    {"type": "normal", "x": 400, "y": 150, "width": 60, "height": 20},
+    {"type": "normal", "x": 480, "y": 150, "width": 60, "height": 20},
+    {"type": "normal", "x": 560, "y": 150, "width": 60, "height": 20},
+
+    {"type": "strong", "x": 120, "y": 180, "width": 60, "height": 20},
+    {"type": "strong", "x": 200, "y": 180, "width": 60, "height": 20},
+    {"type": "strong", "x": 280, "y": 180, "width": 60, "height": 20},
+    {"type": "strong", "x": 360, "y": 180, "width": 60, "height": 20},
+    {"type": "strong", "x": 440, "y": 180, "width": 60, "height": 20},
+    {"type": "strong", "x": 520, "y": 180, "width": 60, "height": 20},
+    {"type": "strong", "x": 600, "y": 180, "width": 60, "height": 20}
+  ]
+}
