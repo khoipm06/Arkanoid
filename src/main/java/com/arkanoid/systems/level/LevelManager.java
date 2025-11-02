@@ -1,14 +1,12 @@
 package com.arkanoid.systems.level;
 
 import com.arkanoid.core.entities.Brick;
-import com.arkanoid.core.entities.NormalBrick;
-import com.google.gson.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,24 +20,21 @@ public class LevelManager {
     }
 
     public List<Brick> loadLevel(int levelNumber) {
-        List<Brick> bricks = new ArrayList<>();
-        try (InputStream inputStream = getClass().getResourceAsStream("/levels/level" + levelNumber + ".json")) {
-            if (inputStream == null) {
-                System.out.println(" Không tìm thấy file level" + levelNumber);
-                return bricks;
+        try {
+            String levelFile = "/levels/level" + levelNumber + ".json";
+            InputStream is = getClass().getResourceAsStream(levelFile);
+            
+            if (is == null) {
+                return createDefaultLevel();
             }
-            JsonObject json = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
-            JsonArray brickArray = json.getAsJsonArray("bricks");
 
-            for (JsonElement element : brickArray) {
-                JsonObject brickData = element.getAsJsonObject();
-                Brick brick = entityFactory.createBrick(brickData);
-                if (brick != null) bricks.add(brick);
-            }
+            Gson gson = new Gson();
+            JsonObject levelData = gson.fromJson(new InputStreamReader(is), JsonObject.class);
+            
+            return parseLevelData(levelData);
         } catch (Exception e) {
-            e.printStackTrace();
+            return createDefaultLevel();
         }
-        return bricks;
     }
 
     private List<Brick> parseLevelData(JsonObject levelData) {
@@ -69,23 +64,23 @@ public class LevelManager {
             for (int col = 0; col < 10; col++) {
                 double x = startX + col * (brickWidth + gap);
                 double y = startY + row * (brickHeight + gap);
-
+                
                 String type = "normal";
                 if (row == 0) type = "strong";
                 if (row == 2 && col % 3 == 0) type = "moving";
-
+                
                 JsonObject brickData = new JsonObject();
                 brickData.addProperty("type", type);
                 brickData.addProperty("x", x);
                 brickData.addProperty("y", y);
                 brickData.addProperty("width", brickWidth);
                 brickData.addProperty("height", brickHeight);
-
+                
                 if (type.equals("moving")) {
                     brickData.addProperty("minX", 0);
                     brickData.addProperty("maxX", 800);
                 }
-
+                
                 bricks.add(entityFactory.createBrick(brickData));
             }
         }
@@ -100,32 +95,4 @@ public class LevelManager {
     public int getCurrentLevel() {
         return currentLevel;
     }
-
-    public List<Brick> loadLevelFromFile(String mapPath) {
-        List<Brick> bricks = new ArrayList<>();
-        try (InputStream input = getClass().getResourceAsStream(mapPath)) {
-            if (input == null) {
-                System.err.println("Không tìm thấy file map: " + mapPath);
-                return bricks;
-            }
-
-            String json = new String(input.readAllBytes(), StandardCharsets.UTF_8);
-            JSONObject data = new JSONObject(json);
-            JSONArray layout = data.getJSONArray("layout");
-
-            for (int row = 0; row < layout.length(); row++) {
-                String line = layout.getString(row);
-                for (int col = 0; col < line.length(); col++) {
-                    if (line.charAt(col) == '1') {
-                        bricks.add(new NormalBrick(col * 40, row * 20, 40, 20));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return bricks;
-    }
-
-
 }
