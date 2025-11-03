@@ -23,6 +23,8 @@ public class GameManager {
     private List<Ball> balls;
     private List<Brick> bricks;
     private List<PowerUp> powerUps;
+    private List<Explosion> explosions;
+    private List<LineEffect> lineEffects;
     private Player player;
     private double gameWidth;
     private double gameHeight;
@@ -37,6 +39,8 @@ public class GameManager {
         this.balls = new ArrayList<>();
         this.bricks = new ArrayList<>();
         this.powerUps = new ArrayList<>();
+        this.explosions = new ArrayList<>();
+        this.lineEffects = new ArrayList<>();
         this.levelManager = new LevelManager();
         this.levelNumber = levelNumber;
         this.bricks = levelManager.loadLevel(levelNumber);
@@ -85,7 +89,7 @@ public class GameManager {
         }
 
         for (Ball ball : balls) {
-            CollisionDetector.checkBallBrickCollisions(ball, bricks, this::onBrickDestroyed);
+            CollisionDetector.checkBallBrickCollisions(ball, bricks, this::onBrickDestroyed, this);
         }
 
         Iterator<PowerUp> powerUpIterator = powerUps.iterator();
@@ -124,6 +128,32 @@ public class GameManager {
         if (bricks.isEmpty()) {
             currentState = GameState.LEVEL_COMPLETE;
         }
+
+        Iterator<Explosion> explosionIterator = explosions.iterator();
+        while (explosionIterator.hasNext()) {
+            Explosion explosion = explosionIterator.next();
+            explosion.update(deltaTime);
+            if (!explosion.isActive()) {
+                explosionIterator.remove();
+            }
+        }
+
+        Iterator<LineEffect> lineEffectIterator = lineEffects.iterator();
+        while (lineEffectIterator.hasNext()) {
+            LineEffect lineEffect = lineEffectIterator.next();
+            lineEffect.update(deltaTime);
+            if (!lineEffect.isActive()) {
+                lineEffectIterator.remove();
+            }
+        }
+    }
+
+    public List<LineEffect> getLineEffects() {
+        return lineEffects;
+    }
+
+    public void addExplosion(double x, double y, double radius, double duration) {
+        explosions.add(new Explosion(x, y, radius, duration));
     }
 
     private void onBrickDestroyed(Brick brick) {
@@ -173,6 +203,7 @@ public class GameManager {
     public List<Ball> getBalls() { return balls; }
     public List<Brick> getBricks() { return bricks; }
     public List<PowerUp> getPowerUps() { return powerUps; }
+    public List<Explosion> getExplosions() { return explosions; }
     public Player getPlayer() { return player; }
     public PlayerManager getPlayerManager() { return playerManager; }
     public int getLevelNumber() {
@@ -195,6 +226,8 @@ public class GameManager {
 
             if (clearRow) {
                 int rowToClear = random.nextInt(maxRow + 1);
+                double y = bricks.stream().filter(b -> b.getRow() == rowToClear).findFirst().map(Brick::getY).orElse(0.0);
+                lineEffects.add(new LineEffect(0, y, gameWidth, y, 0.5));
                 for (Brick brick : bricks) {
                     if (!brick.isDestroyed() && brick.getRow() == rowToClear) {
                         brick.destroy();
@@ -203,6 +236,8 @@ public class GameManager {
                 }
             } else {
                 int colToClear = random.nextInt(maxCol + 1);
+                double x = bricks.stream().filter(b -> b.getCol() == colToClear).findFirst().map(Brick::getX).orElse(0.0);
+                lineEffects.add(new LineEffect(x, 0, x, gameHeight, 0.5));
                 for (Brick brick : bricks) {
                     if (!brick.isDestroyed() && brick.getCol() == colToClear) {
                         brick.destroy();

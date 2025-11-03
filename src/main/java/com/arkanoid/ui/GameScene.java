@@ -2,6 +2,8 @@
 
     import com.arkanoid.core.entities.Ball;
     import com.arkanoid.core.entities.Brick;
+    import com.arkanoid.core.entities.Explosion;
+    import com.arkanoid.core.entities.LineEffect;
     import com.arkanoid.core.entities.Paddle;
     import com.arkanoid.core.entities.PowerUp;
     import com.arkanoid.systems.GameManager;
@@ -181,6 +183,14 @@
 
             for (PowerUp powerUp : gameManager.getPowerUps()) {
                 powerUp.render(gc);
+            }
+
+            for (Explosion explosion : gameManager.getExplosions()) {
+                explosion.render(gc);
+            }
+
+            for (LineEffect lineEffect : gameManager.getLineEffects()) {
+                lineEffect.render(gc);
             }
 
             if (gameManager.getPlayer() != null) {
