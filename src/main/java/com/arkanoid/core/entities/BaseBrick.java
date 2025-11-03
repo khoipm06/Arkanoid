@@ -9,14 +9,18 @@ public abstract class BaseBrick extends GameObject implements Brick {
     protected Color color;
     protected boolean destroyed;
     protected double powerUpChance;
+    protected int row;
+    protected int col;
 
-    public BaseBrick(double x, double y, double width, double height, int hitPoints, Color color) {
+    public BaseBrick(double x, double y, double width, double height, int hitPoints, Color color, int row, int col) {
         super(x, y, width, height);
         this.hitPoints = hitPoints;
         this.maxHitPoints = hitPoints;
         this.color = color;
         this.destroyed = false;
-        this.powerUpChance = 0.2;
+        this.powerUpChance = 0.5;
+        this.col = col;
+        this.row = row;
     }
 
     @Override
@@ -29,6 +33,11 @@ public abstract class BaseBrick extends GameObject implements Brick {
     }
 
     @Override
+    public void destroy() {
+        destroyed = true;
+        active = false;
+    }
+    @Override
     public boolean isDestroyed() {
         return destroyed;
     }
@@ -39,14 +48,16 @@ public abstract class BaseBrick extends GameObject implements Brick {
 
     @Override
     public void render(GraphicsContext gc) {
-        if (!destroyed) {
+        if(destroyed) return;
             double brightness = (double) hitPoints / maxHitPoints;
             Color renderColor = color.deriveColor(0, 1, brightness, 1);
             gc.setFill(renderColor);
             gc.fillRect(x, y, width, height);
+
+        gc.setLineWidth(1.0);
             gc.setStroke(Color.DARKGRAY);
-            gc.strokeRect(x, y, width, height);
-        }
+        gc.strokeRect(x + 0.5, y + 0.5, Math.max(0, width - 1), Math.max(0, height - 1));
+
     }
 
     @Override
@@ -69,6 +80,17 @@ public abstract class BaseBrick extends GameObject implements Brick {
 //        } else {
 //            return new ExplosiveBallPowerUp(centerX, centerY);
 //        }
-        return new GunPaddlePowerUp(centerX, centerY);
+//        return new GunPaddlePowerUp(centerX, centerY);
+        if (random < 0.5 ) {
+            return new ExplosiveBallPowerUp(centerX, centerY);
+        }
+        return new RowClearPowerUp(centerX, centerY);
+       }
+    public int getRow() {
+        return row;
+    }
+
+    public int getCol() {
+        return col;
     }
 }

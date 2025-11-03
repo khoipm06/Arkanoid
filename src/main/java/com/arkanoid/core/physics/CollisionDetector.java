@@ -3,12 +3,15 @@ package com.arkanoid.core.physics;
 import com.arkanoid.core.entities.Ball;
 import com.arkanoid.core.entities.Brick;
 import com.arkanoid.core.entities.Paddle;
+import com.arkanoid.systems.GameManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CollisionDetector {
     
-    public static void checkBallBrickCollisions(Ball ball, List<Brick> bricks, CollisionCallback callback) {
+    public static void checkBallBrickCollisions(Ball ball, List<Brick> bricks, CollisionCallback callback, GameManager gameManager) {
+        List<Brick> bricksToExplode = new ArrayList<>();
         for (Brick brick : bricks) {
             if (brick.isDestroyed()) continue;
             
@@ -17,6 +20,36 @@ public class CollisionDetector {
                 brick.hit();
                 if (callback != null) {
                     callback.onBrickHit(brick);
+                }
+                if (ball.isExplosive() && !ball.hasExploded()) {
+                    bricksToExplode.add(brick);
+                    gameManager.addExplosion(brick.getCenterX(), brick.getCenterY(), 50, 0.5);
+                    ball.setHasExploded(true);
+                }
+                // Only one brick can be hit at a time by a non-explosive ball
+                if (!ball.isExplosive()) {
+                    break;
+                }
+            }
+        }
+        for (Brick explodedBrick : bricksToExplode) {
+            double explosionCenterX = explodedBrick.getCenterX();
+            double explosionCenterY = explodedBrick.getCenterY();
+            double explosionRadius = 50; // Define explosion radius
+
+            for (Brick otherBrick : bricks) {
+                if (otherBrick.isDestroyed()) continue;
+
+                double distance = Math.sqrt(
+                        Math.pow(otherBrick.getCenterX() - explosionCenterX, 2) +
+                                Math.pow(otherBrick.getCenterY() - explosionCenterY, 2)
+                );
+
+                if (distance <= explosionRadius) {
+                    otherBrick.destroy();
+                    if (callback != null) {
+                        callback.onBrickHit(otherBrick);
+                    }
                 }
             }
         }

@@ -33,7 +33,18 @@ public class LevelManager {
 
             for (JsonElement element : brickArray) {
                 JsonObject brickData = element.getAsJsonObject();
-                Brick brick = entityFactory.createBrick(brickData);
+                double x = brickData.get("x").getAsDouble();
+                double y = brickData.get("y").getAsDouble();
+                double brickWidth = brickData.get("width").getAsDouble(); // Assuming brickWidth is available in data or fixed
+                double brickHeight = brickData.get("height").getAsDouble(); // Assuming brickHeight is available in data or fixed
+                double startX = 50; // Based on createDefaultLevel
+                double startY = 50; // Based on createDefaultLevel
+                double gap = 5; // Based on createDefaultLevel
+
+                int row = (int) ((y - startY) / (brickHeight + gap));
+                int col = (int) ((x - startX) / (brickWidth + gap));
+
+                Brick brick = entityFactory.createBrick(brickData, row ,col);
                 if (brick != null) bricks.add(brick);
             }
         } catch (Exception e) {
@@ -48,7 +59,17 @@ public class LevelManager {
 
         for (int i = 0; i < bricksArray.size(); i++) {
             JsonObject brickData = bricksArray.get(i).getAsJsonObject();
-            Brick brick = entityFactory.createBrick(brickData);
+            double x = brickData.get("x").getAsDouble();
+            double y = brickData.get("y").getAsDouble();
+            double brickWidth = brickData.get("width").getAsDouble();
+            double brickHeight = brickData.get("height").getAsDouble();
+            double startX = 50;
+            double startY = 50;
+            double gap = 5;
+
+            int row = (int) ((y - startY) / (brickHeight + gap));
+            int col = (int) ((x - startX) / (brickWidth + gap));
+            Brick brick = entityFactory.createBrick(brickData, row, col);
             if (brick != null) {
                 bricks.add(brick);
             }
@@ -86,7 +107,7 @@ public class LevelManager {
                     brickData.addProperty("maxX", 800);
                 }
 
-                bricks.add(entityFactory.createBrick(brickData));
+                bricks.add(entityFactory.createBrick(brickData, row ,col));
             }
         }
 
@@ -117,7 +138,7 @@ public class LevelManager {
                 String line = layout.getString(row);
                 for (int col = 0; col < line.length(); col++) {
                     if (line.charAt(col) == '1') {
-                        bricks.add(new NormalBrick(col * 40, row * 20, 40, 20));
+                        bricks.add(new NormalBrick(col * 40, row * 20, 40, 20, row, col));
                     }
                 }
             }

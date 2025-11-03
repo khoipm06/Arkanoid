@@ -8,8 +8,8 @@ public class MovingBrick extends BaseBrick {
     private double maxX;
     private double moveSpeed;
 
-    public MovingBrick(double x, double y, double width, double height, double minX, double maxX) {
-        super(x, y, width, height, 2, Color.CYAN);
+    public MovingBrick(double x, double y, double width, double height, double minX, double maxX, int row, int col) {
+        super(x, y, width, height, 2, Color.CYAN, row, col);
         this.minX = minX;
         this.maxX = maxX;
         this.moveSpeed = 50;

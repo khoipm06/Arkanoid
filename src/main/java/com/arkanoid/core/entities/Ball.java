@@ -18,6 +18,12 @@
         private static final Map<String, Image> SKINS = new HashMap<>();
         private static String currentSkin = "Default";
 
+//        private boolean isExplosive = false;
+         private boolean explosive = false;
+        private boolean hasExploded = false;
+
+
+
         static {
             loadSkins();
         }
@@ -180,4 +186,14 @@
                 System.err.println("⚠️ Skin không tồn tại: " + skinName);
             }
         }
+
+        public boolean hasExploded() {
+            return hasExploded;
+        }
+
+        public void setHasExploded(boolean hasExploded) {
+            this.hasExploded = hasExploded;
+        }
+        public boolean isExplosive() { return explosive; }
+        public void setExplosive(boolean value) { explosive = value; }
     }
