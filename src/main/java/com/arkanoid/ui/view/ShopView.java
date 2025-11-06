@@ -1,5 +1,8 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.core.entities.Ball;
+import com.arkanoid.core.entities.Paddle;
+import com.arkanoid.systems.player.PlayerProfile;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.IntegerProperty;
@@ -11,6 +14,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 
+import java.awt.*;
 import java.util.Optional;
 
 public class ShopView {
@@ -25,13 +29,27 @@ public class ShopView {
     @FXML
     private Button deposit;
 
-    // Số tiền người chơi
+    private SessionManager.User currentUser;
     @FXML
     private IntegerProperty money = new SimpleIntegerProperty(1000);
 
     @FXML
     public void initialize() {
-        lblMoney.textProperty().bind(money.asString("Số dư : %d"));
+        currentUser = SessionManager.getCurrentUser();
+        if (currentUser == null) {
+            SessionManager.register("guest", "123");
+            currentUser = SessionManager.getCurrentUser();
+        }
+
+        updateMoneyLabel();
+    }
+    public void refreshMoney() {
+        currentUser = SessionManager.getCurrentUser();
+        updateMoneyLabel();
+    }
+    private void updateMoneyLabel() {
+        if (currentUser != null)
+            lblMoney.setText("Số dư: " + currentUser.getMoney() + "$");
     }
 
     private void showMessage(String text) {
@@ -55,16 +73,43 @@ public class ShopView {
 
     @FXML
     public void onBallShopClick(MouseEvent event) {
-
         SoundManager.playSound("Accept.wav");
 
-        System.out.println("Shop ball");
+        PlayerProfile player = SessionManager.getActiveProfile();
+        PlayerProfile.setCurrentPlayer(player);
+
+        player.setCurrentSkin(SessionManager.getEquippedSkin());
+
+        Ball ball = new Ball(0, 0, 10, 100);
+        ball.equipSkin(player.getCurrentSkin());
+
+        ShopBall shopBallController = (ShopBall) SceneManager.getController("shopBall");
+        if (shopBallController != null) {
+            shopBallController.setPlayer(player, ball);
+        } else {
+            System.out.println("Không tìm thấy controller shopBall!");
+        }
+
+        SceneManager.switchTo("shopBall");
     }
     @FXML
     public void onPaddleShopClick(MouseEvent event) {
         SoundManager.playSound("Accept.wav");
 
-        System.out.println("Paddle Shop");
+        PlayerProfile player = SessionManager.getActiveProfile();
+        PlayerProfile.setCurrentPlayer(player);
+
+        Paddle paddle = new Paddle(0, 0, 120, 20);
+        paddle.equipSkin(player.getEquippedPaddleSkin());
+
+        ShopPaddle shopPaddleController = (ShopPaddle) SceneManager.getController("shopPaddle");
+        if (shopPaddleController != null) {
+            shopPaddleController.setPlayer(paddle);
+        } else {
+            System.out.println("Không tìm thấy controller shopPaddle!");
+        }
+
+        SceneManager.switchTo("shopPaddle");
     }
 
     @FXML
@@ -86,7 +131,14 @@ public class ShopView {
             try {
                 int amount = Integer.parseInt(amountStr);
                 if (amount > 0) {
-                    money.set(money.get() + amount);
+                    SessionManager.User currentUser = SessionManager.getCurrentUser();
+                    currentUser.addMoney(amount);
+                    refreshMoney();
+
+                    ShopBall shopBall = (ShopBall) SceneManager.getController("shopBall");
+                    if (shopBall != null) {
+                        shopBall.refreshMoney();
+                    }
                     showMessage("Nạp tiền thành công! +" + amount);
                 } else {
                     showMessage("Số tiền nạp phải lớn hơn 0!");

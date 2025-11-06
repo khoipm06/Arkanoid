@@ -30,6 +30,10 @@ public class GameManager {
     private double gameHeight;
     private int levelNumber;
 
+    private List<Bullet> bullets;
+    private double gunFireCooldown = 0.0; // thời gian đếm ngược tới lần bắn tiếp theo (giây)
+    private static final double GUN_FIRE_INTERVAL = 0.2; // 0.2s ~ 5 viên/s
+
     public GameManager(double gameWidth, double gameHeight, int levelNumber) {
         this.gameWidth = gameWidth;
         this.gameHeight = gameHeight;
@@ -67,6 +71,7 @@ public class GameManager {
         String mapPath = "/levels/level" + levelNumber + ".json";
         bricks = levelManager.loadLevelFromFile(mapPath);
         powerUps.clear();
+        bullets.clear();
     }
 
     public void update(double deltaTime) {
@@ -209,6 +214,13 @@ public class GameManager {
     public int getLevelNumber() {
         return levelNumber;
     }
+    public int getScore() {
+        return player.getState().getScore();
+    }
+
+//    public int getHighestScore() {
+//        return playerManager.getHighestScore();
+//    }
 
     private void applyPowerUpEffect(PowerUp powerUp, Paddle paddle) {
         if (powerUp instanceof ExplosiveBallPowerUp) {
