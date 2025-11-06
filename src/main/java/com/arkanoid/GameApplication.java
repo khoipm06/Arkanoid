@@ -1,5 +1,6 @@
 package com.arkanoid;
 
+import com.arkanoid.database.DatabaseManager;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.view.SceneManager;
 import javafx.application.Application;
@@ -20,6 +21,7 @@ public class GameApplication extends Application {
 //        primaryStage.setScene(mainMenu.getScene());
 //
 //        primaryStage.show();
+        DatabaseManager.initialize();
         SceneManager.setStage(primaryStage);
         SceneManager.loadScene("mainMenuView", "MainMenuView.fxml");
         SceneManager.loadScene("modeSelectView", "ModeSelectView.fxml");
@@ -37,6 +39,13 @@ public class GameApplication extends Application {
         SceneManager.loadScene("winLevel", "WinLevel.fxml");
 
         SceneManager.switchTo("mainMenuView");
+
+        try {
+            primaryStage.getIcons().add(new javafx.scene.image.Image(getClass().getResourceAsStream("/icons/arkanoid.png")));
+        } catch (Exception e) {
+            System.err.println("Error loading application icon: " + e.getMessage());
+        }
+
         primaryStage.setTitle("Arkanoid Game");
         primaryStage.show();
 

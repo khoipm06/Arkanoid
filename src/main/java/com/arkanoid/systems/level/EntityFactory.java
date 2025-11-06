@@ -21,7 +21,7 @@ public class EntityFactory {
                 double maxX = data.has("maxX") ? data.get("maxX").getAsDouble() : 800;
                 yield new MovingBrick(x, y, width, height, minX, maxX, row, col);
             }
-            default -> new NormalBrick(x, y, width, height, row, col);
+            default -> new NormalBrick(x, y, width, height,row, col);
         };
     }
 
@@ -31,6 +31,7 @@ public class EntityFactory {
             case "multiball" -> new MultiBallPowerUp(x, y);
             case "explosive" -> new ExplosiveBallPowerUp(x, y);
             case "gun" -> new GunPaddlePowerUp(x, y);
+            case "rowClear" -> new RowClearPowerUp(x, y);
             default -> null;
         };
     }

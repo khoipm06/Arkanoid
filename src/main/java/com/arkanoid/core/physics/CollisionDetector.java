@@ -3,7 +3,6 @@ package com.arkanoid.core.physics;
 import com.arkanoid.core.entities.Ball;
 import com.arkanoid.core.entities.Brick;
 import com.arkanoid.core.entities.Paddle;
-
 import com.arkanoid.systems.GameManager;
 
 import java.util.ArrayList;
@@ -12,9 +11,7 @@ import java.util.List;
 public class CollisionDetector {
     
     public static void checkBallBrickCollisions(Ball ball, List<Brick> bricks, CollisionCallback callback, GameManager gameManager) {
-        // Create a temporary list to hold bricks to be destroyed by explosion
         List<Brick> bricksToExplode = new ArrayList<>();
-
         for (Brick brick : bricks) {
             if (brick.isDestroyed()) continue;
 
@@ -24,10 +21,10 @@ public class CollisionDetector {
                 if (callback != null) {
                     callback.onBrickHit(brick);
                 }
-
-                if (ball.isExplosive()) {
+                if (ball.isExplosive() && !ball.hasExploded()) {
                     bricksToExplode.add(brick);
                     gameManager.addExplosion(brick.getCenterX(), brick.getCenterY(), 50, 0.5);
+                    ball.setHasExploded(true);
                 }
                 // Only one brick can be hit at a time by a non-explosive ball
                 if (!ball.isExplosive()) {
@@ -35,8 +32,6 @@ public class CollisionDetector {
                 }
             }
         }
-
-        // Process explosive destruction after initial collision detection
         for (Brick explodedBrick : bricksToExplode) {
             double explosionCenterX = explodedBrick.getCenterX();
             double explosionCenterY = explodedBrick.getCenterY();
@@ -47,7 +42,7 @@ public class CollisionDetector {
 
                 double distance = Math.sqrt(
                         Math.pow(otherBrick.getCenterX() - explosionCenterX, 2) +
-                        Math.pow(otherBrick.getCenterY() - explosionCenterY, 2)
+                                Math.pow(otherBrick.getCenterY() - explosionCenterY, 2)
                 );
 
                 if (distance <= explosionRadius) {

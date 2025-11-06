@@ -1,11 +1,6 @@
     package com.arkanoid.ui;
 
-    import com.arkanoid.core.entities.Ball;
-    import com.arkanoid.core.entities.Brick;
-    import com.arkanoid.core.entities.Explosion;
-    import com.arkanoid.core.entities.LineEffect;
-    import com.arkanoid.core.entities.Paddle;
-    import com.arkanoid.core.entities.PowerUp;
+    import com.arkanoid.core.entities.*;
     import com.arkanoid.systems.GameManager;
     import com.arkanoid.ui.view.*;
     import javafx.animation.AnimationTimer;
@@ -336,7 +331,6 @@
             for (LineEffect lineEffect : gameManager.getLineEffects()) {
                 lineEffect.render(gc);
             }
-
             if (gameManager.getPlayer() != null) {
                 gameManager.getPlayer().getPaddle().render(gc);
             }

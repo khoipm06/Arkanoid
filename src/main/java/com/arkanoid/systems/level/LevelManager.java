@@ -44,7 +44,7 @@ public class LevelManager {
                 int row = (int) ((y - startY) / (brickHeight + gap));
                 int col = (int) ((x - startX) / (brickWidth + gap));
 
-                Brick brick = entityFactory.createBrick(brickData, row, col);
+                Brick brick = entityFactory.createBrick(brickData, row ,col);
                 if (brick != null) bricks.add(brick);
             }
         } catch (Exception e) {
@@ -69,7 +69,6 @@ public class LevelManager {
 
             int row = (int) ((y - startY) / (brickHeight + gap));
             int col = (int) ((x - startX) / (brickWidth + gap));
-
             Brick brick = entityFactory.createBrick(brickData, row, col);
             if (brick != null) {
                 bricks.add(brick);
@@ -108,7 +107,7 @@ public class LevelManager {
                     brickData.addProperty("maxX", 800);
                 }
 
-                bricks.add(entityFactory.createBrick(brickData, row, col));
+                bricks.add(entityFactory.createBrick(brickData, row ,col));
             }
         }
 

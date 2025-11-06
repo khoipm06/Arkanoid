@@ -1,23 +1,28 @@
 package com.arkanoid.database;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DatabaseManager {
-    private static final String DB_URL = "jdbc:sqlite:arkanoid.db";
-    private static Connection connection;
+//        private static final String DB_URL = "jdbc:sqlite:arkanoid.db";
+        private static final String DB_URL = "jdbc:sqlite:data/arkanoid.db";
+        private static Connection connection;
 
-    public static void initialize() {
-        try {
-            connection = DriverManager.getConnection(DB_URL);
-            createTables();
-            System.out.println("Database initialized successfully");
-        } catch (SQLException e) {
-            e.printStackTrace();
+        public static void initialize() {
+            try {
+                new java.io.File("data").mkdirs();
+                connection = DriverManager.getConnection(DB_URL);
+                createTables();
+                System.out.println("Database initialized successfully");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-    }
 
-    private static void createTables() throws SQLException {
-        String createUsersTable = """
+        private static void createTables() throws SQLException {
+            String createUsersTable = """
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
@@ -28,7 +33,7 @@ public class DatabaseManager {
             )
         """;
 
-        String createPlayerProfilesTable = """
+            String createPlayerProfilesTable = """
             CREATE TABLE IF NOT EXISTS player_profiles (
                 user_id INTEGER PRIMARY KEY,
                 coins INTEGER DEFAULT 0,
@@ -40,7 +45,7 @@ public class DatabaseManager {
             )
         """;
 
-        String createInventoryTable = """
+            String createInventoryTable = """
             CREATE TABLE IF NOT EXISTS inventory (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
@@ -51,7 +56,7 @@ public class DatabaseManager {
             )
         """;
 
-        String createGameHistoryTable = """
+            String createGameHistoryTable = """
             CREATE TABLE IF NOT EXISTS game_history (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
@@ -63,25 +68,25 @@ public class DatabaseManager {
             )
         """;
 
-        try (Statement stmt = connection.createStatement()) {
-            stmt.execute(createUsersTable);
-            stmt.execute(createPlayerProfilesTable);
-            stmt.execute(createInventoryTable);
-            stmt.execute(createGameHistoryTable);
-        }
-    }
-
-    public static Connection getConnection() {
-        return connection;
-    }
-
-    public static void close() {
-        try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
+            try (Statement stmt = connection.createStatement()) {
+                stmt.execute(createUsersTable);
+                stmt.execute(createPlayerProfilesTable);
+                stmt.execute(createInventoryTable);
+                stmt.execute(createGameHistoryTable);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-    }
+
+        public static Connection getConnection() {
+            return connection;
+        }
+
+        public static void close() {
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
 }
