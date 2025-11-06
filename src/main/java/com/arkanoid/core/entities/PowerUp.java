@@ -50,7 +50,7 @@ public abstract class PowerUp extends MovableObject {
         }
     }
 
-    public boolean checkPaddleCollision(Paddle paddle) {
+    public PowerUp checkPaddleCollision(Paddle paddle) {
         if (!collected && intersects(paddle)) {
             setCollected(true);
             applyEffect(paddle);
@@ -66,6 +66,6 @@ public abstract class PowerUp extends MovableObject {
             pause.play();
             return true;
         }
-        return false;
+        return null;
     }
 }
