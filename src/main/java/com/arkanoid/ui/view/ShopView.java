@@ -25,18 +25,20 @@ public class ShopView {
     @FXML
     private Button deposit;
 
+    // Số tiền người chơi
     @FXML
     private IntegerProperty money = new SimpleIntegerProperty(1000);
 
     @FXML
     public void initialize() {
-        lblMoney.textProperty().bind(money.asString("Balance : %d"));
+        lblMoney.textProperty().bind(money.asString("Số dư : %d"));
     }
 
     private void showMessage(String text) {
         lblMessage.setText(text);
         lblMessage.setVisible(true);
 
+        // Dừng 2 giây rồi ẩn lại
         PauseTransition pause = new PauseTransition(Duration.seconds(2));
         pause.setOnFinished(e -> lblMessage.setVisible(false));
         pause.play();
@@ -45,9 +47,9 @@ public class ShopView {
         int itemPrice = 200;
         if (money.get() >= itemPrice) {
             money.set(money.get() - itemPrice);
-            lblMessage.setText("Item purchased successfully!");
+            lblMessage.setText("Mua đồ thành công!");
         } else {
-            lblMessage.setText("Not enough money!");
+            lblMessage.setText("Không đủ tiền!");
         }
     }
 
@@ -75,9 +77,9 @@ public class ShopView {
     public void onDepositClick(MouseEvent event) {
         SoundManager.playSound("Accept.wav");
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Deposit");
-        dialog.setHeaderText("Enter the amount you want to deposit:");
-        dialog.setContentText("Amount:");
+        dialog.setTitle("Nạp tiền");
+        dialog.setHeaderText("Nhập số tiền bạn muốn nạp:");
+        dialog.setContentText("Số tiền:");
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(amountStr -> {
@@ -85,12 +87,12 @@ public class ShopView {
                 int amount = Integer.parseInt(amountStr);
                 if (amount > 0) {
                     money.set(money.get() + amount);
-                    showMessage("Deposit successful! +" + amount);
+                    showMessage("Nạp tiền thành công! +" + amount);
                 } else {
-                    showMessage("Deposit amount must be greater than 0!");
+                    showMessage("Số tiền nạp phải lớn hơn 0!");
                 }
             } catch (NumberFormatException e) {
-                showMessage("Please enter a valid number!");
+                showMessage("Vui lòng nhập số hợp lệ!");
             }
         });
     }

@@ -53,8 +53,18 @@ public abstract class PowerUp extends MovableObject {
     public PowerUp checkPaddleCollision(Paddle paddle) {
         if (!collected && intersects(paddle)) {
             setCollected(true);
-            active = false; // Deactivate the power-up object itself
-            return this;
+            applyEffect(paddle);
+            PauseTransition pause = new PauseTransition(Duration.seconds(2));
+
+            // Khi hết 2 giây, tắt hiệu ứng
+            pause.setOnFinished(e -> {
+                removeEffect(paddle);
+                setCollected(false);
+            });
+
+            // Bắt đầu đếm ngược
+            pause.play();
+            return true;
         }
         return null;
     }

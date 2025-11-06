@@ -10,8 +10,8 @@ public class AuthScreen {
         SoundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("signIn");
-        SessionManager.User user = new SessionManager.User("PlayerName");
-        SessionManager.login(user);
+        SessionManager.User user = new SessionManager.User("TenNguoiChoi");
+        SessionManager.login(user); //
 
     }
 
@@ -27,8 +27,8 @@ public class AuthScreen {
         SoundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("signUpView");
-        SessionManager.User user = new SessionManager.User("PlayerName");
-        SessionManager.login(user);
+        SessionManager.User user = new SessionManager.User("TenNguoiChoi");
+        SessionManager.login(user); //
     }
 
 }

@@ -26,17 +26,17 @@ public class SignIn {
         String username = userNameField.getText();
         String password = passwordField.getText();
         if (username.isEmpty() || password.isEmpty()) {
-            System.out.println("Please fill in all fields!");
+            System.out.println("Vui lòng nhập đầy đủ thông tin!");
             return;
         }
 
         if (!SessionManager.login(username, password)) {
-            System.out.println("Login failed");
+            System.out.println("Đăng nhập không thành công");
             userNameField.clear();
             passwordField.clear();
             return;
         }
-        System.out.println("Login successful!");
+        System.out.println("Đăng nhập thành công!");
         System.out.println(" Hello username: " + username);
 
         SceneManager.switchTo("mainMenuView");

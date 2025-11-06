@@ -49,21 +49,23 @@
                 if (streamBackGround != null) {
                     this.backgroundImage = new Image(streamBackGround);
                 } else {
-                    System.err.println("Warning: Could not find background.png. Using black background.");
+                    System.err.println("Cảnh báo: Không tìm thấy file ảnh background.png. Dùng nền đen.");
                 }
             } catch (Exception e) {
-                System.err.println("Error loading background image: " + e.getMessage());
+                System.err.println("Lỗi khi tải ảnh nền: " + e.getMessage());
             }
 
             InputStream stream = getClass().getResourceAsStream("/images/p101.png");
             if (stream == null) {
-                System.out.println("Could not find image file!");
+                System.out.println("Không tìm thấy file ảnh!");
             } else {
                 Image paddleImg = new Image(stream);
+                // Sau khi Player được khởi tạo trong GameManager, dòng này sẽ chạy thành công
                 if (gameManager.getPlayer() != null) {
                     gameManager.getPlayer().getPaddle().setPaddleImage(paddleImg);
                 } else {
-                    System.out.println("Error: Player not initialized!");
+                    // Dòng này sẽ không in ra nữa nếu bạn đã sửa GameManager
+                    System.out.println("Lỗi: Player chưa được khởi tạo!");
                 }
             }
 

@@ -20,6 +20,9 @@ public class ProfileScreen {
     public void initialize() {
         SessionManager.User user = SessionManager.getCurrentUser();
         if (user != null) {
+            // Giả sử bạn đã thêm fx:id="usernameLabel" cho Label hiển thị username
+            // usernameLabel.setText(user.getUsername());
+            // highScoreLabel.setText(String.valueOf(user.getHighScore()));
         }
     }
 

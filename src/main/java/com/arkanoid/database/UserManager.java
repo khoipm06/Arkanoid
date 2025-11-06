@@ -57,6 +57,7 @@ public class UserManager {
                     if (rs.next()) {
                         int userId = rs.getInt(1);
                         
+                        // Tạo profile mặc định
                         try (PreparedStatement profileStmt = DatabaseManager.getConnection().prepareStatement(createProfileSql)) {
                             profileStmt.setInt(1, userId);
                             profileStmt.executeUpdate();
@@ -88,6 +89,7 @@ public class UserManager {
                     String lastLoginStr = rs.getString("last_login");
                     LocalDateTime lastLogin = lastLoginStr != null ? LocalDateTime.parse(lastLoginStr) : null;
                     
+                    // Cập nhật thời gian đăng nhập
                     try (PreparedStatement updateStmt = DatabaseManager.getConnection().prepareStatement(updateLoginSql)) {
                         updateStmt.setString(1, LocalDateTime.now().toString());
                         updateStmt.setInt(2, id);

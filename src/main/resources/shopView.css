@@ -28,11 +28,12 @@
     -fx-pref-width: 100px;
     -fx-pref-height: 40px;
 
+    /* Màu xanh dương đậm (hoặc màu vàng nổi bật nếu muốn) */
     -fx-background-color:
-        linear-gradient(to bottom, #1E90FF, #0055AA);
+        linear-gradient(to bottom, #1E90FF, #0055AA); /* Màu xanh dương nổi bật */
     -fx-background-radius: 5;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0.0, 0, 1);
-    -fx-text-fill: #333333;
+    -fx-text-fill: #333333; /* Chữ màu tối */
     -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
@@ -50,9 +51,11 @@
     -fx-pref-width: 150px;
     -fx-pref-height: 150px;
 
+    /* Nền là màu xanh navy bán trong suốt */
     -fx-background-color: rgba(30, 144, 255, 0.2);
     -fx-background-radius: 10;
 
+    /* Viền sáng bao quanh */
     -fx-border-color: #1E90FF;
     -fx-border-width: 2px;
     -fx-border-radius: 10;
@@ -61,6 +64,7 @@
     -fx-font-size: 18px;
     -fx-font-weight: bold;
 
+    /* Căn chỉnh text lên trên nếu bạn định chèn hình ảnh vật phẩm */
     -fx-content-display: top;
     -fx-padding: 10 0 0 0;
 }
@@ -76,11 +80,26 @@
 }
 
 #lblMoney {
-    -fx-text-fill: #FFFFFF;
+    /* 1. Màu chữ: Rất sáng hoặc Phát sáng */
+    -fx-text-fill: #FFFFFF; /* Màu trắng tinh khiết */
 
+    /* 2. Kích thước chữ */
     -fx-font-size: 24px;
     -fx-font-weight: bold;
 
     -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.8), 10, 0.0, 0, 0);
 
+    /* Giải thích hiệu ứng trên: */
+    /* - Tạo bóng mờ (gaussian) */
+    /* - Màu trắng bán trong suốt (rgba(255, 255, 255, 0.8)) */
+    /* - Bán kính làm mờ 10px (tạo hiệu ứng phát sáng) */
+}
+
+/* Tùy chọn: Nếu muốn màu Neon rực rỡ hơn */
+/*
+#lblMoney {
+    -fx-text-fill: #33CCFF;
+    -fx-effect: dropshadow(gaussian, #33CCFF, 15, 0.5, 0, 0);
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
 }

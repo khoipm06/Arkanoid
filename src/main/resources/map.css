@@ -14,12 +14,14 @@
 
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 3, 0.0, 0, 1);
 
+       /* Kiểu chữ */
        -fx-text-fill: white;
        -fx-font-size: 14px;
        -fx-font-weight: bold;
 }
 
 #preMapButton:hover {
+    /* Hiệu ứng phát sáng mạnh hơn khi hover */
     -fx-background-color: #0055AA;
     -fx-border-color: #66FFFF;
 }
@@ -37,12 +39,14 @@
 
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 3, 0.0, 0, 1);
 
+       /* Kiểu chữ */
        -fx-text-fill: white;
        -fx-font-size: 14px;
        -fx-font-weight: bold;
 }
 
 #nextMapButton:hover {
+    /* Hiệu ứng phát sáng mạnh hơn khi hover */
     -fx-background-color: #0055AA;
     -fx-border-color: #66FFFF;
 }
@@ -60,12 +64,14 @@
 
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 3, 0.0, 0, 1);
 
+       /* Kiểu chữ */
        -fx-text-fill: white;
        -fx-font-size: 14px;
        -fx-font-weight: bold;
 }
 
 #playGameButton:hover {
+    /* Hiệu ứng phát sáng mạnh hơn khi hover */
     -fx-background-color: #0055AA;
     -fx-border-color: #66FFFF;
 }

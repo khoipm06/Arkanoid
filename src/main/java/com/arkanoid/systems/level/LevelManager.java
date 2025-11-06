@@ -25,7 +25,7 @@ public class LevelManager {
         List<Brick> bricks = new ArrayList<>();
         try (InputStream inputStream = getClass().getResourceAsStream("/levels/level" + levelNumber + ".json")) {
             if (inputStream == null) {
-                System.out.println("Could not find level file" + levelNumber);
+                System.out.println(" Không tìm thấy file level" + levelNumber);
                 return bricks;
             }
             JsonObject json = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
@@ -127,7 +127,7 @@ public class LevelManager {
         List<Brick> bricks = new ArrayList<>();
         try (InputStream input = getClass().getResourceAsStream(mapPath)) {
             if (input == null) {
-                System.err.println("Could not find map file: " + mapPath);
+                System.err.println("Không tìm thấy file map: " + mapPath);
                 return bricks;
             }
 

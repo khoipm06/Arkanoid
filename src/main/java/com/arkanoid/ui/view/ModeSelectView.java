@@ -49,7 +49,7 @@
         }
         @FXML
         public void onBackClick(MouseEvent event) {
-            System.out.println("Back to main menu");
+            System.out.println("Quay lại menu chính");
 
             SoundManager.playSound("Accept.wav");
 

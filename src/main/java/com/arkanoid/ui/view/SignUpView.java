@@ -31,21 +31,21 @@ public class SignUpView {
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
         if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            System.out.println("Please fill in all fields!");
+            System.out.println("Vui lòng nhập đầy đủ thông tin!");
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            System.out.println("Passwords do not match! Please re-enter.");
+            System.out.println("Mật khẩu không khớp! Vui lòng nhập lại.");
             return;
         }
 
         if (!SessionManager.register(username, password)) {
-            System.out.println("Player name already exists!");
+            System.out.println("Tên người chơi đã tồn tại!");
             return;
         }
 
-        System.out.println("Registration successful!");
+        System.out.println("Đăng ký thành công!");
         System.out.println("Username: " + username);
         System.out.println("Password: " + password);
 
