@@ -14,7 +14,7 @@ public class CollisionDetector {
         List<Brick> bricksToExplode = new ArrayList<>();
         for (Brick brick : bricks) {
             if (brick.isDestroyed()) continue;
-            
+
             if (ball.intersects((com.arkanoid.core.entities.GameObject) brick)) {
                 handleBallBrickCollision(ball, brick);
                 brick.hit();

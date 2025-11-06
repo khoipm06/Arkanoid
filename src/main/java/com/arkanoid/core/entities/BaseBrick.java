@@ -68,6 +68,15 @@ public abstract class BaseBrick extends GameObject implements Brick {
         return null;
     }
 
+    public int getRow() {
+        return row;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+
     private PowerUp createRandomPowerUp() {
         double random = Math.random();
         double centerX = getCenterX();
