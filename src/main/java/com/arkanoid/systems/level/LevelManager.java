@@ -138,7 +138,7 @@ public class LevelManager {
                 String line = layout.getString(row);
                 for (int col = 0; col < line.length(); col++) {
                     if (line.charAt(col) == '1') {
-                        bricks.add(new NormalBrick(col * 40, row * 20, 40, 20, row, col));
+                        bricks.add(new NormalBrick(col * 40, row * 20, 40, 20, row, col, "/images/brownbrick.png"));
                     }
                 }
             }
