@@ -1,6 +1,7 @@
 package com.arkanoid.ui.view;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -11,6 +12,7 @@ import java.util.Map;
 public class SceneManager {
     private static Stage mainStage;
     private static final Map<String, Scene> scenes = new HashMap<>();
+    private static final Map<String, Object> controllers = new HashMap<>();
 
     public static void setStage(Stage stage) {
         mainStage = stage;
@@ -20,6 +22,7 @@ public class SceneManager {
         FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource("/com.arkanoid.ui.view/" + fxmlPath));
         Scene scene = new Scene(loader.load());
         scenes.put(name, scene);
+        controllers.put(name, loader.getController());
     }
 
     public static void switchTo(String name) {
@@ -29,4 +32,24 @@ public class SceneManager {
             System.out.println("Scene not found: " + name);
         }
     }
+
+    public static Object getController(String name) {
+        return controllers.get(name);
+    }
+    public static void showGameOver(int level, int score, int highest) {
+        Object controller = getController("gameOver");
+        if (controller instanceof com.arkanoid.ui.view.GameOver gameOverController) {
+            gameOverController.init(level, score, highest);
+        }
+        SceneManager.switchTo("gameOver");
+    }
+
+    public static void showWinLevel(int level, int score, int highest) {
+        Object controller = getController("winLevel");
+        if (controller instanceof com.arkanoid.ui.view.WinLevel winLevelController) {
+            winLevelController.init(level, score, highest);
+        }
+        SceneManager.switchTo("winLevel");
+    }
+
 }

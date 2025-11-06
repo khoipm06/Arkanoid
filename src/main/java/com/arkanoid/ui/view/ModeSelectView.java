@@ -62,4 +62,15 @@
         public void setMainController(MainMenuView controller) {
             this.mainController = controller;
         }
+        public Button getSinglePlayerButton() {
+            return singlePlayer;
+        }
+
+        public Button getMultiPlayerButton() {
+            return multiPlayer;
+        }
+
+        public Button getBackButton() {
+            return back;
+        }
     }
