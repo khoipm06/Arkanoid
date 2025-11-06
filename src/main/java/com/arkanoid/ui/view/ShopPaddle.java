@@ -141,16 +141,31 @@ public class ShopPaddle {
         for (SkinItem item : skinItems) {
             boolean owned = user.hasPaddleSkin(item.name);
             boolean equipped = user.getEquippedPaddleSkin().equals(item.name);
+            boolean canAfford = user.getMoney() >= item.price;
 
-            item.buyButton.setVisible(!owned);
-            item.equipButton.setVisible(owned);
+            item.buyButton.getStyleClass().removeAll("buy-button", "owned-button");
+            item.equipButton.getStyleClass().removeAll("equip-button", "equipped-button");
 
-            if (equipped) {
-                item.equipButton.setText("Đang trang bị");
-                item.equipButton.setDisable(true);
+            // BUY BUTTON
+            if (!owned) {
+                item.buyButton.getStyleClass().add("buy-button");   // chưa mua
+                item.buyButton.setDisable(!canAfford);
             } else {
-                item.equipButton.setText("Trang bị");
-                item.equipButton.setDisable(false);
+                item.buyButton.getStyleClass().add("owned-button"); // đã mua
+            }
+
+            // EQUIP BUTTON
+            if (owned) {
+                item.equipButton.setVisible(true);
+                if (equipped) {
+                    item.equipButton.getStyleClass().add("equipped-button"); // đang trang bị
+                    item.equipButton.setDisable(true);
+                } else {
+                    item.equipButton.getStyleClass().add("equip-button"); // chưa trang bị
+                    item.equipButton.setDisable(false);
+                }
+            } else {
+                item.equipButton.setVisible(false);
             }
         }
     }

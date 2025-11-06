@@ -12,8 +12,8 @@
             <Font size="31.0" />
          </font>
       </Label>
-      <Button fx:id="ballButton" layoutX="135.0" layoutY="284.0" mnemonicParsing="false" onMouseClicked="#onBallShopClick" prefHeight="64.0" prefWidth="122.0" text="Ball" />
-      <Button fx:id="paddleButton" layoutX="512.0" layoutY="284.0" mnemonicParsing="false" onMouseClicked="#onPaddleShopClick" prefHeight="64.0" prefWidth="130.0" text="Paddle" />
+      <Button fx:id="ballButton" layoutX="135.0" layoutY="284.0" mnemonicParsing="false" onMouseClicked="#onBallShopClick" prefHeight="77.0" prefWidth="259.0" />
+      <Button fx:id="paddleButton" layoutX="512.0" layoutY="284.0" mnemonicParsing="false" onMouseClicked="#onPaddleShopClick" prefHeight="64.0" prefWidth="130.0" />
       <Button fx:id="backButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#onBackClick" text="back" />
       <Button fx:id="depositButton" layoutX="630.0" layoutY="55.0" mnemonicParsing="false" onMouseClicked="#onDepositClick" prefHeight="50.0" prefWidth="81.0" text="Nạp tiền" />
       <Label fx:id="lblMessage" layoutX="278.0" layoutY="193.0" prefHeight="32.0" prefWidth="206.0" text="Label" visible="false" />

@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -23,6 +24,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.InputStream;
+
 public class MainMenuView {
     @FXML
     private Button startGame;
@@ -33,7 +36,7 @@ public class MainMenuView {
     @FXML
     private Button shop;
     @FXML
-    private Label welcome;
+    private ImageView welcome;
     @FXML
     private Button profile;
     @FXML
@@ -42,10 +45,13 @@ public class MainMenuView {
     @FXML
     public void initialize() {
         try {
+            Image logo = new Image(getClass().getResourceAsStream("/images/arkanoid.png"));
+            welcome.setImage(logo);
+
             applyIntroEffect();
-            Platform.runLater(() -> applyShineEffect(welcome));
+//            applyGlowEffect(welcome);// fade + scale vẫn dùng được
         } catch (Exception e) {
-            System.err.println("Không thể tải ảnh nền: background.png");
+            System.err.println("Không thể tải ảnh logo");
             e.printStackTrace();
         }
     }
@@ -64,28 +70,40 @@ public class MainMenuView {
         new ParallelTransition(fade, scale).play();
     }
 
-    private void applyShineEffect(Label label) {
-        Stop[] stops = new Stop[] {
-                new Stop(0, Color.CYAN),
-                new Stop(0.5, Color.WHITE),
-                new Stop(1, Color.CYAN)
-        };
+//    private void applyShineEffect(Label label) {
+//        Stop[] stops = new Stop[] {
+//                new Stop(0, Color.CYAN),
+//                new Stop(0.5, Color.WHITE),
+//                new Stop(1, Color.CYAN)
+//        };
+//
+//        AnimationTimer timer = new AnimationTimer() {
+//            double progress = -0.5;
+//
+//            @Override
+//            public void handle(long now) {
+//                progress += 0.01;
+//                if (progress > 1.5) progress = -0.5;
+//
+//                LinearGradient dynamic = new LinearGradient(
+//                        progress, 0, progress + 0.3, 0, true, CycleMethod.NO_CYCLE, stops
+//                );
+//                label.setTextFill(dynamic);
+//            }
+//        };
+//        timer.start();
+//    }
+    private void applyGlowEffect(ImageView img) {
+        Glow glow = new Glow(0.3);
+        img.setEffect(glow);
 
-        AnimationTimer timer = new AnimationTimer() {
-            double progress = -0.5;
-
-            @Override
-            public void handle(long now) {
-                progress += 0.01;
-                if (progress > 1.5) progress = -0.5;
-
-                LinearGradient dynamic = new LinearGradient(
-                        progress, 0, progress + 0.3, 0, true, CycleMethod.NO_CYCLE, stops
-                );
-                label.setTextFill(dynamic);
-            }
-        };
-        timer.start();
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(glow.levelProperty(), 0.2)),
+                new KeyFrame(Duration.seconds(1.5), new KeyValue(glow.levelProperty(), 1.0))
+        );
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.setAutoReverse(true);
+        timeline.play();
     }
 
     @FXML

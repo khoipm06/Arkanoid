@@ -25,25 +25,31 @@
 }
 
 /* --- Nút chung (Buy / Equip) --- */
-.button {
-    -fx-background-radius: 10;
-    -fx-background-color: linear-gradient(to bottom, #1b2735, #090a0f);
-    -fx-border-color: #00ffff;
-    -fx-border-radius: 10;
-    -fx-border-width: 2;
-    -fx-text-fill: #00eaff;
-    -fx-font-weight: bold;
-    -fx-padding: 6 20 6 20;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0,255,255,0.5), 8, 0.2, 0, 0);
-    -fx-transition: all 0.2s ease;
+.buy-button, .owned-button, .equip-button, .equipped-button {
+    -fx-pref-width: 60px;
+    -fx-pref-height: 60px;
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
 }
 
-.button:hover {
-    -fx-background-color: linear-gradient(to bottom, #00eaff, #0066ff);
-    -fx-text-fill: white;
-    -fx-border-color: white;
-    -fx-effect: dropshadow(gaussian, rgba(0,200,255,0.9), 15, 0.4, 0, 0);
+.buy-button {
+    -fx-background-image: url("/images/Close_BTN.png");
+}
+
+.owned-button {
+    -fx-background-image: url("/images/Ok_BTN.png");
+}
+
+.equip-button {
+    -fx-background-image: url("/images/Equip_BTN.png");
+}
+
+.equipped-button {
+    -fx-background-image: url("/images/Equiped_BTN.png");
+    -fx-opacity: 0.85;
 }
 
 /* --- Nút back --- */

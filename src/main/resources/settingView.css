@@ -24,39 +24,42 @@
 #okButton {
     -fx-pref-width: 80px;
     -fx-pref-height: 30px;
-    -fx-background-color: linear-gradient(to bottom, #7FFF00, #4C9E00);
-    -fx-background-radius: 5;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0.0, 0, 1);
-    -fx-text-fill: white;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
+     -fx-background-image: url("/images/ok.png");
+    -fx-background-size: cover;      /* Tự co ảnh theo nút */
+        -fx-background-repeat: no-repeat;
+        -fx-background-position: center;
+        -fx-background-color: transparent;  /* Xóa màu nền mặc định */
+        -fx-border-color: transparent;      /* Xóa border */
 }
 #okButton:hover {
-    -fx-background-color: linear-gradient(to bottom, #90EE90, #54AA54);
+    -fx-opacity: 0.8;  /* Hiệu ứng hover */
     -fx-cursor: hand;
 }
+
 #okButton:pressed {
-    -fx-translate-y: 1px;
-    -fx-effect: none;
+    -fx-opacity: 0.6;
+    -fx-translate-y: 2px;
 }
 
 #cancelButton {
-    -fx-pref-width: 80px;
-    -fx-pref-height: 30px;
-    -fx-background-color: linear-gradient(to bottom, #D3D3D3, #A9A9A9);
-    -fx-background-radius: 5;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0.0, 0, 1);
-    -fx-text-fill: #333333;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
+    -fx-pref-width: 50px;
+    -fx-pref-height: 50px;
+    -fx-background-image: url("/images/exit1.png");
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
 }
+
 #cancelButton:hover {
-    -fx-background-color: linear-gradient(to bottom, #F0F0F0, #D3D3D3);
+    -fx-opacity: 0.8;
     -fx-cursor: hand;
 }
+
 #cancelButton:pressed {
-    -fx-translate-y: 1px;
-    -fx-effect: none;
+    -fx-opacity: 0.6;
+    -fx-translate-y: 2px;
 }
 
 .slider {

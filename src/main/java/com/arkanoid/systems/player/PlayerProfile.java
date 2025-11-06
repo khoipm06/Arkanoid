@@ -11,7 +11,9 @@ public class PlayerProfile {
     private Map<String, Integer> inventory;
     private String currentSkin;
     private static PlayerProfile currentPlayer;
+
     private String currentPaddleSkin = "paddle_Default";
+    ;
 
     public PlayerProfile(String playerId) {
         this.playerId = playerId;
@@ -20,6 +22,7 @@ public class PlayerProfile {
         this.currentPaddleSkin = "paddle_Default";
         PlayerProfile.setCurrentPlayer(this);
     }
+
 
     public String getPlayerId() {
         return playerId;
