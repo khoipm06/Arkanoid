@@ -1,5 +1,6 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.database.UserManager;
 import com.arkanoid.core.entities.Ball;
 import com.arkanoid.core.entities.Paddle;
 import com.arkanoid.systems.player.PlayerProfile;
@@ -37,7 +38,8 @@ public class ShopView {
     public void initialize() {
         currentUser = SessionManager.getCurrentUser();
         if (currentUser == null) {
-            SessionManager.register("guest", "123");
+            UserManager.register("guest", "123", "");
+            SessionManager.login(new SessionManager.User("guest"));
             currentUser = SessionManager.getCurrentUser();
         }
 

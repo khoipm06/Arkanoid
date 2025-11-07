@@ -130,17 +130,24 @@ public class LevelManager {
                 return bricks;
             }
 
-            String json = new String(input.readAllBytes(), StandardCharsets.UTF_8);
-            JSONObject data = new JSONObject(json);
-            JSONArray layout = data.getJSONArray("layout");
+            JsonObject json = JsonParser.parseReader(new InputStreamReader(input, StandardCharsets.UTF_8)).getAsJsonObject();
+            JsonArray brickArray = json.getAsJsonArray("bricks");
 
-            for (int row = 0; row < layout.length(); row++) {
-                String line = layout.getString(row);
-                for (int col = 0; col < line.length(); col++) {
-                    if (line.charAt(col) == '1') {
-                        bricks.add(new NormalBrick(col * 40, row * 20, 40, 20, row, col));
-                    }
-                }
+            for (JsonElement element : brickArray) {
+                JsonObject brickData = element.getAsJsonObject();
+                double x = brickData.get("x").getAsDouble();
+                double y = brickData.get("y").getAsDouble();
+                double brickWidth = brickData.get("width").getAsDouble();
+                double brickHeight = brickData.get("height").getAsDouble();
+                double startX = 50; 
+                double startY = 50; 
+                double gap = 5; 
+
+                int row = (int) ((y - startY) / (brickHeight + gap));
+                int col = (int) ((x - startX) / (brickWidth + gap));
+
+                Brick brick = entityFactory.createBrick(brickData, row, col);
+                if (brick != null) bricks.add(brick);
             }
         } catch (Exception e) {
             e.printStackTrace();

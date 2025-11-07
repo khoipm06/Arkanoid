@@ -1,10 +1,7 @@
 package com.arkanoid.database;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.Base64;
 
 public class UserManager {
     
@@ -30,23 +27,17 @@ public class UserManager {
         public LocalDateTime getLastLogin() { return lastLogin; }
     }
 
-    private static String hashPassword(String password) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(password.getBytes());
-            return Base64.getEncoder().encodeToString(hash);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error hashing password", e);
-        }
-    }
-
     public static User register(String username, String password, String email) {
         String sql = "INSERT INTO users (username, password, email, created_at) VALUES (?, ?, ?, ?)";
         String createProfileSql = "INSERT INTO player_profiles (user_id) VALUES (?)";
         
+        if (usernameExists(username)) {
+            return null; // User already exists
+        }
+
         try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, username);
-            pstmt.setString(2, hashPassword(password));
+            pstmt.setString(2, password);
             pstmt.setString(3, email);
             pstmt.setString(4, LocalDateTime.now().toString());
             
@@ -57,7 +48,7 @@ public class UserManager {
                     if (rs.next()) {
                         int userId = rs.getInt(1);
                         
-                        // Tạo profile mặc định
+                        // Create default profile
                         try (PreparedStatement profileStmt = DatabaseManager.getConnection().prepareStatement(createProfileSql)) {
                             profileStmt.setInt(1, userId);
                             profileStmt.executeUpdate();
@@ -79,7 +70,7 @@ public class UserManager {
         
         try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
             pstmt.setString(1, username);
-            pstmt.setString(2, hashPassword(password));
+            pstmt.setString(2, password);
             
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -89,7 +80,7 @@ public class UserManager {
                     String lastLoginStr = rs.getString("last_login");
                     LocalDateTime lastLogin = lastLoginStr != null ? LocalDateTime.parse(lastLoginStr) : null;
                     
-                    // Cập nhật thời gian đăng nhập
+                    // Update login time
                     try (PreparedStatement updateStmt = DatabaseManager.getConnection().prepareStatement(updateLoginSql)) {
                         updateStmt.setString(1, LocalDateTime.now().toString());
                         updateStmt.setInt(2, id);

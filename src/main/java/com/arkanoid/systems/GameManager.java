@@ -117,17 +117,23 @@ public class GameManager {
 
         bricks.removeIf(Brick::isDestroyed);
 
-        balls.removeIf(ball -> {
+        // Handle ball out of bounds
+        Iterator<Ball> ballIterator = balls.iterator();
+        while (ballIterator.hasNext()) {
+            Ball ball = ballIterator.next();
             if (ball.isOutOfBounds()) {
                 player.getState().loseLife();
-                if (player.getState().isGameOver()) {
-                    currentState = GameState.GAME_OVER;
-                }
-                return true;
+                ballIterator.remove();
             }
-            return false;
-        });
+        }
 
+        // Check for game over
+        if (player.getState().isGameOver()) {
+            currentState = GameState.GAME_OVER;
+            return; // Immediately exit update loop if game is over
+        }
+
+        // If no balls are left and the game is still playing, reset the ball
         if (balls.isEmpty() && currentState == GameState.PLAYING) {
             resetBall(paddle);
         }

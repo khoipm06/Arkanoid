@@ -1,5 +1,6 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.database.UserManager;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -40,7 +41,7 @@ public class SignUpView {
             return;
         }
 
-        if (!SessionManager.register(username, password)) {
+        if (UserManager.register(username, password, "") == null) {
             System.out.println("Tên người chơi đã tồn tại!");
             return;
         }
@@ -48,9 +49,6 @@ public class SignUpView {
         System.out.println("Đăng ký thành công!");
         System.out.println("Username: " + username);
         System.out.println("Password: " + password);
-
-        SessionManager.User user = new SessionManager.User(username);
-        SessionManager.login(user);
 
         SceneManager.switchTo("signIn");
     }
