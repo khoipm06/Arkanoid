@@ -24,8 +24,6 @@ public class GameManager {
     private List<Ball> balls;
     private List<Brick> bricks;
     private List<PowerUp> powerUps;
-    private List<Explosion> explosions;
-    private List<LineEffect> lineEffects;
     private Player player;
     private double gameWidth;
     private double gameHeight;
@@ -104,15 +102,14 @@ public class GameManager {
         while (powerUpIterator.hasNext()) {
             PowerUp powerUp = powerUpIterator.next();
             powerUp.update(deltaTime);
-
-            PowerUp collectedPowerUp = powerUp.checkPaddleCollision(player.getPaddle());
-            if (collectedPowerUp != null) {
+            
+            if (powerUp.checkPaddleCollision(player.getPaddle())) {
                 player.getState().addScore(50);
                 applyPowerUpEffect(powerUp, paddle);   // 🔥 kích hoạt hiệu ứng power-up
                 powerUpIterator.remove();              // ❌ xoá luôn khỏi list sau khi ăn
                 continue;
             }
-
+            
             if (!powerUp.isActive() || powerUp.getY() > gameHeight) {
                 powerUpIterator.remove();
             }
@@ -168,6 +165,9 @@ public class GameManager {
                 bullets.add(right);
                 gunFireCooldown = GUN_FIRE_INTERVAL;
             }
+        } else {
+            // reset cooldown to allow immediate fire when re-activated
+            gunFireCooldown = 0.0;
         }
 
         // update bullets
@@ -264,7 +264,7 @@ public class GameManager {
     public List<Ball> getBalls() { return balls; }
     public List<Brick> getBricks() { return bricks; }
     public List<PowerUp> getPowerUps() { return powerUps; }
-    public List<Explosion> getExplosions() { return explosions; }
+    public List<Bullet> getBullets() {return bullets; }
     public Player getPlayer() { return player; }
     public PlayerManager getPlayerManager() { return playerManager; }
     public int getLevelNumber() {

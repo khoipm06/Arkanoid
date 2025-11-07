@@ -197,12 +197,3 @@
         public boolean isExplosive() { return explosive; }
         public void setExplosive(boolean value) { explosive = value; }
     }
-
-    public boolean isExplosive() {
-        return isExplosive;
-    }
-
-    public void setExplosive(boolean explosive) {
-        isExplosive = explosive;
-    }
-}
