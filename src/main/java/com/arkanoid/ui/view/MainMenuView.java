@@ -281,6 +281,6 @@ public class MainMenuView {
 
         SoundManager.playSound("Accept.wav");
 
-        System.out.println("leaderBoard");
+        SceneManager.switchTo("leaderboard");
     }
 }

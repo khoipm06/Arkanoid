@@ -1,6 +1,7 @@
     package com.arkanoid.ui.view;
 
-    import com.arkanoid.core.entities.Ball;
+    import com.arkanoid.database.UserManager;
+import com.arkanoid.core.entities.Ball;
     import com.arkanoid.systems.player.PlayerProfile;
     import com.arkanoid.systems.sound.SoundManager;
     import javafx.fxml.FXML;
@@ -56,6 +57,10 @@
 
         @FXML
         public void initialize() {
+            if (SessionManager.getCurrentUser() == null) {
+                UserManager.register("guest", "123", "");
+                SessionManager.login(new SessionManager.User("guest"));
+            }
 
             skinItems.add(new SkinItem("Fire", 1000, buy1, equip1, imgFire));
             skinItems.add(new SkinItem("Ice", 2000, buy2, equip2, imgIce));

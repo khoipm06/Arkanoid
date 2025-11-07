@@ -1,5 +1,6 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.database.UserManager;
 import com.arkanoid.core.entities.Paddle;
 import com.arkanoid.systems.player.PlayerProfile;
 import com.arkanoid.ui.view.SessionManager;
@@ -46,6 +47,11 @@ public class ShopPaddle {
 
     @FXML
     public void initialize() {
+        if (SessionManager.getCurrentUser() == null) {
+            UserManager.register("guest", "123", "");
+            SessionManager.login(new SessionManager.User("guest"));
+        }
+
         skinItems.add(new SkinItem("paddle_Wood", 1000, buy1, equip1, image1));
         skinItems.add(new SkinItem("paddle_Metal", 2000, buy2, equip2, image2));
         skinItems.add(new SkinItem("paddle_Neon", 3000, buy3, equip3, image3));

@@ -45,11 +45,15 @@ class GameManagerTest {
     }
 
     @Test
-    void testGameOver() {
+    void testGameOver() throws NoSuchFieldException, IllegalAccessException {
         gameManager.startGame();
         Player player = gameManager.getPlayer();
-        player.getState().setLives(1);
-        
+
+        // Use reflection to set lives to 1
+        java.lang.reflect.Field livesField = player.getState().getClass().getDeclaredField("lives");
+        livesField.setAccessible(true);
+        livesField.set(player.getState(), 1);
+
         // Simulate ball going out of bounds
         gameManager.getBalls().get(0).setY(700);
         gameManager.update(0.16);
