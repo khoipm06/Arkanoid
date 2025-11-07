@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="root" prefHeight="535.0" prefWidth="738.0" stylesheets="@../shopBall.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.ShopBall">
+<AnchorPane fx:id="root" prefHeight="535.0" prefWidth="738.0" stylesheets="@../shopBall.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.ShopBall">
    <children>
       <Label layoutX="281.0" layoutY="60.0" prefHeight="38.0" prefWidth="164.0" text="Shop Ball">
          <font>

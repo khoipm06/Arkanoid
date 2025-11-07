@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="shopRoot" prefHeight="537.0" prefWidth="764.0" stylesheets="@../shopView.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.ShopView">
+<AnchorPane fx:id="shopRoot" prefHeight="537.0" prefWidth="764.0" stylesheets="@../shopView.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.ShopView">
    <children>
       <Label fx:id="lblMoney" layoutX="295.0" layoutY="46.0" prefHeight="64.0" prefWidth="274.0" text="Số dư :">
          <font>

@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Font?>
 
 
-<AnchorPane fx:id="root" prefHeight="574.0" prefWidth="825.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.GameOver">
+<AnchorPane fx:id="root" prefHeight="574.0" prefWidth="825.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.GameOver">
    <children>
       <Label fx:id="labelGameOver" layoutX="277.0" layoutY="130.0" prefHeight="47.0" prefWidth="250.0" text="Game Over!">
          <font>

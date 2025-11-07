@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="rootSignUp" prefHeight="587.0" prefWidth="744.0" stylesheets="@../signUp.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.SignUpView">
+<AnchorPane fx:id="rootSignUp" prefHeight="587.0" prefWidth="744.0" stylesheets="@../signUp.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.SignUpView">
    <children>
       <Label fx:id="labelSignUp" layoutX="239.0" layoutY="80.0" prefHeight="43.0" prefWidth="266.0" text="Đăng kí tài khoản">
          <font>
