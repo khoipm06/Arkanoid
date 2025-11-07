@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 
-<AnchorPane prefHeight="498.0" prefWidth="724.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.Pause">
+<AnchorPane prefHeight="498.0" prefWidth="724.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.Pause">
    <children>
       <Button fx:id="newGameButton" layoutX="296.0" layoutY="84.0" mnemonicParsing="false" onMouseClicked="#onNewGameClick" prefHeight="58.0" prefWidth="114.0" text="Button" />
       <Button fx:id="resumeButton" layoutX="296.0" layoutY="207.0" mnemonicParsing="false" onMouseClicked="#onResumeClick" prefHeight="58.0" prefWidth="114.0" text="Button" />

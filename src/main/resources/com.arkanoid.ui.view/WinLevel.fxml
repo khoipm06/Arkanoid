@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Font?>
 
 
-<AnchorPane fx:id="root" prefHeight="521.0" prefWidth="758.0" stylesheets="@../Win.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.WinLevel">
+<AnchorPane fx:id="root" prefHeight="521.0" prefWidth="758.0" stylesheets="@../Win.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.WinLevel">
    <children>
       <Label fx:id="winLevel" layoutX="306.0" layoutY="65.0" prefHeight="62.0" prefWidth="146.0" text="WIN">
          <font>

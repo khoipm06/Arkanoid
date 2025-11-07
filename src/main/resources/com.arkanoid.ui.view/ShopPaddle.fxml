@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="root" prefHeight="563.0" prefWidth="749.0" stylesheets="@../shopPaddle.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.ShopPaddle">
+<AnchorPane fx:id="root" prefHeight="563.0" prefWidth="749.0" stylesheets="@../shopPaddle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.ShopPaddle">
    <children>
       <Button fx:id="backHome" layoutX="46.0" layoutY="61.0" mnemonicParsing="false" onMouseClicked="#onBackHomeClick" prefHeight="51.0" prefWidth="55.0" />
       <Button fx:id="buy1" layoutX="404.0" layoutY="191.0" mnemonicParsing="false" onMouseClicked="#onBuy1Click" prefHeight="51.0" prefWidth="66.0" text="Buy" />
