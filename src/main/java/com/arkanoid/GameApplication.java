@@ -30,6 +30,7 @@ public class GameApplication extends Application {
         SceneManager.loadScene("shopPaddle", "ShopPaddle.fxml");
         SceneManager.loadScene("gameOver", "GameOver.fxml");
         SceneManager.loadScene("winLevel", "WinLevel.fxml");
+        SceneManager.loadScene("leaderboard", "Leaderboard.fxml");
 
         SceneManager.switchTo("mainMenuView");
 
