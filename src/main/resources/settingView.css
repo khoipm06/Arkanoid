@@ -22,14 +22,14 @@
 }
 
 #okButton {
-    -fx-pref-width: 80px;
-    -fx-pref-height: 30px;
-     -fx-background-image: url("/images/ok.png");
-    -fx-background-size: cover;      /* Tự co ảnh theo nút */
+    -fx-pref-width: 70px;      /* Kích thước thực tế của ảnh */
+        -fx-pref-height: 50px;
+        -fx-background-image: url("/images/Ok_BTN.png");
+        -fx-background-size: 100% 100%;  /* co ảnh vừa với nút */
         -fx-background-repeat: no-repeat;
         -fx-background-position: center;
-        -fx-background-color: transparent;  /* Xóa màu nền mặc định */
-        -fx-border-color: transparent;      /* Xóa border */
+        -fx-background-color: transparent;
+        -fx-border-color: transparent;
 }
 #okButton:hover {
     -fx-opacity: 0.8;  /* Hiệu ứng hover */
@@ -42,14 +42,15 @@
 }
 
 #cancelButton {
-    -fx-pref-width: 50px;
-    -fx-pref-height: 50px;
-    -fx-background-image: url("/images/exit1.png");
-    -fx-background-size: cover;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
+
+    -fx-pref-width: 70px;
+        -fx-pref-height: 50px;
+        -fx-background-image: url("/images/exit.png");
+        -fx-background-size: 100% 100%;
+        -fx-background-repeat: no-repeat;
+        -fx-background-position: center;
+        -fx-background-color: transparent;
+        -fx-border-color: transparent;
 }
 
 #cancelButton:hover {
@@ -63,47 +64,37 @@
 }
 
 .slider {
-    -fx-padding: 10px; /* Thêm padding cho dễ nhìn */
+    -fx-padding: 10;
 }
 
-/* Thanh trượt (Track) - Phần nền của slider */
 .slider .track {
-    /* Màu nền track sáng hơn và gradient nhẹ */
-    -fx-background-color:
-        linear-gradient(to bottom, #444444, #222222);
-
-    /* Viền sáng bao quanh track */
-    -fx-border-color: #33CCFF; /* Màu xanh phát sáng */
-    -fx-border-width: 1px;
-    -fx-border-radius: 5;
-
+    -fx-background-color: linear-gradient(to right, #333333, #555555);
     -fx-background-radius: 5;
-    -fx-pref-height: 8px;
-
-    /* Bóng trong để tạo cảm giác chìm xuống */
-    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.7), 5, 0.0, 0, 1);
+    -fx-pref-height: 8;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.7), 4, 0, 0, 1);
 }
 
-/* Nút trượt (Thumb) - Phần tròn mà người dùng kéo */
 .slider .thumb {
     -fx-background-color:
-        linear-gradient(to bottom, #66FFFF, #33CCFF); /* Màu xanh sáng hơn */
+        linear-gradient(to bottom, #66FFFF, #33CCFF),
+        radial-gradient(center 50% 50%, radius 50%, #33CCFF, #0099CC);
     -fx-background-radius: 50%;
-    -fx-padding: 10px;
-    /* Tăng bán kính phát sáng cho thumb
-    -fx-effect: dropshadow(gaussian, #33CCFF, 15, 0.7, 0, 0);*/
+    -fx-pref-width: 22;
+    -fx-pref-height: 22;
+    -fx-effect: dropshadow(gaussian, #33CCFF, 12, 0.7, 0, 0);
 }
-/* Phần track đã được lấp đầy (tùy chọn) */
-/* .slider .track-low {
-    -fx-background-color: #1E90FF;
-} */
 
-.slider .axis-label {
-    /* Màu chữ trắng sáng */
+.slider .thumb:hover {
+    -fx-effect: dropshadow(gaussian, #66FFFF, 16, 0.8, 0, 0);
+}
+
+.slider .tick-label {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 12px;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, #33CCFF, 8, 0.5, 0, 0);
+}
 
-    /* Hiệu ứng phát sáng nhẹ */
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 1.0), 10, 0.0, 0, 0);
+.slider .axis {
+    -fx-tick-label-fill: #FFFFFF;
 }

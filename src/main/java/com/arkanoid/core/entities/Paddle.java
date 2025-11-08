@@ -15,11 +15,14 @@ public class Paddle extends MovableObject {
     private Color color;
     private final double originalWidth;
     private Image paddleImage;
+    private Image defaultPaddleImage;
     private static final Map<String, Image> paddleSkins = new HashMap<>();
+    private String originalSkin = "paddle_Default";
     private static String currentSkin = "paddle_Default";
 
     private boolean gunMode = false;
     private long gunExpiryNano = -1;
+    private Image gunImage;
 
     static {
         loadSkins();
@@ -33,9 +36,16 @@ public class Paddle extends MovableObject {
         super(x, y, width, height, speed);
         this.minX = minX;
         this.maxX = maxX;
-        this.color = Color.BLUE;
+//        this.color = Color.BLUE;
         this.originalWidth = width;
         this.paddleImage = getSkin(currentSkin);
+        this.defaultPaddleImage= this.paddleImage;
+        try (InputStream stream = Paddle.class.getResourceAsStream("/images/gun.png")) {
+            if (stream != null) gunImage = new Image(stream);
+            else System.err.println("Không tìm thấy ảnh gun.png");
+        } catch (Exception e) {
+            System.err.println("Lỗi load gun.png: " + e.getMessage());
+        }
 
     }
 
@@ -62,7 +72,16 @@ public class Paddle extends MovableObject {
 
     @Override
     public void update(double deltaTime) {
+
         constrainToBounds();
+        if (gunMode && gunExpiryNano != -1 && System.nanoTime() > gunExpiryNano) {
+            gunMode = false;
+        }
+        // nếu skin tạm hết hạn → trả về skin gốc
+        if (!currentSkin.equals(originalSkin)) {
+            this.paddleImage = getSkin(originalSkin);
+            currentSkin = originalSkin;
+        }
     }
 
     public void setPaddleImage(Image image) {
@@ -78,14 +97,10 @@ public class Paddle extends MovableObject {
             gc.setStroke(Color.WHITE);
             gc.strokeRect(x, y, width, height);
         }
-        if (isGunMode()) {
-            double gunW = 6, gunH = 12;
-            gc.setFill(Color.SILVER);
-            gc.fillRect(getLeftGunX(), getGunY(), gunW, gunH);
-            gc.fillRect(getRightGunX(), getGunY(), gunW, gunH);
-            gc.setStroke(Color.BLACK);
-            gc.strokeRect(getLeftGunX(), getGunY(), gunW, gunH);
-            gc.strokeRect(getRightGunX(), getGunY(), gunW, gunH);
+        if (isGunMode() && gunImage != null) {
+            double gunW = 12, gunH = 24; // kích thước gun
+            gc.drawImage(gunImage, getLeftGunX(), getGunY(), gunW, gunH);
+            gc.drawImage(gunImage, getRightGunX(), getGunY(), gunW, gunH);
         }
     }
 
@@ -160,11 +175,11 @@ public class Paddle extends MovableObject {
     }
 
     public double getLeftGunX() {
-        return x + 4; // offset nhỏ để đạn không nằm sát viền
+        return x + 1; // offset nhỏ để đạn không nằm sát viền
     }
 
     public double getRightGunX() {
-        return x + width - 4 - 4; // offset: width - margin - bulletWidth
+        return x + width - 12; // offset: width - margin - bulletWidth
     }
 
     public double getGunY() {

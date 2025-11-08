@@ -89,7 +89,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
         double random = Math.random();
         double centerX = getCenterX();
         double centerY = getCenterY();
-        
+        return new GunPaddlePowerUp(centerX, centerY);
 //        if (random < 0.4) {
 //            return new ExpandPaddlePowerUp(centerX, centerY);
 //        } else if (random < 0.7) {
@@ -98,11 +98,11 @@ public abstract class BaseBrick extends GameObject implements Brick {
 //            return new ExplosiveBallPowerUp(centerX, centerY);
 //        }
 //        return new GunPaddlePowerUp(centerX, centerY);
-        if (random < 0.5 ) {
-            return new ExplosiveBallPowerUp(centerX, centerY);
-        }
-        return new RowClearPowerUp(centerX, centerY);
-       }
+//        if (random < 0.5 ) {
+//            return new ExplosiveBallPowerUp(centerX, centerY);
+//        }
+//        return new RowClearPowerUp(centerX, centerY);
+    }
     public int getRow() {
         return row;
     }

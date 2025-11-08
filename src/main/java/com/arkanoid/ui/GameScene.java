@@ -50,7 +50,12 @@ public class GameScene {
         this.stage = stage;
         this.pressedKeys = new HashSet<>();
 
-        this.gameManager = new GameManager(width, height, levelNumber);
+        double gameAreaWidth = 700;  // cố định để dễ kiểm soát
+        double gameAreaHeight = height;
+
+        canvas = new Canvas(gameAreaWidth, gameAreaHeight);
+        gc = canvas.getGraphicsContext2D();
+        this.gameManager = new GameManager(canvas.getWidth(), canvas.getHeight(), levelNumber);
 
         if (gameManager.getPlayer() != null) {
             String equippedSkin = SessionManager.getCurrentUser().getEquippedPaddleSkin();
@@ -83,11 +88,7 @@ public class GameScene {
         BorderPane mainLayout = new BorderPane();
 
         // 1. Canvas chơi game (trái)
-        double gameAreaWidth = 700;  // cố định để dễ kiểm soát
-        double gameAreaHeight = height;
 
-        canvas = new Canvas(gameAreaWidth, gameAreaHeight);
-        gc = canvas.getGraphicsContext2D();
 
         // 2. Panel thông tin (phải)
         VBox infoPanel = createInfoPanel();
@@ -102,9 +103,11 @@ public class GameScene {
 
         // Root là StackPane để overlay đè lên
         root = new StackPane(mainLayout, pauseOverlay);
-        this.scene = new Scene(root, width, height);
+        double infoWidth = 350;
+        this.scene = new Scene(root, canvas.getWidth() + infoWidth, height);
 
         setupInputHandlers();
+        stage.setResizable(false);
         stage.setScene(scene);
 
     }
