@@ -1,5 +1,9 @@
 #settingRoot {
     -fx-background-color: linear-gradient(to bottom right, #202020, #000033);
+    -fx-background-image: url("/images/setting_bg.png"); /* ảnh nền cho setting */
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-position: center;
 }
 
 #volumeLabel {
