@@ -7,7 +7,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -23,7 +22,8 @@ public class LeaderboardController {
     @FXML
     public void initialize() {
         List<PlayerProfileManager.LeaderboardEntry> leaderboardData = PlayerProfileManager.getLeaderboardData();
-        ObservableList<PlayerProfileManager.LeaderboardEntry> items = FXCollections.observableArrayList(leaderboardData);
+        ObservableList<PlayerProfileManager.LeaderboardEntry> items = FXCollections
+                .observableArrayList(leaderboardData);
         leaderboardList.setItems(items);
 
         leaderboardList.setCellFactory(param -> new ListCell<>() {

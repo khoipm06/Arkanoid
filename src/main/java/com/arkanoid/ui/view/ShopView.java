@@ -14,8 +14,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
-
-import java.awt.*;
 import java.util.Optional;
 
 public class ShopView {
@@ -45,10 +43,12 @@ public class ShopView {
 
         updateMoneyLabel();
     }
+
     public void refreshMoney() {
         currentUser = SessionManager.getCurrentUser();
         updateMoneyLabel();
     }
+
     private void updateMoneyLabel() {
         if (currentUser != null)
             lblMoney.setText("Số dư: " + currentUser.getMoney() + "$");
@@ -63,6 +63,7 @@ public class ShopView {
         pause.setOnFinished(e -> lblMessage.setVisible(false));
         pause.play();
     }
+
     private void buyItem() {
         int itemPrice = 200;
         if (money.get() >= itemPrice) {
@@ -94,6 +95,7 @@ public class ShopView {
 
         SceneManager.switchTo("shopBall");
     }
+
     @FXML
     public void onPaddleShopClick(MouseEvent event) {
         SoundManager.playSound("Accept.wav");

@@ -2,8 +2,6 @@ package com.arkanoid.ui.view;
 
 import com.arkanoid.database.UserManager;
 import com.arkanoid.core.entities.Paddle;
-import com.arkanoid.systems.player.PlayerProfile;
-import com.arkanoid.ui.view.SessionManager;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -108,7 +106,8 @@ public class ShopPaddle {
         SessionManager.User user = SessionManager.getCurrentUser();
         for (SkinItem item : skinItems) {
             if (item.name.equals(skinName)) {
-                if (user.hasPaddleSkin(skinName)) return; // đã sở hữu
+                if (user.hasPaddleSkin(skinName))
+                    return; // đã sở hữu
                 if (user.spendMoney(item.price)) {
                     user.addOwnedPaddleSkin(skinName);
                     lblMoney.setText("Số dư: " + user.getMoney() + "$");
@@ -132,15 +131,16 @@ public class ShopPaddle {
             if (paddleInGame != null) {
                 paddleInGame.equipSkin(skinName); // cập nhật paddle đang chơi
             }
-        }  else {
-        System.out.println("Chưa sở hữu skin: " + skinName);
+        } else {
+            System.out.println("Chưa sở hữu skin: " + skinName);
         }
         updateShopUI();
     }
 
     private void updateShopUI() {
         SessionManager.User user = SessionManager.getCurrentUser();
-        if (user == null) return;
+        if (user == null)
+            return;
 
         lblMoney.setText("Số dư: " + user.getMoney() + "$");
 
@@ -154,7 +154,7 @@ public class ShopPaddle {
 
             // BUY BUTTON
             if (!owned) {
-                item.buyButton.getStyleClass().add("buy-button");   // chưa mua
+                item.buyButton.getStyleClass().add("buy-button"); // chưa mua
                 item.buyButton.setDisable(!canAfford);
             } else {
                 item.buyButton.getStyleClass().add("owned-button"); // đã mua

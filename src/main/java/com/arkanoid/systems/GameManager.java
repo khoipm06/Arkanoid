@@ -4,10 +4,6 @@ import com.arkanoid.core.entities.*;
 import com.arkanoid.core.physics.CollisionDetector;
 import com.arkanoid.systems.level.LevelManager;
 import com.arkanoid.systems.player.Player;
-import com.arkanoid.systems.sound.SoundManager;
-import javafx.scene.input.KeyCode;
-
-import javax.sound.sampled.Line;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
