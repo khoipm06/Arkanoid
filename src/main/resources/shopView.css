@@ -1,5 +1,9 @@
     #shopRoot {
         -fx-background-color: linear-gradient(to bottom right, #202020, #000033);
+        -fx-background-image: url("/images/shop_bg.png"); /* ảnh nền của shop */
+        -fx-background-repeat: no-repeat;
+        -fx-background-size: cover; /* ảnh phủ toàn màn */
+        -fx-background-position: center;
     }
 
     #backButton {

@@ -9,18 +9,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class GameApplication extends Application {
-    public static final double GAME_WIDTH = 800;
-    public static final double GAME_HEIGHT = 600;
+    public static final double GAME_WIDTH = 1000;
+    public static final double GAME_HEIGHT = 650;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-//        primaryStage.setTitle("Arkanoid Game");
-//        primaryStage.setResizable(false);
-//
-//        MainMenuScene mainMenu = new MainMenuScene(primaryStage, GAME_WIDTH, GAME_HEIGHT);
-//        primaryStage.setScene(mainMenu.getScene());
-//
-//        primaryStage.show();
         DatabaseManager.initialize();
         SceneManager.setStage(primaryStage);
         SceneManager.loadScene("mainMenuView", "MainMenuView.fxml");

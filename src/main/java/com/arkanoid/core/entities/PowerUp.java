@@ -32,8 +32,8 @@ public abstract class PowerUp extends MovableObject {
     public void render(GraphicsContext gc) {
         gc.setFill(color);
         gc.fillOval(x, y, width, height);
-        gc.setStroke(Color.WHITE);
-        gc.strokeOval(x, y, width, height);
+//        gc.setStroke(Color.WHITE);
+//        gc.strokeOval(x, y, width, height);
     }
 
     public abstract void applyEffect(Paddle paddle);

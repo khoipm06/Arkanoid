@@ -5,12 +5,12 @@
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="settingRoot" prefHeight="532.0" prefWidth="758.0" stylesheets="@../settingView.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.SettingView">
+<AnchorPane fx:id="settingRoot" prefHeight="546.0" prefWidth="823.0" stylesheets="@../settingView.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.SettingView">
    <children>
       <Slider fx:id="volumeSlider" layoutX="116.0" layoutY="159.0" prefHeight="14.0" prefWidth="368.0" showTickLabels="true" value="50.0" />
       <Label fx:id="volumeLabel" layoutX="116.0" layoutY="93.0" prefHeight="35.0" prefWidth="214.0" stylesheets="@../settingView.css" text="Volumn" />
       <Label fx:id="valueLabel" layoutX="574.0" layoutY="151.0" prefHeight="33.0" prefWidth="46.0" text="50%" />
-      <Button fx:id="okButton" layoutX="517.0" layoutY="444.0" mnemonicParsing="false" onMouseClicked="#onOKClick" prefHeight="59.0" prefWidth="59.0" />
-      <Button fx:id="cancelButton" layoutX="661.0" layoutY="446.0" mnemonicParsing="false" onMouseClicked="#onCancelClick" prefHeight="48.0" prefWidth="62.0" />
+      <Button fx:id="okButton" layoutX="557.0" layoutY="438.0" mnemonicParsing="false" onMouseClicked="#onOKClick" prefHeight="48.0" prefWidth="150.0" />
+      <Button fx:id="cancelButton" layoutX="680.0" layoutY="438.0" mnemonicParsing="false" onMouseClicked="#onCancelClick" prefHeight="48.0" prefWidth="150.0" />
    </children>
 </AnchorPane>

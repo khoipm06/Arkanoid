@@ -86,7 +86,6 @@ public class Map {
     private void onPlayGameButtonClick(MouseEvent event) {
 
         SoundManager.playSound("Accept.wav");
-        SoundManager.playSound("Accept.wav");
 
         if (stage == null) {
             stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
