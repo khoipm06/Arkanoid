@@ -4,12 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerProfile {
-    private String playerId;
-    private Map<String, Integer> inventory;
-    private String currentSkin;
     private static PlayerProfile currentPlayer;
-
-    private String currentPaddleSkin = "paddle_Default";;
+    private final String playerId;
+    private final Map<String, Integer> inventory;
+    private String currentSkin;
+    private String currentPaddleSkin = "paddle_Default";
 
     public PlayerProfile(String playerId) {
         this.playerId = playerId;
@@ -17,6 +16,14 @@ public class PlayerProfile {
         this.currentSkin = "Default";
         this.currentPaddleSkin = "paddle_Default";
         PlayerProfile.setCurrentPlayer(this);
+    }
+
+    public static PlayerProfile getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public static void setCurrentPlayer(PlayerProfile player) {
+        currentPlayer = player;
     }
 
     public String getPlayerId() {
@@ -37,14 +44,6 @@ public class PlayerProfile {
 
     public void setCurrentSkin(String skin) {
         this.currentSkin = skin;
-    }
-
-    public static PlayerProfile getCurrentPlayer() {
-        return currentPlayer;
-    }
-
-    public static void setCurrentPlayer(PlayerProfile player) {
-        currentPlayer = player;
     }
 
     public String getEquippedPaddleSkin() {

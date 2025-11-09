@@ -10,8 +10,8 @@
    xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
    fx:controller="com.arkanoid.ui.view.LeaderboardController">
    <children>
-      <Label fx:id="titleLabel" alignment="CENTER" layoutX="232.0" layoutY="39.0" prefHeight="62.0"
-         prefWidth="335.0" text="LEADERBOARD">
+      <Label fx:id="titleLabel" alignment="CENTER" layoutX="179.0" layoutY="19.0" prefHeight="62.0"
+         prefWidth="399.0" text="LEADERBOARD">
          <font>
             <Font name="Arial Black" size="36.0" />
          </font>

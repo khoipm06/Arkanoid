@@ -6,8 +6,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="root" prefHeight="590.0" prefWidth="855.0" xmlns="http://javafx.com/javafx/21"
-   xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.GameOver">
+<AnchorPane fx:id="root" prefHeight="590.0" prefWidth="855.0" stylesheets="@../GameOver.css"
+   xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+   fx:controller="com.arkanoid.ui.view.GameOver">
    <children>
       <Label fx:id="score" layoutX="253.0" layoutY="206.0" prefHeight="30.0" prefWidth="305.0"
          text="Score :">

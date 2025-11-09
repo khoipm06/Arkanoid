@@ -1,8 +1,9 @@
 package com.arkanoid.core.entities;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class GunPaddlePowerUp extends PowerUp {
-    private final long expiryNano; // unique marker for this instance (set on apply)
+    private final long expiryNano;
     private long appliedExpiryNano = -1;
 
     public GunPaddlePowerUp(double x, double y) {
@@ -11,7 +12,13 @@ public class GunPaddlePowerUp extends PowerUp {
         this.lifetime = 10.0;
         this.age = 0;
         this.active = true;
-        this.expiryNano = 0; // placeholder; will compute on apply
+        var url = getClass().getResource("/images/GunPowerUp.png");
+        if (url != null) {
+            this.image = new Image(url.toExternalForm());
+        } else {
+            System.out.println("GunPaddlePowerUp image not found!");
+        }
+        this.expiryNano = 0;
     }
 
     @Override

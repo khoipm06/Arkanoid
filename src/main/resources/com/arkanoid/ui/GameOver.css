@@ -28,12 +28,14 @@
 
 #newGame {
   -fx-background-color: transparent;
-  -fx-background-image: url("../../../images/newgame_icon.png");
-  -fx-background-size: 40px 40px;
+  -fx-background-image: url("../../../images/New_Game.png");
+  -fx-background-size: 100% 100%; /* ảnh lấp đầy button */
   -fx-background-repeat: no-repeat;
-  -fx-background-position: center;
+  -fx-background-position: center; /* vẫn căn giữa nếu muốn */
+
   -fx-text-fill: white;
   -fx-font-weight: bold;
+
   -fx-border-color: #00ffff;
   -fx-border-radius: 10;
   -fx-border-width: 2;
@@ -48,14 +50,19 @@
 /* Nút Home */
 #backHome {
   -fx-background-color: transparent;
-  -fx-background-image: url("../../../images/back.png");
-  -fx-background-size: 40px 40px;
+  -fx-background-image: url("../../../images/New_Game.png");
+  -fx-background-size: 100% 100%; /* ảnh lấp đầy button */
   -fx-background-repeat: no-repeat;
-  -fx-background-position: center;
-  -fx-pref-width: 40px;
-  -fx-pref-height: 40px;
+  -fx-background-position: center; /* vẫn căn giữa nếu muốn */
+
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+
+  -fx-border-color: #00ffff;
+  -fx-border-radius: 10;
+  -fx-border-width: 2;
+  -fx-background-radius: 10;
   -fx-cursor: hand;
-  -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 0.8), 10, 0.3, 0, 0);
 }
 
 #backHome:hover {

@@ -2,6 +2,7 @@ package com.arkanoid.core.physics;
 
 import com.arkanoid.core.entities.Ball;
 import com.arkanoid.core.entities.Brick;
+import com.arkanoid.core.entities.UnbreakableBrick;
 import com.arkanoid.systems.GameManager;
 
 import java.util.ArrayList;
@@ -23,8 +24,35 @@ public class CollisionDetector {
                     callback.onBrickHit(brick);
                 }
                 if (ball.isExplosive() && !ball.hasExploded()) {
-                    bricksToExplode.add(brick);
-                    gameManager.addExplosion(brick.getCenterX(), brick.getCenterY(), 50, 0.5);
+                    double explosionRadius = 80;
+                    double explosionX = brick.getCenterX();
+                    double explosionY = brick.getCenterY();
+
+                    // Thêm vụ nổ vào GameManager (có thể dùng sprite sheet)
+                    gameManager.addExplosion(explosionX, explosionY, 64, 64, 1);
+
+                    for (Brick otherBrick : bricks) {
+                        if (otherBrick.isDestroyed())
+                            continue;
+
+                        // Bỏ qua gạch không phá được
+                        if (otherBrick instanceof UnbreakableBrick)
+                            continue;
+
+                        double dx = otherBrick.getCenterX() - explosionX;
+                        double dy = otherBrick.getCenterY() - explosionY;
+                        double dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist <= explosionRadius) {
+                            if (otherBrick instanceof UnbreakableBrick)
+                                continue;
+
+                            otherBrick.instantDestroy(); // Phá ngay, bỏ qua hitCount
+                            if (callback != null)
+                                callback.onBrickHit(otherBrick);
+                        }
+                    }
+
                     ball.setHasExploded(true);
                 }
                 // Only one brick can be hit at a time by a non-explosive ball

@@ -14,6 +14,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
     protected int col;
     protected Image texture;
 
+
     public BaseBrick(double x, double y, double width, double height,
                      int hitPoints, Color color, int row, int col) {
         this(x, y, width, height, hitPoints, color, row, col, null); // mặc định không có texture
@@ -58,18 +59,10 @@ public abstract class BaseBrick extends GameObject implements Brick {
     @Override
     public void render(GraphicsContext gc) {
         if(destroyed) return;
-//            double brightness = (double) hitPoints / maxHitPoints;
-//            Color renderColor = color.deriveColor(0, 1, brightness, 1);
-//            gc.setFill(renderColor);
-//            gc.fillRect(x, y, width, height);
-//
-//        gc.setLineWidth(1.0);
-//            gc.setStroke(Color.DARKGRAY);
-//        gc.strokeRect(x + 0.5, y + 0.5, Math.max(0, width - 1), Math.max(0, height - 1));
+
         if (texture != null) {
             gc.drawImage(texture, x, y, width, height);
         } else {
-            // fallback nếu không có ảnh
             double brightness = (double) hitPoints / maxHitPoints;
             Color renderColor = color.deriveColor(0, 1, brightness, 1);
             gc.setFill(renderColor);
@@ -84,24 +77,28 @@ public abstract class BaseBrick extends GameObject implements Brick {
         }
         return null;
     }
-
+    @Override
+    public void instantDestroy() {
+        this.destroyed = true;
+        this.active = false;
+        this.hitPoints = 0;
+    }
     private PowerUp createRandomPowerUp() {
         double random = Math.random();
         double centerX = getCenterX();
         double centerY = getCenterY();
-        return new GunPaddlePowerUp(centerX, centerY);
-//        if (random < 0.4) {
-//            return new ExpandPaddlePowerUp(centerX, centerY);
-//        } else if (random < 0.7) {
-//            return new MultiBallPowerUp(centerX, centerY);
-//        } else {
-//            return new ExplosiveBallPowerUp(centerX, centerY);
-//        }
-//        return new GunPaddlePowerUp(centerX, centerY);
-//        if (random < 0.5 ) {
-//            return new ExplosiveBallPowerUp(centerX, centerY);
-//        }
-//        return new RowClearPowerUp(centerX, centerY);
+
+        if (random < 0.1) {
+            return new RowClearPowerUp(centerX, centerY);
+        } else if (random < 0.3) {
+            return new ExplosiveBallPowerUp(centerX, centerY);
+        } else if (random < 0.7) {
+            return new GunPaddlePowerUp(centerX, centerY);
+        }
+        else {
+                return new ExpandPaddlePowerUp(centerX, centerY);
+            }
+
     }
     public int getRow() {
         return row;

@@ -5,7 +5,7 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class Bullet extends GameObject {
-    private double speedY; // negative = lên trên
+    private double speedY;
     private Image bulletImage;
 
     public Bullet(double x, double y, double width, double height, double speedY) {
@@ -22,7 +22,7 @@ public class Bullet extends GameObject {
 
     public void update(double deltaTime) {
         y += speedY * deltaTime;
-        // nếu ra khỏi màn hình thì deactivate (GameManager sẽ remove)
+
     }
 
     public void render(GraphicsContext gc) {

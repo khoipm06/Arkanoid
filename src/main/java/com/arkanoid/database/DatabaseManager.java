@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseManager {
-//        private static final String DB_URL = "jdbc:sqlite:arkanoid.db";
         private static final String DB_URL = "jdbc:sqlite:data/arkanoid.db";
         private static Connection connection;
 

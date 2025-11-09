@@ -9,7 +9,7 @@ public class MovingBrick extends BaseBrick {
     private double moveSpeed;
 
     public MovingBrick(double x, double y, double width, double height, double minX, double maxX, int row, int col, String path) {
-        super(x, y, width, height, 2, Color.CYAN, row, col, path);
+        super(x, y, width, height, 1, Color.CYAN, row, col, path);
         this.minX = minX;
         this.maxX = maxX;
         this.moveSpeed = 50;
@@ -18,14 +18,16 @@ public class MovingBrick extends BaseBrick {
 
     @Override
     public void update(double deltaTime) {
-        x += velocityX * deltaTime;
-        
-        if (x <= minX) {
-            x = minX;
-            velocityX = moveSpeed;
-        } else if (x + width >= maxX) {
-            x = maxX - width;
-            velocityX = -moveSpeed;
+        double newX = x + velocityX * deltaTime;
+
+        if (newX < minX) {
+            newX = minX;
+            velocityX = moveSpeed;           // Đi sang phải
+        } else if (newX + width > maxX) {
+            newX = maxX - width;
+            velocityX = -moveSpeed;          // Đi sang trái
         }
+
+        x = newX;
     }
 }

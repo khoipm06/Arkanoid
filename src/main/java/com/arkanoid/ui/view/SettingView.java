@@ -34,8 +34,6 @@ public class SettingView {
         System.out.println("Volume saved: " + savedVolume + "%");
 
         SoundManager.playSound("Accept.wav");
-
-        // quay lại màn hình chính (đóng cửa sổ Setting)
         SceneManager.switchTo("mainMenuView");
     }
 

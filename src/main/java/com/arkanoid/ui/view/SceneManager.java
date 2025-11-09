@@ -1,6 +1,5 @@
 package com.arkanoid.ui.view;
 
-import com.arkanoid.systems.player.Player;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -53,11 +52,4 @@ public class SceneManager {
         SceneManager.switchTo("winLevel");
     }
 
-    public static void showTwoPlayerGameOver(Player winner, Player loser, Player player1, Player player2) {
-        Object controller = getController("twoPlayerGameOver");
-        if (controller instanceof com.arkanoid.ui.view.TwoPlayerGameOver gameOverController) {
-            gameOverController.setGameData(winner, loser, player1, player2);
-        }
-        SceneManager.switchTo("twoPlayerGameOver");
-    }
 }

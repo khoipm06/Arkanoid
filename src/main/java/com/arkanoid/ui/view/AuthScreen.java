@@ -11,7 +11,7 @@ public class AuthScreen {
 
         SceneManager.switchTo("signIn");
         SessionManager.User user = new SessionManager.User("TenNguoiChoi");
-        SessionManager.login(user); //
+        SessionManager.login(user);
 
     }
 
@@ -21,14 +21,14 @@ public class AuthScreen {
 
         SceneManager.switchTo("mainMenuView");
     }
+
     @FXML
     public void onSignUpButtonClick(MouseEvent event) {
-
         SoundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("signUpView");
         SessionManager.User user = new SessionManager.User("TenNguoiChoi");
-        SessionManager.login(user); //
+        SessionManager.login(user);
     }
 
 }

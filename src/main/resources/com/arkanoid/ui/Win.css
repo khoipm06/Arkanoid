@@ -28,7 +28,7 @@
   -fx-pref-width: 50px;
   -fx-pref-height: 50px;
 
-  -fx-background-image: url("images/preMap.png");
+  -fx-background-image: url("../../../images/preMap.png");
   -fx-background-size: 51px 51px;
   -fx-background-repeat: no-repeat;
   -fx-background-position: center;
@@ -53,7 +53,7 @@
   -fx-pref-width: 50px;
   -fx-pref-height: 50px;
 
-  -fx-background-image: url("images/nextMap.png");
+  -fx-background-image: url("../../../images/nextMap.png");
   -fx-background-size: 51px 51px;
   -fx-background-repeat: no-repeat;
   -fx-background-position: center;
@@ -77,17 +77,52 @@
 /* Nút Home */
 #home {
   -fx-background-color: transparent;
-  -fx-background-image: url("../../../images/back.png");
-  -fx-background-size: 40px 40px;
+  -fx-background-image: url("../../../images/home.png");
+  -fx-background-size: 100% 100%; /* ảnh lấp đầy button */
   -fx-background-repeat: no-repeat;
-  -fx-background-position: center;
-  -fx-pref-width: 40px;
-  -fx-pref-height: 40px;
+  -fx-background-position: center; /* vẫn căn giữa nếu muốn */
+
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+
+  -fx-border-color: #00ffff;
+  -fx-border-radius: 10;
+  -fx-border-width: 2;
+  -fx-background-radius: 10;
   -fx-cursor: hand;
-  -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 0.8), 10, 0.3, 0, 0);
 }
 
 #home:hover {
+  -fx-scale-x: 1.1;
+  -fx-scale-y: 1.1;
+  -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 1), 15, 0.5, 0, 0);
+}
+
+/* Nút disabled */
+.button:disabled {
+  -fx-background-color: #333;
+  -fx-text-fill: gray;
+  -fx-border-color: #444;
+  -fx-opacity: 0.6;
+}
+#replay {
+  -fx-background-color: transparent;
+  -fx-background-image: url("../../../images/New_Game.png");
+  -fx-background-size: 100% 100%; /* ảnh lấp đầy button */
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: center; /* vẫn căn giữa nếu muốn */
+
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+
+  -fx-border-color: #00ffff;
+  -fx-border-radius: 10;
+  -fx-border-width: 2;
+  -fx-background-radius: 10;
+  -fx-cursor: hand;
+}
+
+#replay:hover {
   -fx-scale-x: 1.1;
   -fx-scale-y: 1.1;
   -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 1), 15, 0.5, 0, 0);
