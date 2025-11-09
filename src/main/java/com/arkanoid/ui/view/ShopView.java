@@ -33,7 +33,7 @@ public class ShopView {
     public void initialize() {
         currentUser = SessionManager.getCurrentUser();
         if (currentUser == null) {
-            UserManager.register("guest", "123", "");
+            UserManager.register("guest", "123");
             SessionManager.login(new SessionManager.User("guest"));
             currentUser = SessionManager.getCurrentUser();
         }

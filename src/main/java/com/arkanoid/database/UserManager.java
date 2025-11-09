@@ -4,18 +4,17 @@ import java.sql.*;
 import java.time.LocalDateTime;
 
 public class UserManager {
+    private static final DatabaseManager databaseManager = DatabaseManager.getInstance();
 
     public static class User {
         private int id;
         private String username;
-        private String email;
         private LocalDateTime createdAt;
         private LocalDateTime lastLogin;
 
-        public User(int id, String username, String email, LocalDateTime createdAt, LocalDateTime lastLogin) {
+        public User(int id, String username, LocalDateTime createdAt, LocalDateTime lastLogin) {
             this.id = id;
             this.username = username;
-            this.email = email;
             this.createdAt = createdAt;
             this.lastLogin = lastLogin;
         }
@@ -28,10 +27,6 @@ public class UserManager {
             return username;
         }
 
-        public String getEmail() {
-            return email;
-        }
-
         public LocalDateTime getCreatedAt() {
             return createdAt;
         }
@@ -41,20 +36,19 @@ public class UserManager {
         }
     }
 
-    public static User register(String username, String password, String email) {
-        String sql = "INSERT INTO users (username, password, email, created_at) VALUES (?, ?, ?, ?)";
+    public static User register(String username, String password) {
+        String sql = "INSERT INTO users (username, password, created_at) VALUES (?, ?, ?, ?)";
         String createProfileSql = "INSERT INTO player_profiles (user_id) VALUES (?)";
 
         if (usernameExists(username)) {
             return null; // User already exists
         }
 
-        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql,
+        try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
-            pstmt.setString(3, email);
-            pstmt.setString(4, LocalDateTime.now().toString());
+            pstmt.setString(3, LocalDateTime.now().toString());
 
             int affectedRows = pstmt.executeUpdate();
 
@@ -64,13 +58,13 @@ public class UserManager {
                         int userId = rs.getInt(1);
 
                         // Create default profile
-                        try (PreparedStatement profileStmt = DatabaseManager.getConnection()
+                        try (PreparedStatement profileStmt = databaseManager.getConnection()
                                 .prepareStatement(createProfileSql)) {
                             profileStmt.setInt(1, userId);
                             profileStmt.executeUpdate();
                         }
 
-                        return new User(userId, username, email, LocalDateTime.now(), null);
+                        return new User(userId, username, LocalDateTime.now(), null);
                     }
                 }
             }
@@ -81,30 +75,29 @@ public class UserManager {
     }
 
     public static User login(String username, String password) {
-        String sql = "SELECT id, username, email, created_at, last_login FROM users WHERE username = ? AND password = ?";
+        String sql = "SELECT id, username, created_at, last_login FROM users WHERE username = ? AND password = ?";
         String updateLoginSql = "UPDATE users SET last_login = ? WHERE id = ?";
 
-        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     int id = rs.getInt("id");
-                    String email = rs.getString("email");
                     LocalDateTime createdAt = LocalDateTime.parse(rs.getString("created_at"));
                     String lastLoginStr = rs.getString("last_login");
                     LocalDateTime lastLogin = lastLoginStr != null ? LocalDateTime.parse(lastLoginStr) : null;
 
                     // Update login time
-                    try (PreparedStatement updateStmt = DatabaseManager.getConnection()
+                    try (PreparedStatement updateStmt = databaseManager.getConnection()
                             .prepareStatement(updateLoginSql)) {
                         updateStmt.setString(1, LocalDateTime.now().toString());
                         updateStmt.setInt(2, id);
                         updateStmt.executeUpdate();
                     }
 
-                    return new User(id, username, email, createdAt, lastLogin);
+                    return new User(id, username, createdAt, lastLogin);
                 }
             }
         } catch (SQLException e) {
@@ -115,7 +108,7 @@ public class UserManager {
 
     public static boolean usernameExists(String username) {
         String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
-        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(sql)) {
             pstmt.setString(1, username);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {

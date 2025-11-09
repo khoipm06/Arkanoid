@@ -4,15 +4,15 @@ public class PlayerState {
     private int score;
     private int lives;
     private int level;
-    private double skillEnergy;
-    private final double maxSkillEnergy;
+    // private double skillEnergy;
+    // private final double maxSkillEnergy;
 
     public PlayerState() {
         this.score = 0;
         this.lives = 3;
         this.level = 1;
-        this.skillEnergy = 0;
-        this.maxSkillEnergy = 100;
+        // this.skillEnergy = 0;
+        // this.maxSkillEnergy = 100;
     }
 
     public int getScore() {
@@ -51,26 +51,18 @@ public class PlayerState {
         level++;
     }
 
-    public double getSkillEnergy() {
-        return skillEnergy;
-    }
+    // public double getSkillEnergy() {
+    // }
 
-    public void addSkillEnergy(double amount) {
-        skillEnergy = Math.min(maxSkillEnergy, skillEnergy + amount);
-    }
+    // public void addSkillEnergy(double amount) {
+    // }
 
-    public boolean useSkill(double cost) {
-        if (skillEnergy >= cost) {
-            skillEnergy -= cost;
-            return true;
-        }
-        return false;
-    }
+    // public boolean useSkill(double cost) {
+    // }
 
     public void reset() {
         score = 0;
         lives = 3;
         level = 1;
-        skillEnergy = 0;
     }
 }

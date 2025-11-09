@@ -32,7 +32,7 @@ public class ShopBall {
     @FXML
     public void initialize() {
         if (SessionManager.getCurrentUser() == null) {
-            UserManager.register("guest", "123", "");
+            UserManager.register("guest", "123");
             SessionManager.login(new SessionManager.User("guest"));
         }
 

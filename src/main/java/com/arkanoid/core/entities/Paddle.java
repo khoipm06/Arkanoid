@@ -3,6 +3,9 @@ package com.arkanoid.core.entities;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -141,10 +144,32 @@ public class Paddle extends MovableObject {
             gc.drawImage(gunImage, getRightGunX(), getGunY(), gunW, gunH);
         }
 
-        if (hitFlashTime > 0) { // Render hit flash overlay
-            gc.setFill(new Color(1, 1, 1, hitFlashTime / 0.2)); // White, fading opacity
-            gc.fillRect(x, y, width, height);
+        if (hitFlashTime > 0) {
+            double progress = hitFlashTime / 0.2;
+            double intensity = Math.pow(progress, 0.7);
+
+            double collisionX = x + width / 2;
+            double collisionY = y;
+
+            double maxRadius = width;
+            double currentRadius = maxRadius * (1 - progress);
+
+            RadialGradient gradient = new RadialGradient(
+                    0, 0,
+                    collisionX, collisionY,
+                    currentRadius,
+                    false,
+                    CycleMethod.NO_CYCLE,
+                    new Stop(0, Color.color(1, 1, 1, intensity)),
+                    new Stop(0.4, Color.color(0.5, 0.8, 1.0, intensity * 0.4)),
+                    new Stop(1, Color.color(0.3, 0.6, 0.9, 0)));
+
+            gc.setFill(gradient);
+            // Only fill the immediate area around the collision
+            gc.fillOval(collisionX - currentRadius, collisionY - currentRadius,
+                    currentRadius * 2, currentRadius * 2);
         }
+
     }
 
     public void setColor(Color color) {

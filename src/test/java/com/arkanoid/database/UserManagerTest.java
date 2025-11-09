@@ -9,11 +9,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserManagerTest {
 
+    private DatabaseManager databaseManager = DatabaseManager.getInstance();
+
     @BeforeEach
     void setUp() throws SQLException {
-        DatabaseManager.initialize();
+        databaseManager.initialize();
         // Clear tables before each test
-        try (Statement stmt = DatabaseManager.getConnection().createStatement()) {
+        try (Statement stmt = databaseManager.getConnection().createStatement()) {
             stmt.execute("DELETE FROM users");
             stmt.execute("DELETE FROM player_profiles");
             stmt.execute("DELETE FROM game_history");
@@ -24,10 +26,9 @@ class UserManagerTest {
     void testRegisterAndLogin() {
         String username = "testuser";
         String password = "password123";
-        String email = "test@example.com";
 
         // Test successful registration
-        UserManager.User registeredUser = UserManager.register(username, password, email);
+        UserManager.User registeredUser = UserManager.register(username, password);
         assertNotNull(registeredUser, "Registration should be successful");
         assertEquals(username, registeredUser.getUsername());
 
@@ -45,22 +46,22 @@ class UserManagerTest {
     void testRegisterDuplicateUser() {
         String username = "duplicateuser";
         String password = "password123";
-        String email = "duplicate@example.com";
 
         // First registration should succeed
-        UserManager.User registeredUser = UserManager.register(username, password, email);
+        UserManager.User registeredUser = UserManager.register(username, password);
         assertNotNull(registeredUser, "First registration should be successful");
 
         // Second registration with the same username should fail
-        UserManager.User duplicateUser = UserManager.register(username, "anotherpassword", "another@email.com");
+        UserManager.User duplicateUser = UserManager.register(username, "anotherpassword");
         assertNull(duplicateUser, "Registering a duplicate username should fail");
     }
 
     @Test
     void testUsernameExists() {
         String username = "existinguser";
-        UserManager.register(username, "password", "email@email.com");
+        UserManager.register(username, "password123");
         assertTrue(UserManager.usernameExists(username), "usernameExists should return true for an existing user");
-        assertFalse(UserManager.usernameExists("nonexistinguser"), "usernameExists should return false for a non-existing user");
+        assertFalse(UserManager.usernameExists("nonexistinguser"),
+                "usernameExists should return false for a non-existing user");
     }
 }

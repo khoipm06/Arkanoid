@@ -103,6 +103,50 @@ public class GameScene {
         }
     }
 
+    private void openSaveLoadScene() {
+        try {
+            // Load SaveLoadView FXML
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/com/arkanoid/ui/view/SaveLoadView.fxml"));
+            StackPane saveLoadRoot = loader.load();
+
+            // Get controller and initialize
+            com.arkanoid.ui.view.SaveLoadScene controller = loader.getController();
+
+            // TODO: Get actual user ID when user system is integrated
+            // For now, use default user ID
+            int userId = 1;
+
+            // Create GameSaveManager instance
+            com.arkanoid.systems.save.GameSaveManager gameSaveManager = new com.arkanoid.systems.save.impl.GameSaveManagerImpl(
+                    gameManager);
+
+            // Load CSS and create scene first
+            Scene saveLoadScene = new Scene(saveLoadRoot);
+            saveLoadScene.getStylesheets().add(
+                    getClass().getResource("/com/arkanoid/ui/saveload.css").toExternalForm());
+
+            // Initialize controller with callback to return to game
+            controller.init(
+                    gameSaveManager,
+                    gameManager,
+                    stage,
+                    userId,
+                    () -> {
+                        // Callback to return to game scene
+                        stage.setScene(scene);
+                        pauseOverlay.setVisible(true);
+                    },
+                    saveLoadRoot);
+
+            // Switch to save/load scene
+            stage.setScene(saveLoadScene);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.err.println("Failed to open Save/Load scene: " + ex.getMessage());
+        }
+    }
+
     private VBox createInfoPanel() {
         VBox info = new VBox(20);
         info.setAlignment(Pos.TOP_CENTER);
@@ -187,6 +231,13 @@ public class GameScene {
             pauseOverlay.setVisible(false);
         });
 
+        // Nút Game Saves
+        Button gameSavesBtn = new Button("Game Saves");
+        stylePauseButton(gameSavesBtn);
+        gameSavesBtn.setOnAction(e -> {
+            openSaveLoadScene();
+        });
+
         // Nút New Game
         Button newGameBtn = new Button("New Game");
         stylePauseButton(newGameBtn);
@@ -204,7 +255,7 @@ public class GameScene {
             SceneManager.switchTo("mainMenuView");
         });
 
-        overlay.getChildren().addAll(pausedText, resumeBtn, newGameBtn, quitBtn);
+        overlay.getChildren().addAll(pausedText, resumeBtn, gameSavesBtn, newGameBtn, quitBtn);
         return overlay;
     }
 
@@ -245,6 +296,22 @@ public class GameScene {
                 return;
             }
 
+            // F5 - Quick save (T062)
+            if (key == KeyCode.F5) {
+                if (gameManager.getCurrentState() == GameManager.GameState.PAUSED) {
+                    try {
+                        com.arkanoid.systems.save.GameSaveManager gameSaveManager = new com.arkanoid.systems.save.impl.GameSaveManagerImpl(
+                                gameManager);
+                        int userId = 1; // TODO: Get from SessionManager
+                        gameSaveManager.saveCurrentGameWithAutoName(userId, null);
+                        System.out.println("Quick save created (F5)");
+                    } catch (Exception e) {
+                        System.err.println("Quick save failed: " + e.getMessage());
+                    }
+                }
+                return;
+            }
+
             if (key == KeyCode.SPACE) {
                 for (Ball ball : gameManager.getBalls()) {
                     if (ball.isAttachedToPaddle()) {
@@ -276,7 +343,6 @@ public class GameScene {
                 handleInput(deltaTime);
                 update(deltaTime);
                 render();
-
             }
         };
 

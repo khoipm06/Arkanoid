@@ -12,12 +12,13 @@ import java.io.IOException;
 
 public class GameApplication extends Application {
     private static final SoundManager soundManager = SoundManager.getInstance();
+    private static final DatabaseManager databaseManager = DatabaseManager.getInstance();
     public static final double GAME_WIDTH = 1000;
     public static final double GAME_HEIGHT = 650;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        DatabaseManager.initialize();
+        databaseManager.initialize();
         SceneManager.setStage(primaryStage);
         SceneManager.loadScene("mainMenuView", "MainMenuView.fxml");
         SceneManager.loadScene("modeSelectView", "ModeSelectView.fxml");
@@ -28,13 +29,12 @@ public class GameApplication extends Application {
         SceneManager.loadScene("signIn", "SignIn.fxml");
         SceneManager.loadScene("signUpView", "SignUpView.fxml");
         SceneManager.loadScene("map", "Map.fxml");
-        SceneManager.loadScene("pause", "Pause.fxml");
+        // SceneManager.loadScene("pause", "Pause.fxml");
         SceneManager.loadScene("shopBall", "ShopBall.fxml");
         SceneManager.loadScene("shopPaddle", "ShopPaddle.fxml");
         SceneManager.loadScene("gameOver", "GameOver.fxml");
         SceneManager.loadScene("winLevel", "WinLevel.fxml");
         SceneManager.loadScene("leaderboard", "Leaderboard.fxml");
-        SceneManager.loadScene("twoPlayerGame", "TwoPlayerGame.fxml");
 
         SceneManager.switchTo("mainMenuView");
 

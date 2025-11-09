@@ -43,7 +43,7 @@ public class SignUpView {
             return;
         }
 
-        if (UserManager.register(username, password, "") == null) {
+        if (UserManager.register(username, password) == null) {
             System.out.println("Tên người chơi đã tồn tại!");
             return;
         }

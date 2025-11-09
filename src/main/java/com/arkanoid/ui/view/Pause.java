@@ -14,6 +14,8 @@ public class Pause {
     @FXML
     private Button newGameButton;
     @FXML
+    private Button gameSavesButton;
+    @FXML
     private Button resumeButton;
     @FXML
     private Button quitButton;
@@ -42,6 +44,13 @@ public class Pause {
         soundManager.playSound("Accept.wav");
         gameManager.resume();
         gameScene.hidePauseOverlay();
+    }
+
+    @FXML
+    public void onGameSavesClick(MouseEvent event) {
+        soundManager.playSound("Accept.wav");
+        // TODO: Open SaveLoadScene
+        System.out.println("Game Saves clicked - SaveLoadScene integration pending");
     }
 
     @FXML

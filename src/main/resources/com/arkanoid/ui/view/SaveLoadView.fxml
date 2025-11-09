@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane prefHeight="600.0" prefWidth="800.0" styleClass="save-load-root"
+    xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="com.arkanoid.ui.view.SaveLoadScene">
+
+    <!-- Right Panel for Save/Load Interface -->
+    <VBox alignment="TOP_CENTER" spacing="15.0" styleClass="save-load-panel"
+        StackPane.alignment="CENTER_RIGHT" prefWidth="400.0">
+        <padding>
+            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+        </padding>
+
+        <!-- Title -->
+        <Label text="Game Saves" styleClass="title-label" />
+
+        <!-- Save Count -->
+        <Label fx:id="saveCountLabel" text="0/100 saves" styleClass="save-count-label" />
+
+        <!-- Save New Game Button -->
+        <Button fx:id="saveNewButton" text="Save New Game"
+            styleClass="primary-button" prefWidth="200.0"
+            onAction="#onSaveNewGame" />
+
+        <!-- ListView for Saved Games -->
+        <ListView fx:id="saveListView" styleClass="save-list-view"
+            VBox.vgrow="ALWAYS" prefHeight="300.0" />
+
+        <!-- Action Buttons -->
+        <HBox spacing="10.0" alignment="CENTER">
+            <Button fx:id="loadButton" text="Load"
+                styleClass="secondary-button" prefWidth="90.0"
+                onAction="#onLoadGame" disable="true" />
+            <Button fx:id="deleteButton" text="Delete"
+                styleClass="danger-button" prefWidth="90.0"
+                onAction="#onDeleteGame" disable="true" />
+        </HBox>
+
+        <!-- Back Button -->
+        <Button fx:id="backButton" text="Back"
+            styleClass="back-button" prefWidth="120.0"
+            onAction="#onBack" />
+    </VBox>
+</StackPane>

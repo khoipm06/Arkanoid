@@ -13,6 +13,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
     protected int row;
     protected int col;
     protected Image texture;
+    protected String texturePath;
 
     public BaseBrick(double x, double y, double width, double height,
             int hitPoints, Color color, int row, int col) {
@@ -29,6 +30,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
         this.powerUpChance = 0.5;
         this.col = col;
         this.row = row;
+        this.texturePath = texturePath;
         if (texturePath != null) {
             this.texture = new Image(getClass().getResourceAsStream(texturePath));
         }
@@ -111,6 +113,10 @@ public abstract class BaseBrick extends GameObject implements Brick {
 
     public int getCol() {
         return col;
+    }
+
+    public String getTexturePath() {
+        return texturePath;
     }
 
     @Override

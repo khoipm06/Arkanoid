@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerProfileManager {
+    private static final DatabaseManager databaseManager = DatabaseManager.getInstance();
 
     public static class ProfileData {
         public int coins;
@@ -45,7 +46,7 @@ public class PlayerProfileManager {
                     ORDER BY pp.high_score DESC
                 """;
 
-        try (Statement stmt = DatabaseManager.getConnection().createStatement();
+        try (Statement stmt = databaseManager.getConnection().createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
@@ -62,7 +63,7 @@ public class PlayerProfileManager {
 
     public static ProfileData getProfile(int userId) {
         String sql = "SELECT * FROM player_profiles WHERE user_id = ?";
-        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(sql)) {
             pstmt.setInt(1, userId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -87,7 +88,7 @@ public class PlayerProfileManager {
 
     public static void updateHighScore(int userId, int highScore) {
         String sql = "UPDATE player_profiles SET high_score = ? WHERE user_id = ? AND high_score < ?";
-        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(sql)) {
             pstmt.setInt(1, highScore);
             pstmt.setInt(2, userId);
             pstmt.setInt(3, highScore);
@@ -113,7 +114,7 @@ public class PlayerProfileManager {
     }
 
     private static void executeUpdate(String sql, Object... params) {
-        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(sql)) {
             for (int i = 0; i < params.length; i++) {
                 pstmt.setObject(i + 1, params[i]);
             }

@@ -1,32 +1,87 @@
 package com.arkanoid.database;
 
+import com.arkanoid.database.exception.DatabaseException;
+
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
-public class DatabaseManager {
+/**
+ * Improved DatabaseManager with connection pooling, transaction support, and
+ * proper lifecycle management.
+ * Singleton pattern with thread-safe initialization.
+ */
+public class DatabaseManager implements AutoCloseable {
+    private static volatile DatabaseManager instance;
     private static final String DB_URL = "jdbc:sqlite:data/arkanoid.db";
-    private static Connection connection;
+    private static final int POOL_SIZE = 5;
 
-    public static void initialize() {
+    private final List<Connection> connectionPool;
+    private final List<Boolean> connectionStatus;
+    private boolean initialized = false;
+
+    private DatabaseManager() {
+        this.connectionPool = new ArrayList<>(POOL_SIZE);
+        this.connectionStatus = new ArrayList<>(POOL_SIZE);
+    }
+
+    public static DatabaseManager getInstance() {
+        if (instance == null) {
+            synchronized (DatabaseManager.class) {
+                if (instance == null) {
+                    instance = new DatabaseManager();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public synchronized void initialize() {
+        if (initialized) {
+            return;
+        }
+
         try {
-            new java.io.File("data").mkdirs();
-            connection = DriverManager.getConnection(DB_URL);
-            createTables();
-            System.out.println("Database initialized successfully");
+            // Ensure directory exists
+            String dbPath = DB_URL.replaceFirst("^jdbc:sqlite:", "");
+            File dbFile = new File(dbPath);
+            File parentDir = dbFile.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.mkdirs();
+            }
+
+            // Initialize connection pool
+            for (int i = 0; i < POOL_SIZE; i++) {
+                Connection conn = DriverManager.getConnection(DB_URL);
+                conn.setAutoCommit(true);
+                connectionPool.add(conn);
+                connectionStatus.add(false); // false = available
+            }
+
+            // Create tables using a connection from the pool
+            try (Connection conn = getConnection()) {
+                createTables(conn);
+            }
+
+            initialized = true;
+            System.out.println("Database initialized successfully with connection pool");
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("Failed to initialize database", e);
         }
     }
 
-    private static void createTables() throws SQLException {
+    private void createTables(Connection conn) throws SQLException {
         String createUsersTable = """
                     CREATE TABLE IF NOT EXISTS users (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         username TEXT UNIQUE NOT NULL,
                         password TEXT NOT NULL,
-                        email TEXT,
                         created_at TEXT NOT NULL,
                         last_login TEXT
                     )
@@ -67,25 +122,139 @@ public class DatabaseManager {
                     )
                 """;
 
-        try (Statement stmt = connection.createStatement()) {
+        String createGameSavesTable = """
+                    CREATE TABLE IF NOT EXISTS game_saves (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        save_name TEXT NOT NULL,
+                        level_number INTEGER NOT NULL,
+                        score INTEGER NOT NULL,
+                        lives INTEGER NOT NULL,
+                        elapsed_time_seconds INTEGER NOT NULL,
+                        game_state_json TEXT NOT NULL,
+                        thumbnail_data BLOB,
+                        created_at TEXT NOT NULL,
+                        FOREIGN KEY (user_id) REFERENCES users(id)
+                    )
+                """;
+
+        try (Statement stmt = conn.createStatement()) {
             stmt.execute(createUsersTable);
             stmt.execute(createPlayerProfilesTable);
             stmt.execute(createInventoryTable);
             stmt.execute(createGameHistoryTable);
+            stmt.execute(createGameSavesTable);
         }
     }
 
-    public static Connection getConnection() {
-        return connection;
-    }
-
-    public static void close() {
-        try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
+    /**
+     * Get a connection from the pool. Caller must return it via releaseConnection()
+     * or use executeInTransaction/executeQuery which handle it automatically.
+     */
+    public synchronized Connection getConnection() throws SQLException {
+        for (int i = 0; i < POOL_SIZE; i++) {
+            if (!connectionStatus.get(i)) {
+                connectionStatus.set(i, true);
+                return connectionPool.get(i);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+        // If pool exhausted, create a temporary connection
+        System.err.println("Warning: Connection pool exhausted, creating temporary connection");
+        return DriverManager.getConnection(DB_URL);
+    }
+
+    /**
+     * Release a connection back to the pool
+     */
+    public synchronized void releaseConnection(Connection conn) {
+        int index = connectionPool.indexOf(conn);
+        if (index >= 0) {
+            connectionStatus.set(index, false);
+        } else {
+            // Temporary connection, close it
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing temporary connection: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Execute code within a transaction. Automatically commits on success, rolls
+     * back on exception.
+     */
+    public <T> T executeInTransaction(Function<Connection, T> operation) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);
+
+            T result = operation.apply(conn);
+
+            conn.commit();
+            return result;
+        } catch (Exception e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                }
+            }
+            throw new DatabaseException("Transaction failed", e);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException e) {
+                    System.err.println("Error resetting auto-commit: " + e.getMessage());
+                }
+                releaseConnection(conn);
+            }
+        }
+    }
+
+    /**
+     * Execute a query operation (read-only, no transaction needed)
+     */
+    public <T> T executeQuery(Function<Connection, T> operation) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            return operation.apply(conn);
+        } catch (SQLException e) {
+            throw new DatabaseException("Query failed", e);
+        } finally {
+            if (conn != null) {
+                releaseConnection(conn);
+            }
+        }
+    }
+
+    /**
+     * Execute an update operation within a transaction
+     */
+    public void executeUpdate(Consumer<Connection> operation) {
+        executeInTransaction(conn -> {
+            operation.accept(conn);
+            return null;
+        });
+    }
+
+    @Override
+    public void close() {
+        for (Connection conn : connectionPool) {
+            try {
+                if (conn != null && !conn.isClosed()) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                System.err.println("Error closing connection: " + e.getMessage());
+            }
+        }
+        connectionPool.clear();
+        connectionStatus.clear();
+        initialized = false;
     }
 }

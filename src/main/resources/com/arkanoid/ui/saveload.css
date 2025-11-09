@@ -1,0 +1,204 @@
+/* Save/Load Scene Styles */
+
+.save-load-root {
+  -fx-background-color: rgba(0, 0, 0, 0.85);
+}
+
+.save-load-panel {
+  -fx-background-color: linear-gradient(to bottom, #1a1a2e 0%, #16213e 100%);
+  -fx-background-radius: 15px;
+  -fx-border-color: #0f3460;
+  -fx-border-width: 2px;
+  -fx-border-radius: 15px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 20, 0, 0, 5);
+}
+
+.title-label {
+  -fx-font-size: 28px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #e94560;
+  -fx-effect: dropshadow(gaussian, rgba(233, 69, 96, 0.5), 5, 0, 0, 0);
+}
+
+.save-count-label {
+  -fx-font-size: 14px;
+  -fx-text-fill: #a8dadc;
+}
+
+/* Button Styles */
+.primary-button {
+  -fx-background-color: linear-gradient(to bottom, #e94560 0%, #c93551 100%);
+  -fx-text-fill: white;
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-background-radius: 8px;
+  -fx-cursor: hand;
+  -fx-padding: 10px 20px;
+  -fx-effect: dropshadow(gaussian, rgba(233, 69, 96, 0.4), 5, 0, 0, 2);
+}
+
+.primary-button:hover {
+  -fx-background-color: linear-gradient(to bottom, #ff5577 0%, #e94560 100%);
+  -fx-scale-x: 1.05;
+  -fx-scale-y: 1.05;
+}
+
+.primary-button:pressed {
+  -fx-background-color: linear-gradient(to bottom, #c93551 0%, #a82a42 100%);
+  -fx-translate-y: 2px;
+}
+
+.secondary-button {
+  -fx-background-color: linear-gradient(to bottom, #0f3460 0%, #0a2647 100%);
+  -fx-text-fill: white;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-background-radius: 8px;
+  -fx-cursor: hand;
+  -fx-padding: 8px 15px;
+  -fx-effect: dropshadow(gaussian, rgba(15, 52, 96, 0.4), 5, 0, 0, 2);
+}
+
+.secondary-button:hover {
+  -fx-background-color: linear-gradient(to bottom, #144272 0%, #0f3460 100%);
+  -fx-scale-x: 1.05;
+  -fx-scale-y: 1.05;
+}
+
+.secondary-button:pressed {
+  -fx-background-color: linear-gradient(to bottom, #0a2647 0%, #051d3b 100%);
+  -fx-translate-y: 2px;
+}
+
+.danger-button {
+  -fx-background-color: linear-gradient(to bottom, #d62828 0%, #b81414 100%);
+  -fx-text-fill: white;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-background-radius: 8px;
+  -fx-cursor: hand;
+  -fx-padding: 8px 15px;
+  -fx-effect: dropshadow(gaussian, rgba(214, 40, 40, 0.4), 5, 0, 0, 2);
+}
+
+.danger-button:hover {
+  -fx-background-color: linear-gradient(to bottom, #f44336 0%, #d62828 100%);
+  -fx-scale-x: 1.05;
+  -fx-scale-y: 1.05;
+}
+
+.danger-button:pressed {
+  -fx-background-color: linear-gradient(to bottom, #b81414 0%, #9a0f0f 100%);
+  -fx-translate-y: 2px;
+}
+
+.back-button {
+  -fx-background-color: linear-gradient(to bottom, #457b9d 0%, #1d3557 100%);
+  -fx-text-fill: white;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-background-radius: 8px;
+  -fx-cursor: hand;
+  -fx-padding: 8px 15px;
+}
+
+.back-button:hover {
+  -fx-background-color: linear-gradient(to bottom, #5a9bbf 0%, #457b9d 100%);
+}
+
+.back-button:pressed {
+  -fx-background-color: linear-gradient(to bottom, #1d3557 0%, #0d1b2a 100%);
+  -fx-translate-y: 2px;
+}
+
+/* Disabled button state */
+.button:disabled {
+  -fx-opacity: 0.4;
+  -fx-cursor: default;
+}
+
+/* ListView Styles */
+.save-list-view {
+  -fx-background-color: #0d1b2a;
+  -fx-background-radius: 8px;
+  -fx-border-color: #0f3460;
+  -fx-border-width: 1px;
+  -fx-border-radius: 8px;
+}
+
+.save-list-view .list-cell {
+  -fx-background-color: transparent;
+  -fx-text-fill: #a8dadc;
+  -fx-padding: 10px;
+  -fx-border-width: 0 0 1 0;
+  -fx-border-color: #0f3460;
+}
+
+.save-list-view .list-cell:selected {
+  -fx-background-color: #0f3460;
+  -fx-text-fill: white;
+}
+
+.save-list-view .list-cell:hover {
+  -fx-background-color: rgba(15, 52, 96, 0.3);
+}
+
+.save-list-view .list-cell:empty {
+  -fx-background-color: transparent;
+  -fx-border-width: 0;
+}
+
+/* Scrollbar Styles */
+.save-list-view .scroll-bar:vertical {
+  -fx-background-color: #0d1b2a;
+}
+
+.save-list-view .scroll-bar:vertical .thumb {
+  -fx-background-color: #0f3460;
+  -fx-background-radius: 5px;
+}
+
+.save-list-view .scroll-bar:vertical .thumb:hover {
+  -fx-background-color: #144272;
+}
+
+.save-list-view .scroll-bar:vertical .increment-button,
+.save-list-view .scroll-bar:vertical .decrement-button {
+  -fx-background-color: transparent;
+}
+
+/* Custom GameSave Cell Styles */
+.game-save-cell {
+  -fx-background-color: transparent;
+  -fx-padding: 8px;
+  -fx-spacing: 12px;
+}
+
+.game-save-cell:hover {
+  -fx-background-color: rgba(15, 52, 96, 0.3);
+  -fx-background-radius: 5px;
+}
+
+.save-thumbnail {
+  -fx-border-color: #0f3460;
+  -fx-border-width: 2px;
+  -fx-border-radius: 4px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 3, 0, 0, 1);
+}
+
+.save-name {
+  -fx-text-fill: #e94560;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+}
+
+.save-metadata {
+  -fx-text-fill: #a8dadc;
+  -fx-font-size: 12px;
+}
+
+.save-timestamp {
+  -fx-text-fill: #888888;
+  -fx-font-size: 11px;
+  -fx-font-style: italic;
+}
