@@ -1,0 +1,18 @@
+.root {
+    -fx-font-family: "Verdana";
+}
+
+#winnerLabel {
+    -fx-font-size: 36px;
+    -fx-text-fill: #4CAF50;
+    -fx-font-weight: bold;
+}
+
+#player1ScoreLabel, #player2ScoreLabel {
+    -fx-font-size: 24px;
+    -fx-text-fill: #e0e0e0;
+}
+
+.vbox {
+    -fx-background-color: #121212;
+}

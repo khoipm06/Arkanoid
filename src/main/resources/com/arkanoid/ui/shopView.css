@@ -1,6 +1,6 @@
     #shopRoot {
         -fx-background-color: linear-gradient(to bottom right, #202020, #000033);
-        -fx-background-image: url("/images/shop_bg.png"); /* ảnh nền của shop */
+        -fx-background-image: url("../../../images/shop_bg.png"); /* ảnh nền của shop */
         -fx-background-repeat: no-repeat;
         -fx-background-size: cover; /* ảnh phủ toàn màn */
         -fx-background-position: center;
@@ -9,7 +9,7 @@
     #backButton {
         -fx-pref-width: 50px;
         -fx-pref-height: 50px;
-        -fx-background-image: url("/images/back.png");
+        -fx-background-image: url("../../../images/back.png");
         -fx-background-size: 50px 50px;
         -fx-background-color: transparent;
         -fx-border-color: transparent;
@@ -54,7 +54,7 @@
     #ballButton {
         -fx-pref-width: 150px;
         -fx-pref-height: 100px;
-        -fx-background-image: url("/images/Ball_Shop.png");
+        -fx-background-image: url("../../../images/Ball_Shop.png");
         -fx-background-size: 150px 100px; /* đúng kích thước ảnh */
         -fx-background-repeat: no-repeat;
         -fx-background-position: center;
@@ -64,7 +64,7 @@
     #paddleButton {
         -fx-pref-width: 150px;
         -fx-pref-height: 100px;
-        -fx-background-image: url("/images/Paddle_Shop.png");
+        -fx-background-image: url("../../../images/Paddle_Shop.png");
         -fx-background-size: 150px 100px;
         -fx-background-repeat: no-repeat;
         -fx-background-position: center;
