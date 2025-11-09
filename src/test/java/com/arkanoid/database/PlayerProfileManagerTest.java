@@ -15,7 +15,7 @@ class PlayerProfileManagerTest {
 
     @BeforeEach
     void setUp() throws SQLException {
-        DatabaseManager.initialize();
+        dbManager.initialize();
         try (Statement stmt = dbManager.getConnection().createStatement()) {
             stmt.execute("DELETE FROM users");
             stmt.execute("DELETE FROM player_profiles");

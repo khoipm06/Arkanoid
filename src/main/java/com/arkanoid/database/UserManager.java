@@ -37,7 +37,7 @@ public class UserManager {
     }
 
     public static User register(String username, String password) {
-        String sql = "INSERT INTO users (username, password, created_at) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO users (username, password, created_at) VALUES (?, ?, ?)";
         String createProfileSql = "INSERT INTO player_profiles (user_id) VALUES (?)";
 
         if (usernameExists(username)) {

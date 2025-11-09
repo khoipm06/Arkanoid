@@ -4,7 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class Bullet extends GameObject {
-    private double speedY;
+    private final double speedY;
     private Image bulletImage;
 
     public Bullet(double x, double y, double width, double height, double speedY) {

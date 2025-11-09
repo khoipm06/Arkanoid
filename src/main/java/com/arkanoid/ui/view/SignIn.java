@@ -43,7 +43,7 @@ public class SignIn {
         }
         System.out.println("Đăng nhập thành công!");
         System.out.println(" Hello username: " + username);
-        SessionManager.login(new SessionManager.User(user.getUsername()));
+        SessionManager.login(new SessionManager.User(user.getId(), user.getUsername()));
 
         SceneManager.switchTo("mainMenuView");
     }

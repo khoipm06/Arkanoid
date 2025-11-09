@@ -17,6 +17,10 @@ public class SceneManager {
         mainStage = stage;
     }
 
+    public static Stage getStage() {
+        return mainStage;
+    }
+
     public static void loadScene(String name, String fxmlPath) throws IOException {
         FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource("/com/arkanoid/ui/view/" + fxmlPath));
         Scene scene = new Scene(loader.load());

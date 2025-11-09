@@ -54,6 +54,47 @@ public class LevelManager {
         return bricks;
     }
 
+    /**
+     * Loads the special multiplayer level layout from level_multiplayer.json
+     * 
+     * @return List of bricks for two-player competitive mode
+     */
+    public List<Brick> loadMultiplayerLevel() {
+        List<Brick> bricks = new ArrayList<>();
+        try (InputStream inputStream = getClass().getResourceAsStream("/levels/level_multiplayer.json")) {
+            if (inputStream == null) {
+                System.err.println("ERROR: Could not find level_multiplayer.json");
+                return bricks;
+            }
+            JsonObject json = JsonParser.parseReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).getAsJsonObject();
+            JsonArray brickArray = json.getAsJsonArray("bricks");
+
+            for (JsonElement element : brickArray) {
+                JsonObject brickData = element.getAsJsonObject();
+                double x = brickData.get("x").getAsDouble();
+                double y = brickData.get("y").getAsDouble();
+                double brickWidth = brickData.get("width").getAsDouble();
+                double brickHeight = brickData.get("height").getAsDouble();
+                double startX = 50;
+                double startY = 50;
+                double gap = 5;
+
+                int row = (int) ((y - startY) / (brickHeight + gap));
+                int col = (int) ((x - startX) / (brickWidth + gap));
+
+                Brick brick = entityFactory.createBrick(brickData, row, col);
+                if (brick != null) {
+                    bricks.add(brick);
+                }
+            }
+            System.out.println("Loaded " + bricks.size() + " bricks for multiplayer level");
+        } catch (Exception e) {
+            System.err.println("ERROR loading multiplayer level: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return bricks;
+    }
+
     private List<Brick> parseLevelData(JsonObject levelData) {
         List<Brick> bricks = new ArrayList<>();
         JsonArray bricksArray = levelData.getAsJsonArray("bricks");

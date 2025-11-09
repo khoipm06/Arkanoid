@@ -5,19 +5,21 @@ import com.arkanoid.systems.GameManager;
 import com.arkanoid.systems.save.GameSaveManager;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.components.ToastNotification;
+import com.arkanoid.ui.GameScene;
 import com.google.gson.JsonSyntaxException;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import javafx.scene.image.WritableImage;
 import javafx.stage.Stage;
 
 import java.util.Optional;
 
 /**
- * Controller for the Save/Load scene.
- * Handles save game creation, loading, and deletion.
+ * Controller for the Save/Load scene. Handles save game creation, loading, and
+ * deletion.
  */
 public class SaveLoadScene {
     private static final SoundManager soundManager = SoundManager.getInstance();
@@ -46,18 +48,20 @@ public class SaveLoadScene {
     private Runnable onBackCallback;
     private int currentUserId;
     private StackPane rootPane;
+    private GameScene gameScene;
 
     /**
      * Initialize the controller with required dependencies.
      */
-    public void init(GameSaveManager gameSaveManager, GameManager gameManager, Stage stage,
-            int userId, Runnable onBackCallback, StackPane rootPane) {
+    public void init(GameSaveManager gameSaveManager, GameManager gameManager, Stage stage, int userId,
+            Runnable onBackCallback, StackPane rootPane, GameScene gameScene) {
         this.gameSaveManager = gameSaveManager;
         this.gameManager = gameManager;
         this.stage = stage;
         this.currentUserId = userId;
         this.onBackCallback = onBackCallback;
         this.rootPane = rootPane;
+        this.gameScene = gameScene;
 
         // Set custom cell factory for visual thumbnails (T045)
         saveListView.setCellFactory(lv -> new GameSaveListCell());
@@ -77,26 +81,26 @@ public class SaveLoadScene {
     }
 
     /**
-     * Sets up keyboard shortcuts for the save/load scene.
-     * DELETE key - Delete selected save
+     * Sets up keyboard shortcuts for the save/load scene. DELETE key - Delete
+     * selected save
      */
     private void setupKeyboardShortcuts() {
         saveListView.setOnKeyPressed(event -> {
             switch (event.getCode()) {
-                case DELETE:
-                    if (!deleteButton.isDisabled()) {
-                        onDeleteGame(new ActionEvent());
-                    }
-                    event.consume();
-                    break;
-                case ENTER:
-                    if (!loadButton.isDisabled()) {
-                        onLoadGame(new ActionEvent());
-                    }
-                    event.consume();
-                    break;
-                default:
-                    break;
+            case DELETE:
+                if (!deleteButton.isDisabled()) {
+                    onDeleteGame(new ActionEvent());
+                }
+                event.consume();
+                break;
+            case ENTER:
+                if (!loadButton.isDisabled()) {
+                    onLoadGame(new ActionEvent());
+                }
+                event.consume();
+                break;
+            default:
+                break;
             }
         });
     }
@@ -138,9 +142,17 @@ public class SaveLoadScene {
             }
 
             try {
-                // TODO: Capture thumbnail from game canvas
-                // For now, pass null - will be implemented in Phase 3
-                gameSaveManager.saveCurrentGame(currentUserId, saveName, null);
+                // Capture thumbnail from game canvas
+                WritableImage canvasSnapshot = null;
+                if (gameScene != null) {
+                    try {
+                        canvasSnapshot = gameScene.captureCanvasSnapshot();
+                    } catch (Exception thumbEx) {
+                        System.err.println("Failed to capture thumbnail: " + thumbEx.getMessage());
+                        // Continue without thumbnail
+                    }
+                }
+                gameSaveManager.saveCurrentGame(currentUserId, saveName, canvasSnapshot);
                 refreshSaveList();
                 showSuccess("Game saved successfully!");
             } catch (Exception e) {
@@ -160,12 +172,17 @@ public class SaveLoadScene {
         }
 
         try {
-            // Load the game (T033-T035: includes validation)
             gameSaveManager.loadGame(selectedSave.getId());
+            if (gameScene != null) {
+                javafx.application.Platform.runLater(() -> {
+                    gameScene.renderOnce();
+                });
+            }
+
             showSuccess("Game loaded successfully!");
 
             // Return to game (T037)
-            onBack(event);
+            // onBack(event);
         } catch (JsonSyntaxException e) {
             // T038: Handle corrupted save files
             showError("Save file is corrupted");

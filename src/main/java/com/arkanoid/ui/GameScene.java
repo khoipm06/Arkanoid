@@ -13,6 +13,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -113,9 +114,10 @@ public class GameScene {
             // Get controller and initialize
             com.arkanoid.ui.view.SaveLoadScene controller = loader.getController();
 
-            // TODO: Get actual user ID when user system is integrated
-            // For now, use default user ID
-            int userId = 1;
+            // Get user ID from SessionManager
+            int userId = SessionManager.getCurrentUser() != null 
+                ? SessionManager.getCurrentUser().getId() 
+                : 1; // Fallback to 1 if not logged in
 
             // Create GameSaveManager instance
             com.arkanoid.systems.save.GameSaveManager gameSaveManager = new com.arkanoid.systems.save.impl.GameSaveManagerImpl(
@@ -137,7 +139,8 @@ public class GameScene {
                         stage.setScene(scene);
                         pauseOverlay.setVisible(true);
                     },
-                    saveLoadRoot);
+                    saveLoadRoot,
+                    this); // Pass GameScene reference for canvas snapshot
 
             // Switch to save/load scene
             stage.setScene(saveLoadScene);
@@ -302,8 +305,11 @@ public class GameScene {
                     try {
                         com.arkanoid.systems.save.GameSaveManager gameSaveManager = new com.arkanoid.systems.save.impl.GameSaveManagerImpl(
                                 gameManager);
-                        int userId = 1; // TODO: Get from SessionManager
-                        gameSaveManager.saveCurrentGameWithAutoName(userId, null);
+                        int userId = SessionManager.getCurrentUser() != null 
+                            ? SessionManager.getCurrentUser().getId() 
+                            : 1; // Fallback to 1 if not logged in
+                        WritableImage snapshot = captureCanvasSnapshot();
+                        gameSaveManager.saveCurrentGameWithAutoName(userId, snapshot);
                         System.out.println("Quick save created (F5)");
                     } catch (Exception e) {
                         System.err.println("Quick save failed: " + e.getMessage());
@@ -444,5 +450,42 @@ public class GameScene {
 
     public Scene getScene() {
         return scene;
+    }
+
+    /**
+     * Get the game canvas for thumbnail capture.
+     * 
+     * @return The game canvas
+     */
+    public Canvas getCanvas() {
+        return canvas;
+    }
+
+    /**
+     * Captures a snapshot of the current game canvas as WritableImage.
+     * Must be called on JavaFX Application Thread.
+     * 
+     * @return WritableImage snapshot of the canvas
+     */
+    public WritableImage captureCanvasSnapshot() {
+        WritableImage snapshot = new WritableImage(
+                (int) canvas.getWidth(),
+                (int) canvas.getHeight());
+        canvas.snapshot(null, snapshot);
+        return snapshot;
+    }
+
+    public void renderOnce() {
+        render();
+        updateUI();
+    }
+
+    private void updateUI() {
+        if (gameManager.getPlayer() != null) {
+            PlayerState state = gameManager.getPlayer().getState();
+            scoreLabel.setText(String.valueOf(state.getScore()));
+            livesLabel.setText(String.valueOf(state.getLives()));
+        }
+        levelLabel.setText(String.valueOf(gameManager.getLevelNumber()));
     }
 }

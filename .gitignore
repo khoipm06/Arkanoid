@@ -89,6 +89,7 @@ http-client.private.env.json
 
 .DS_Store
 
+logs/**
 data/*.db
 data/*.db-journal
 assets/**

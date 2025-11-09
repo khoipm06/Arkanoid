@@ -145,7 +145,7 @@ public class Paddle extends MovableObject {
         }
 
         if (hitFlashTime > 0) {
-            double progress = hitFlashTime / 0.2;
+            double progress = hitFlashTime / 0.3;
             double intensity = Math.pow(progress, 0.7);
 
             double collisionX = x + width / 2;
@@ -214,7 +214,7 @@ public class Paddle extends MovableObject {
     }
 
     public double getLeftGunX() {
-        return x + 1; // offset nhỏ để đạn không nằm sát viền
+        return x + 2; // prevent the left gun is in the left margin
     }
 
     public double getRightGunX() {
@@ -222,7 +222,7 @@ public class Paddle extends MovableObject {
     }
 
     public double getGunY() {
-        return y - 10; // phía trên paddle
+        return y - 10; // above the paddle
     }
 
     public void triggerHitFlash(double duration) {

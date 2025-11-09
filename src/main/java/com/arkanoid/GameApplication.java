@@ -21,7 +21,7 @@ public class GameApplication extends Application {
         databaseManager.initialize();
         SceneManager.setStage(primaryStage);
         SceneManager.loadScene("mainMenuView", "MainMenuView.fxml");
-        SceneManager.loadScene("modeSelectView", "ModeSelectView.fxml");
+        // SceneManager.loadScene("modeSelectView", "ModeSelectView.fxml");
         SceneManager.loadScene("shopView", "ShopView.fxml");
         SceneManager.loadScene("settingView", "SettingView.fxml");
         SceneManager.loadScene("profileScreen", "ProfileScreen.fxml");
@@ -29,7 +29,6 @@ public class GameApplication extends Application {
         SceneManager.loadScene("signIn", "SignIn.fxml");
         SceneManager.loadScene("signUpView", "SignUpView.fxml");
         SceneManager.loadScene("map", "Map.fxml");
-        // SceneManager.loadScene("pause", "Pause.fxml");
         SceneManager.loadScene("shopBall", "ShopBall.fxml");
         SceneManager.loadScene("shopPaddle", "ShopPaddle.fxml");
         SceneManager.loadScene("gameOver", "GameOver.fxml");

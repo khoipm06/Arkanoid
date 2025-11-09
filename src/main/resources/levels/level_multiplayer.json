@@ -1,0 +1,566 @@
+{
+    "levelNumber": 0,
+    "description": "Symmetrical two-player layout - competitive balance",
+    "bricks": [
+        {
+            "type": "strong",
+            "x": 10,
+            "y": 200,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 78.5,
+            "y": 200,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 147,
+            "y": 200,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 215.5,
+            "y": 200,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 284,
+            "y": 200,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 352.5,
+            "y": 200,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 421,
+            "y": 200,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 489.5,
+            "y": 200,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 558,
+            "y": 200,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 626.5,
+            "y": 200,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 10,
+            "y": 225,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 78.5,
+            "y": 225,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 147,
+            "y": 225,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 215.5,
+            "y": 225,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 284,
+            "y": 225,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 352.5,
+            "y": 225,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 421,
+            "y": 225,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 489.5,
+            "y": 225,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 558,
+            "y": 225,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 626.5,
+            "y": 225,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 10,
+            "y": 250,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 78.5,
+            "y": 250,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 147,
+            "y": 250,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 215.5,
+            "y": 250,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 284,
+            "y": 250,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 352.5,
+            "y": 250,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 421,
+            "y": 250,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 489.5,
+            "y": 250,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 558,
+            "y": 250,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 626.5,
+            "y": 250,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 10,
+            "y": 275,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 78.5,
+            "y": 275,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 147,
+            "y": 275,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 215.5,
+            "y": 275,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 284,
+            "y": 275,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 352.5,
+            "y": 275,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 421,
+            "y": 275,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 489.5,
+            "y": 275,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 558,
+            "y": 275,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 626.5,
+            "y": 275,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 10,
+            "y": 300,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 78.5,
+            "y": 300,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 147,
+            "y": 300,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 215.5,
+            "y": 300,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 284,
+            "y": 300,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 352.5,
+            "y": 300,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 421,
+            "y": 300,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 489.5,
+            "y": 300,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 558,
+            "y": 300,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "weak",
+            "x": 626.5,
+            "y": 300,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 10,
+            "y": 325,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 78.5,
+            "y": 325,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 147,
+            "y": 325,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 215.5,
+            "y": 325,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 284,
+            "y": 325,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 352.5,
+            "y": 325,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 421,
+            "y": 325,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 489.5,
+            "y": 325,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 558,
+            "y": 325,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 626.5,
+            "y": 325,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 10,
+            "y": 350,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 78.5,
+            "y": 350,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 147,
+            "y": 350,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 215.5,
+            "y": 350,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 284,
+            "y": 350,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 352.5,
+            "y": 350,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 421,
+            "y": 350,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 489.5,
+            "y": 350,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 558,
+            "y": 350,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "normal",
+            "x": 626.5,
+            "y": 350,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 10,
+            "y": 375,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 78.5,
+            "y": 375,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 147,
+            "y": 375,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 215.5,
+            "y": 375,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 284,
+            "y": 375,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 352.5,
+            "y": 375,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 421,
+            "y": 375,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 489.5,
+            "y": 375,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 558,
+            "y": 375,
+            "width": 63.5,
+            "height": 20
+        },
+        {
+            "type": "strong",
+            "x": 626.5,
+            "y": 375,
+            "width": 63.5,
+            "height": 20
+        }
+    ]
+}

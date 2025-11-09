@@ -36,11 +36,14 @@ public class ModeSelectView {
 
     @FXML
     public void onMultiPlayerClick(MouseEvent event) {
-        System.out.println("Multi Player");
-
         soundManager.playSound("Accept.wav");
-
-        SceneManager.switchTo("multiPlayerScene");
+        Stage mainStage = SceneManager.getStage();
+        if (mainStage != null) {
+            TwoPlayerGameScreen twoPlayerScreen = new TwoPlayerGameScreen(mainStage);
+            twoPlayerScreen.show();
+        } else {
+            System.err.println("Error: Main stage not found");
+        }
     }
 
     @FXML

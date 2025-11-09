@@ -9,12 +9,14 @@ public class Player {
     private Paddle paddle;
     private Ball ball;
     private int playerNumber;
+    private Orientation orientation;
 
     public Player(String playerId, int playerNumber, Paddle paddle) {
         this.profile = new PlayerProfile(playerId);
         this.state = new PlayerState();
         this.paddle = paddle;
         this.playerNumber = playerNumber;
+        this.orientation = Orientation.fromPlayerNumber(playerNumber);
     }
 
     public Ball getBall() {
@@ -41,16 +43,17 @@ public class Player {
         return playerNumber;
     }
 
+    public Orientation getOrientation() {
+        return orientation;
+    }
+
     public void update(double deltaTime) {
         paddle.update(deltaTime);
         if (ball != null) {
             if (ball.isAttachedToPaddle()) {
                 ball.setX(paddle.getCenterX() - ball.getRadius());
-                if (playerNumber == 1) {
-                    ball.setY(paddle.getY() - ball.getHeight());
-                } else {
-                    ball.setY(paddle.getY() + paddle.getHeight());
-                }
+                double attachYOffset = (orientation == Orientation.BOTTOM) ? -ball.getHeight() : paddle.getHeight();
+                ball.setY(paddle.getY() + attachYOffset);
             }
             ball.update(deltaTime);
         }

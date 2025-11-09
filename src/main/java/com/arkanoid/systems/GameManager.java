@@ -103,14 +103,10 @@ public class GameManager {
             trailSpawnTimer = 0.0;
         }
 
-        Iterator<Brick> brickIterator = bricks.iterator();
-        while (brickIterator.hasNext()) {
-            Brick brick = brickIterator.next();
-            brick.update(deltaTime);
-        }
-
-        for (Ball ball : balls) {
-            CollisionDetector.checkBallBrickCollisions(ball, bricks, this::onBrickDestroyed, this);
+        for (Brick brick : bricks) {
+            if (!brick.isDestroyed()) {
+                brick.update(deltaTime);
+            }
         }
 
         Iterator<PowerUp> powerUpIterator = powerUps.iterator();
@@ -132,15 +128,10 @@ public class GameManager {
             }
         }
 
-        // Remove destroyed bricks using iterator to avoid
-        // ConcurrentModificationException
-        brickIterator = bricks.iterator();
-        while (brickIterator.hasNext()) {
-            Brick brick = brickIterator.next();
-            if (brick.isDestroyed()) {
-                brickIterator.remove();
-            }
+        for (Ball ball : balls) {
+            CollisionDetector.checkBallBrickCollisions(ball, bricks, this::onBrickDestroyed, this);
         }
+        bricks.removeIf(Brick::isDestroyed);
 
         balls.removeIf(ball -> {
             if (ball.isOutOfBounds()) {
@@ -180,10 +171,9 @@ public class GameManager {
         if (paddle.isGunMode()) {
             gunFireCooldown -= deltaTime;
             if (gunFireCooldown <= 0.0) {
-                // spawn 2 bullets (left & right)
                 double bulletW = 6;
                 double bulletH = 12;
-                double speed = -300; // pixels / s (bay lên)
+                double speed = -300;
                 Bullet left = new Bullet(paddle.getLeftGunX(), paddle.getGunY(), bulletW, bulletH, speed);
                 Bullet right = new Bullet(paddle.getRightGunX(), paddle.getGunY(), bulletW, bulletH, speed);
                 bullets.add(left);
@@ -228,7 +218,8 @@ public class GameManager {
                 bulletIt.remove();
             }
         }
-        bricks.removeIf(Brick::isDestroyed);
+
+        // Check win condition after all brick updates
         if (bricks.isEmpty()) {
             currentState = GameState.LEVEL_COMPLETE;
         }
@@ -307,7 +298,7 @@ public class GameManager {
         Ball ball = new Ball(ballX, ballY, ballRadius, ballSpeed);
         ball.setBounds(0, 0, gameWidth, gameHeight);
         ball.setAttachedToPaddle(true);
-        ball.setExplosive(false); // ✅ bóng mới không phải bóng nổ
+        ball.setExplosive(false);
         ball.setHasExploded(false);
         balls.add(ball);
     }
@@ -429,27 +420,15 @@ public class GameManager {
     public com.arkanoid.systems.save.GameState extractCurrentGameState() {
         // Extract paddle state
         Paddle paddle = player.getPaddle();
-        com.arkanoid.systems.save.PaddleState paddleState = new com.arkanoid.systems.save.PaddleState(
-                paddle.getX(),
-                paddle.getY(),
-                paddle.getWidth(),
-                paddle.getHeight(),
-                paddle.getVelocityX(),
-                Paddle.getCurrentSkin(),
-                paddle.isGunMode() ? "Gun" : null,
-                paddle.isGunMode() ? paddle.getGunExpiry() : 0);
+        com.arkanoid.systems.save.PaddleState paddleState = new com.arkanoid.systems.save.PaddleState(paddle.getX(),
+                paddle.getY(), paddle.getWidth(), paddle.getHeight(), paddle.getVelocityX(), Paddle.getCurrentSkin(),
+                paddle.isGunMode() ? "Gun" : null, paddle.isGunMode() ? paddle.getGunExpiry() : 0);
 
         // Extract ball states
         List<com.arkanoid.systems.save.BallState> ballStates = new ArrayList<>();
         for (Ball ball : balls) {
-            ballStates.add(new com.arkanoid.systems.save.BallState(
-                    ball.getX(),
-                    ball.getY(),
-                    ball.getVelocityX(),
-                    ball.getVelocityY(),
-                    ball.getRadius(),
-                    ball.isAttachedToPaddle(),
-                    Ball.getCurrentSkin()));
+            ballStates.add(new com.arkanoid.systems.save.BallState(ball.getX(), ball.getY(), ball.getVelocityX(),
+                    ball.getVelocityY(), ball.getRadius(), ball.isAttachedToPaddle(), Ball.getCurrentSkin()));
         }
 
         // Extract brick states
@@ -462,16 +441,10 @@ public class GameManager {
                 if (brick instanceof BaseBrick) {
                     texturePath = ((BaseBrick) brick).getTexturePath();
                 }
-                brickStates.add(new com.arkanoid.systems.save.BrickState(
-                        brick.getClass().getSimpleName(),
-                        brick.getX(),
-                        brick.getY(),
-                        brick.getWidth(),
-                        brick.getHeight(),
-                        hitPoints,
-                        0, // colorIndex - can be enhanced later
-                        !brick.isDestroyed(),
-                        0, // velocityX - for moving bricks if implemented
+                brickStates.add(new com.arkanoid.systems.save.BrickState(brick.getClass().getSimpleName(), brick.getX(),
+                        brick.getY(), brick.getWidth(), brick.getHeight(), hitPoints, 0, // colorIndex - can be enhanced
+                                                                                         // later
+                        !brick.isDestroyed(), 0, // velocityX - for moving bricks if implemented
                         0, // velocityY
                         texturePath));
             }
@@ -480,26 +453,15 @@ public class GameManager {
         // Extract power-up states
         List<com.arkanoid.systems.save.PowerUpState> powerUpStates = new ArrayList<>();
         for (PowerUp powerUp : powerUps) {
-            powerUpStates.add(new com.arkanoid.systems.save.PowerUpState(
-                    powerUp.getClass().getSimpleName(),
-                    powerUp.getX(),
-                    powerUp.getY(),
-                    powerUp.getVelocityY(),
-                    powerUp.isActive()));
+            powerUpStates.add(new com.arkanoid.systems.save.PowerUpState(powerUp.getClass().getSimpleName(),
+                    powerUp.getX(), powerUp.getY(), powerUp.getVelocityY(), powerUp.isActive()));
         }
 
         // Get elapsed time - for now we'll use 0, can be enhanced later with a timer
         int elapsedTimeSeconds = 0;
 
-        return new com.arkanoid.systems.save.GameState(
-                levelNumber,
-                player.getState().getScore(),
-                player.getState().getLives(),
-                elapsedTimeSeconds,
-                paddleState,
-                ballStates,
-                brickStates,
-                powerUpStates);
+        return new com.arkanoid.systems.save.GameState(levelNumber, player.getState().getScore(),
+                player.getState().getLives(), elapsedTimeSeconds, paddleState, ballStates, brickStates, powerUpStates);
     }
 
     /**
@@ -509,13 +471,11 @@ public class GameManager {
      */
     public void restoreGameState(com.arkanoid.systems.save.GameState gameState) {
         // Validate positions are within bounds
-        if (gameState == null || gameState.getPaddleState() == null ||
-                gameState.getBallStates() == null || gameState.getBrickStates() == null) {
+        if (gameState == null || gameState.getPaddleState() == null || gameState.getBallStates() == null
+                || gameState.getBrickStates() == null) {
             throw new IllegalStateException("Invalid game state: missing required data");
         }
 
-        // Restore player score and lives (use addScore with negative to reset, then
-        // add)
         int currentScore = player.getState().getScore();
         player.getState().addScore(-currentScore); // Reset to 0
         player.getState().addScore(gameState.getScore()); // Add saved score
@@ -567,9 +527,6 @@ public class GameManager {
                 powerUps.add(powerUp);
             }
         }
-
-        // Set game state to playing
-        currentState = GameState.PLAYING;
     }
 
     private Brick createBrickFromState(com.arkanoid.systems.save.BrickState brickState) {
@@ -580,24 +537,23 @@ public class GameManager {
         String texturePath = brickState.texturePath();
 
         switch (type) {
-            case "NormalBrick":
-                return new NormalBrick(brickState.x(), brickState.y(),
-                        brickState.width(), brickState.height(), col, row, texturePath);
-            case "StrongBrick":
-                return new StrongBrick(brickState.x(), brickState.y(),
-                        brickState.width(), brickState.height(), col, row, texturePath);
-            case "UnbreakableBrick":
-                return new UnbreakableBrick(brickState.x(), brickState.y(),
-                        brickState.width(), brickState.height(), col, row, texturePath);
-            case "MovingBrick":
-                return new MovingBrick(brickState.x(), brickState.y(),
-                        brickState.width(), brickState.height(),
-                        0, gameWidth, // minX, maxX
-                        row, col, texturePath);
-            default:
-                // Default to NormalBrick
-                return new NormalBrick(brickState.x(), brickState.y(),
-                        brickState.width(), brickState.height(), col, row, texturePath);
+        case "NormalBrick":
+            return new NormalBrick(brickState.x(), brickState.y(), brickState.width(), brickState.height(), col, row,
+                    texturePath);
+        case "StrongBrick":
+            return new StrongBrick(brickState.x(), brickState.y(), brickState.width(), brickState.height(), col, row,
+                    texturePath);
+        case "UnbreakableBrick":
+            return new UnbreakableBrick(brickState.x(), brickState.y(), brickState.width(), brickState.height(), col,
+                    row, texturePath);
+        case "MovingBrick":
+            return new MovingBrick(brickState.x(), brickState.y(), brickState.width(), brickState.height(), 0,
+                    gameWidth, // minX, maxX
+                    row, col, texturePath);
+        default:
+            // Default to NormalBrick
+            return new NormalBrick(brickState.x(), brickState.y(), brickState.width(), brickState.height(), col, row,
+                    texturePath);
         }
     }
 

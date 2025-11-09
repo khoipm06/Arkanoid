@@ -33,7 +33,7 @@ public class ShopBall {
     public void initialize() {
         if (SessionManager.getCurrentUser() == null) {
             UserManager.register("guest", "123");
-            SessionManager.login(new SessionManager.User("guest"));
+            SessionManager.login(new SessionManager.User(0, "guest"));
         }
 
         skinItems.add(new SkinItem("Fire", 1000, buy1, equip1, imgFire));

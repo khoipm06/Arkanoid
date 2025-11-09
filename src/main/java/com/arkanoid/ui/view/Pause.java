@@ -49,8 +49,9 @@ public class Pause {
     @FXML
     public void onGameSavesClick(MouseEvent event) {
         soundManager.playSound("Accept.wav");
-        // TODO: Open SaveLoadScene
-        System.out.println("Game Saves clicked - SaveLoadScene integration pending");
+        // Note: SaveLoadScene is now implemented in GameScene.java
+        // This old Pause.java may not be in use - consider removing if deprecated
+        System.out.println("Game Saves clicked - Use GameScene implementation");
     }
 
     @FXML

@@ -25,6 +25,7 @@ public class Ball extends MovableObject {
     private Image ballImage;
     private boolean explosive = false;
     private boolean hasExploded = false;
+    private boolean topIsDeadSide = false; // For two-player mode: top player's drain
 
     public Ball(double x, double y, double radius, double speed) {
         super(x - radius, y - radius, radius * 2, radius * 2, speed);
@@ -103,7 +104,8 @@ public class Ball extends MovableObject {
             x = maxX - width;
             reverseX();
         }
-        if (y <= minY) {
+        // Top boundary: reflect only if NOT a Dead Side drain
+        if (y <= minY && !topIsDeadSide) {
             y = minY;
             reverseY();
         }
@@ -148,7 +150,23 @@ public class Ball extends MovableObject {
     }
 
     public boolean isOutOfBounds() {
-        return y > maxY;
+        // Bottom Dead Side (for bottom player)
+        if (y > maxY) {
+            return true;
+        }
+        // Top Dead Side (for top player in two-player mode)
+        if (topIsDeadSide && y < minY) {
+            return true;
+        }
+        return false;
+    }
+
+    public void setTopIsDeadSide(boolean topIsDeadSide) {
+        this.topIsDeadSide = topIsDeadSide;
+    }
+
+    public boolean isTopDeadSide() {
+        return topIsDeadSide;
     }
 
     public void reset(double x, double y) {

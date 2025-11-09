@@ -141,8 +141,10 @@ public class MainMenuView {
         styleModeSelectButton(multiBtn);
         multiBtn.setOnAction(e -> {
             soundManager.playSound("Accept.wav");
-            SceneManager.switchTo("twoPlayerGame");
             root.getChildren().remove(overlay);
+            // TwoPlayerGameScreen creates its own Scene programmatically
+            TwoPlayerGameScreen twoPlayerScreen = new TwoPlayerGameScreen(SceneManager.getStage());
+            twoPlayerScreen.show();
         });
 
         // Nút Back
