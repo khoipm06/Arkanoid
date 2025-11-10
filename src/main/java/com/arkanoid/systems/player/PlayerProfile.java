@@ -1,8 +1,5 @@
 package com.arkanoid.systems.player;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +8,8 @@ public class PlayerProfile {
     private Map<String, Integer> inventory;
     private String currentSkin;
     private static PlayerProfile currentPlayer;
-    private String currentPaddleSkin = "paddle_Default";
+
+    private String currentPaddleSkin = "paddle_Default";;
 
     public PlayerProfile(String playerId) {
         this.playerId = playerId;
@@ -24,7 +22,6 @@ public class PlayerProfile {
     public String getPlayerId() {
         return playerId;
     }
-
 
     public void addItem(String itemId, int quantity) {
         inventory.put(itemId, inventory.getOrDefault(itemId, 0) + quantity);
@@ -41,6 +38,7 @@ public class PlayerProfile {
     public void setCurrentSkin(String skin) {
         this.currentSkin = skin;
     }
+
     public static PlayerProfile getCurrentPlayer() {
         return currentPlayer;
     }
@@ -48,6 +46,7 @@ public class PlayerProfile {
     public static void setCurrentPlayer(PlayerProfile player) {
         currentPlayer = player;
     }
+
     public String getEquippedPaddleSkin() {
         return currentPaddleSkin;
     }

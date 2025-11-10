@@ -1,0 +1,61 @@
+#root {
+    -fx-background-color: linear-gradient(to bottom right, #12043b, #3b0a45, #000010);
+}
+
+#titleLabel {
+    -fx-text-fill: #00ffff;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,255,0.8), 15, 0.4, 0, 0);
+}
+
+#backButton {
+    -fx-background-color: transparent;
+    -fx-background-image: url("/images/back.png");
+    -fx-background-size: 40px 40px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-pref-width: 40px;
+    -fx-pref-height: 40px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,255,0.8), 10, 0.3, 0, 0);
+}
+
+#backButton:hover {
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,255,1), 15, 0.5, 0, 0);
+}
+
+.list-view {
+    -fx-background-color: rgba(0, 0, 0, 0.4);
+    -fx-border-color: #00ffff;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-padding: 10px;
+    -fx-border-color: transparent transparent #00ffff transparent; /* Bottom border */
+    -fx-border-width: 0 0 1px 0;
+}
+
+.list-cell:odd {
+    -fx-background-color: rgba(0, 255, 255, 0.05);
+}
+
+.list-cell:hover {
+    -fx-background-color: rgba(0, 255, 255, 0.2);
+}
+
+.tooltip {
+    -fx-background-color: rgba(0, 0, 0, 0.8);
+    -fx-text-fill: #00ffff;
+    -fx-font-size: 14px;
+    -fx-background-radius: 5;
+    -fx-border-color: #00ffff;
+    -fx-border-width: 1px;
+}

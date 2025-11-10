@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="root" prefHeight="535.0" prefWidth="738.0" stylesheets="@../shopBall.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.ShopBall">
+<AnchorPane fx:id="root" prefHeight="535.0" prefWidth="738.0" stylesheets="@../shopBall.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.ShopBall">
    <children>
       <Label layoutX="281.0" layoutY="60.0" prefHeight="38.0" prefWidth="164.0" text="Shop Ball">
          <font>
@@ -28,13 +28,13 @@
          <font>
             <Font size="14.0" />
          </font></Label>
-      <Button fx:id="buy1" layoutX="436.0" layoutY="198.0" mnemonicParsing="false" onMouseClicked="#onBuy1Click" prefHeight="40.0" prefWidth="74.0" text="Mua" />
-      <Button fx:id="buy2" layoutX="435.0" layoutY="277.0" mnemonicParsing="false" onMouseClicked="#onBuy2Click" prefHeight="34.0" prefWidth="74.0" text="Mua" />
-      <Button fx:id="buy3" layoutX="435.0" layoutY="362.0" mnemonicParsing="false" onMouseClicked="#onBuy3Click" prefHeight="34.0" prefWidth="74.0" text="Mua" />
+      <Button fx:id="buy1" layoutX="436.0" layoutY="172.0" mnemonicParsing="false" onMouseClicked="#onBuy1Click" prefHeight="60.0" prefWidth="74.0" />
+      <Button fx:id="buy2" layoutX="435.0" layoutY="257.0" mnemonicParsing="false" onMouseClicked="#onBuy2Click" prefHeight="54.0" prefWidth="74.0" />
+      <Button fx:id="buy3" layoutX="435.0" layoutY="342.0" mnemonicParsing="false" onMouseClicked="#onBuy3Click" prefHeight="54.0" prefWidth="74.0" />
       <Button fx:id="backHome" layoutX="34.0" layoutY="52.0" mnemonicParsing="false" onMouseClicked="#onBackClick" prefHeight="46.0" prefWidth="45.0" />
-      <Button fx:id="equip1" layoutX="561.0" layoutY="195.0" mnemonicParsing="false" onMouseClicked="#onEquip1Click" prefHeight="46.0" prefWidth="142.0" text="Trang bị" />
-      <Button fx:id="equip2" layoutX="563.0" layoutY="271.0" mnemonicParsing="false" onMouseClicked="#onEquip2Click" prefHeight="46.0" prefWidth="142.0" text="Trang bị" />
-      <Button fx:id="equip3" layoutX="563.0" layoutY="356.0" mnemonicParsing="false" onMouseClicked="#onEquip3Click" prefHeight="46.0" prefWidth="142.0" text="Trang bị" />
+      <Button fx:id="equip1" layoutX="597.0" layoutY="175.0" mnemonicParsing="false" onMouseClicked="#onEquip1Click" prefHeight="60.0" prefWidth="74.0" />
+      <Button fx:id="equip2" layoutX="596.0" layoutY="263.0" mnemonicParsing="false" onMouseClicked="#onEquip2Click" prefHeight="54.0" prefWidth="74.0" />
+      <Button fx:id="equip3" layoutX="595.0" layoutY="348.0" mnemonicParsing="false" onMouseClicked="#onEquip3Click" prefHeight="54.0" prefWidth="74.0" />
       <Label fx:id="lblMoney" layoutX="265.0" layoutY="121.0" prefHeight="34.0" prefWidth="246.0" text="Số dư : ">
          <font>
             <Font size="23.0" />

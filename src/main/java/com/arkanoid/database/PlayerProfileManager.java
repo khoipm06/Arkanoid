@@ -1,6 +1,8 @@
 package com.arkanoid.database;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerProfileManager {
     
@@ -18,6 +20,45 @@ public class PlayerProfileManager {
             this.gamesPlayed = gamesPlayed;
             this.totalScore = totalScore;
         }
+    }
+
+    public static class LeaderboardEntry {
+        public final String username;
+        public final int highScore;
+        public final int levelReached;
+
+        public LeaderboardEntry(String username, int highScore, int levelReached) {
+            this.username = username;
+            this.highScore = highScore;
+            this.levelReached = levelReached;
+        }
+    }
+
+    public static List<LeaderboardEntry> getLeaderboardData() {
+        List<LeaderboardEntry> leaderboard = new ArrayList<>();
+        String sql = """
+            SELECT u.username, pp.high_score, IFNULL(MAX(gh.level_reached), 1) as max_level
+            FROM users u
+            JOIN player_profiles pp ON u.id = pp.user_id
+            LEFT JOIN game_history gh ON u.id = gh.user_id
+            GROUP BY u.id
+            ORDER BY pp.high_score DESC
+        """;
+
+        try (Statement stmt = DatabaseManager.getConnection().createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                leaderboard.add(new LeaderboardEntry(
+                    rs.getString("username"),
+                    rs.getInt("high_score"),
+                    rs.getInt("max_level")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return leaderboard;
     }
 
     public static ProfileData getProfile(int userId) {

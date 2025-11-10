@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Font?>
 
 
-<AnchorPane fx:id="authPane" prefHeight="484.0" prefWidth="745.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.ProfileScreen">
+<AnchorPane fx:id="authPane" prefHeight="484.0" prefWidth="745.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.ProfileScreen">
    <children>
       <AnchorPane layoutX="51.0" layoutY="32.0" prefHeight="418.0" prefWidth="641.0">
          <children>

@@ -1,7 +1,6 @@
 package com.arkanoid.ui.view;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -36,6 +35,7 @@ public class SceneManager {
     public static Object getController(String name) {
         return controllers.get(name);
     }
+
     public static void showGameOver(int level, int score, int highest) {
         Object controller = getController("gameOver");
         if (controller instanceof com.arkanoid.ui.view.GameOver gameOverController) {

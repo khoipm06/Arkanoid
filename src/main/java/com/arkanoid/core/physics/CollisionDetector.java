@@ -2,21 +2,19 @@ package com.arkanoid.core.physics;
 
 import com.arkanoid.core.entities.Ball;
 import com.arkanoid.core.entities.Brick;
-import com.arkanoid.core.entities.Paddle;
-
 import com.arkanoid.systems.GameManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CollisionDetector {
-    
-    public static void checkBallBrickCollisions(Ball ball, List<Brick> bricks, CollisionCallback callback, GameManager gameManager) {
-        // Create a temporary list to hold bricks to be destroyed by explosion
-        List<Brick> bricksToExplode = new ArrayList<>();
 
+    public static void checkBallBrickCollisions(Ball ball, List<Brick> bricks, CollisionCallback callback,
+            GameManager gameManager) {
+        List<Brick> bricksToExplode = new ArrayList<>();
         for (Brick brick : bricks) {
-            if (brick.isDestroyed()) continue;
+            if (brick.isDestroyed())
+                continue;
 
             if (ball.intersects((com.arkanoid.core.entities.GameObject) brick)) {
                 handleBallBrickCollision(ball, brick);
@@ -24,10 +22,10 @@ public class CollisionDetector {
                 if (callback != null) {
                     callback.onBrickHit(brick);
                 }
-
-                if (ball.isExplosive()) {
+                if (ball.isExplosive() && !ball.hasExploded()) {
                     bricksToExplode.add(brick);
                     gameManager.addExplosion(brick.getCenterX(), brick.getCenterY(), 50, 0.5);
+                    ball.setHasExploded(true);
                 }
                 // Only one brick can be hit at a time by a non-explosive ball
                 if (!ball.isExplosive()) {
@@ -35,20 +33,18 @@ public class CollisionDetector {
                 }
             }
         }
-
-        // Process explosive destruction after initial collision detection
         for (Brick explodedBrick : bricksToExplode) {
             double explosionCenterX = explodedBrick.getCenterX();
             double explosionCenterY = explodedBrick.getCenterY();
             double explosionRadius = 50; // Define explosion radius
 
             for (Brick otherBrick : bricks) {
-                if (otherBrick.isDestroyed()) continue;
+                if (otherBrick.isDestroyed())
+                    continue;
 
                 double distance = Math.sqrt(
                         Math.pow(otherBrick.getCenterX() - explosionCenterX, 2) +
-                        Math.pow(otherBrick.getCenterY() - explosionCenterY, 2)
-                );
+                                Math.pow(otherBrick.getCenterY() - explosionCenterY, 2));
 
                 if (distance <= explosionRadius) {
                     otherBrick.destroy();
@@ -59,19 +55,19 @@ public class CollisionDetector {
             }
         }
     }
-    
+
     private static void handleBallBrickCollision(Ball ball, Brick brick) {
         double ballCenterX = ball.getCenterX();
         double ballCenterY = ball.getCenterY();
         double brickCenterX = brick.getX() + brick.getWidth() / 2;
         double brickCenterY = brick.getY() + brick.getHeight() / 2;
-        
+
         double deltaX = ballCenterX - brickCenterX;
         double deltaY = ballCenterY - brickCenterY;
-        
+
         double overlapX = (brick.getWidth() / 2 + ball.getWidth() / 2) - Math.abs(deltaX);
         double overlapY = (brick.getHeight() / 2 + ball.getHeight() / 2) - Math.abs(deltaY);
-        
+
         if (overlapX < overlapY) {
             ball.reverseX();
             if (deltaX > 0) {
@@ -88,7 +84,7 @@ public class CollisionDetector {
             }
         }
     }
-    
+
     public interface CollisionCallback {
         void onBrickHit(Brick brick);
     }

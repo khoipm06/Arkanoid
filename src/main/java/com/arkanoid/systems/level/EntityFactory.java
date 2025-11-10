@@ -13,15 +13,15 @@ public class EntityFactory {
         double height = data.get("height").getAsDouble();
 
         return switch (type.toLowerCase()) {
-            case "normal" -> new NormalBrick(x, y, width, height, row, col);
-            case "strong" -> new StrongBrick(x, y, width, height, row, col);
-            case "unbreakable" -> new UnbreakableBrick(x, y, width, height, row, col);
+            case "normal" -> new NormalBrick(x, y, width, height, row, col, "/images/while.png");
+            case "strong" -> new StrongBrick(x, y, width, height, row, col, "/images/red.png");
+            case "unbreakable" -> new UnbreakableBrick(x, y, width, height, row, col, "/images/unbreakable.png");
             case "moving" -> {
                 double minX = data.has("minX") ? data.get("minX").getAsDouble() : 0;
                 double maxX = data.has("maxX") ? data.get("maxX").getAsDouble() : 800;
-                yield new MovingBrick(x, y, width, height, minX, maxX, row, col);
+                yield new MovingBrick(x, y, width, height, minX, maxX, row, col, "/images/bluebrick.png");
             }
-            default -> new NormalBrick(x, y, width, height, row, col);
+            default -> new NormalBrick(x, y, width, height,row, col, "/images/while.png");
         };
     }
 
@@ -31,6 +31,7 @@ public class EntityFactory {
             case "multiball" -> new MultiBallPowerUp(x, y);
             case "explosive" -> new ExplosiveBallPowerUp(x, y);
             case "gun" -> new GunPaddlePowerUp(x, y);
+            case "rowClear" -> new RowClearPowerUp(x, y);
             default -> null;
         };
     }

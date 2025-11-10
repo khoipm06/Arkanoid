@@ -1,33 +1,44 @@
-package com.arkanoid.core.entities;
+    package com.arkanoid.core.entities;
 
-import com.arkanoid.systems.sound.SoundManager;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import javafx.scene.image.Image;
+    import com.arkanoid.systems.sound.SoundManager;
+    import javafx.scene.canvas.GraphicsContext;
+    import javafx.scene.paint.Color;
+    import javafx.scene.image.Image;
 
-import java.io.InputStream;
+    import java.io.InputStream;
+    import java.util.HashMap;
+    import java.util.Map;
 
-public class Ball extends MovableObject {
-    private double radius;
-    private Color color;
-    private double minX, minY, maxX, maxY;
-    private boolean attachedToPaddle = false;
-    private Image ballImage;
-    private boolean isExplosive = false;
+    public class Ball extends MovableObject {
+        private double radius;
+        private Color color;
+        private double minX, minY, maxX, maxY;
+        private boolean attachedToPaddle = false;
+        private Image ballImage;
+        private static final Map<String, Image> SKINS = new HashMap<>();
+        private static String currentSkin = "Default";
+
+//        private boolean isExplosive = false;
+         private boolean explosive = false;
+        private boolean hasExploded = false;
 
 
-    public Ball(double x, double y, double radius, double speed) {
-        super(x - radius, y - radius, radius * 2, radius * 2, speed);
-        this.radius = radius;
-        this.color = Color.RED;
-//        this.velocityX = speed * 0.7;
-//        this.velocityY = -speed;
-        this.velocityX = 0;
-        this.velocityY = 0;
-        attachedToPaddle = true;
 
-        loadDefaultImage();
-    }
+        static {
+            loadSkins();
+        }
+        public Ball(double x, double y, double radius, double speed) {
+            super(x - radius, y - radius, radius * 2, radius * 2, speed);
+            this.radius = radius;
+            this.color = Color.RED;
+    //        this.velocityX = speed * 0.7;
+    //        this.velocityY = -speed;
+            this.velocityX = 0;
+            this.velocityY = 0;
+            attachedToPaddle = true;
+    //        loadDefaultImage();
+            equipSkin(currentSkin);
+        }
 
 
 
@@ -175,13 +186,14 @@ public class Ball extends MovableObject {
                 System.err.println("⚠️ Skin không tồn tại: " + skinName);
             }
         }
-    }
 
-    public boolean isExplosive() {
-        return isExplosive;
-    }
+        public boolean hasExploded() {
+            return hasExploded;
+        }
 
-    public void setExplosive(boolean explosive) {
-        isExplosive = explosive;
+        public void setHasExploded(boolean hasExploded) {
+            this.hasExploded = hasExploded;
+        }
+        public boolean isExplosive() { return explosive; }
+        public void setExplosive(boolean value) { explosive = value; }
     }
-}

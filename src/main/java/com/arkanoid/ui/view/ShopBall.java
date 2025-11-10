@@ -1,6 +1,7 @@
     package com.arkanoid.ui.view;
 
-    import com.arkanoid.core.entities.Ball;
+    import com.arkanoid.database.UserManager;
+import com.arkanoid.core.entities.Ball;
     import com.arkanoid.systems.player.PlayerProfile;
     import com.arkanoid.systems.sound.SoundManager;
     import javafx.fxml.FXML;
@@ -56,6 +57,10 @@
 
         @FXML
         public void initialize() {
+            if (SessionManager.getCurrentUser() == null) {
+                UserManager.register("guest", "123", "");
+                SessionManager.login(new SessionManager.User("guest"));
+            }
 
             skinItems.add(new SkinItem("Fire", 1000, buy1, equip1, imgFire));
             skinItems.add(new SkinItem("Ice", 2000, buy2, equip2, imgIce));
@@ -152,16 +157,31 @@
             for (SkinItem item : skinItems) {
                 boolean owned = user.hasSkin(item.name);
                 boolean equipped = user.getEquippedSkin().equals(item.name);
+                boolean canAfford = user.getMoney() >= item.price;
 
-                item.buyButton.setVisible(!owned);
-                item.equipButton.setVisible(owned);
+                item.buyButton.getStyleClass().removeAll("buy-button", "owned-button");
+                item.equipButton.getStyleClass().removeAll("equip-button", "equipped-button");
 
-                if (equipped) {
-                    item.equipButton.setText("Đang trang bị");
-                    item.equipButton.setDisable(true);
+                // BUY BUTTON
+                if (!owned) {
+                    item.buyButton.getStyleClass().add("buy-button");   // chưa mua
+                    item.buyButton.setDisable(!canAfford);
                 } else {
-                    item.equipButton.setText("Trang bị");
-                    item.equipButton.setDisable(false);
+                    item.buyButton.getStyleClass().add("owned-button"); // đã mua
+                }
+
+                // EQUIP BUTTON
+                if (owned) {
+                    item.equipButton.setVisible(true);
+                    if (equipped) {
+                        item.equipButton.getStyleClass().add("equipped-button"); // đang trang bị
+                        item.equipButton.setDisable(true);
+                    } else {
+                        item.equipButton.getStyleClass().add("equip-button"); // chưa trang bị
+                        item.equipButton.setDisable(false);
+                    }
+                } else {
+                    item.equipButton.setVisible(false);
                 }
             }
         }
@@ -170,5 +190,9 @@
             if (user != null) {
                 lblMoney.setText("Tiền của bạn: " + user.getMoney() + "$");
             }
+        }
+        private void setButtonState(Button btn, String cssClass) {
+            btn.getStyleClass().removeAll("buy-button", "owned-button", "equip-button", "equipped-button");
+            btn.getStyleClass().add(cssClass);
         }
     }

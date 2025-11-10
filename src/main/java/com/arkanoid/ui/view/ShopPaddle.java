@@ -1,8 +1,7 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.database.UserManager;
 import com.arkanoid.core.entities.Paddle;
-import com.arkanoid.systems.player.PlayerProfile;
-import com.arkanoid.ui.view.SessionManager;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -46,6 +45,11 @@ public class ShopPaddle {
 
     @FXML
     public void initialize() {
+        if (SessionManager.getCurrentUser() == null) {
+            UserManager.register("guest", "123", "");
+            SessionManager.login(new SessionManager.User("guest"));
+        }
+
         skinItems.add(new SkinItem("paddle_Wood", 1000, buy1, equip1, image1));
         skinItems.add(new SkinItem("paddle_Metal", 2000, buy2, equip2, image2));
         skinItems.add(new SkinItem("paddle_Neon", 3000, buy3, equip3, image3));
@@ -102,7 +106,8 @@ public class ShopPaddle {
         SessionManager.User user = SessionManager.getCurrentUser();
         for (SkinItem item : skinItems) {
             if (item.name.equals(skinName)) {
-                if (user.hasPaddleSkin(skinName)) return; // đã sở hữu
+                if (user.hasPaddleSkin(skinName))
+                    return; // đã sở hữu
                 if (user.spendMoney(item.price)) {
                     user.addOwnedPaddleSkin(skinName);
                     lblMoney.setText("Số dư: " + user.getMoney() + "$");
@@ -126,31 +131,47 @@ public class ShopPaddle {
             if (paddleInGame != null) {
                 paddleInGame.equipSkin(skinName); // cập nhật paddle đang chơi
             }
-        }  else {
-        System.out.println("Chưa sở hữu skin: " + skinName);
+        } else {
+            System.out.println("Chưa sở hữu skin: " + skinName);
         }
         updateShopUI();
     }
 
     private void updateShopUI() {
         SessionManager.User user = SessionManager.getCurrentUser();
-        if (user == null) return;
+        if (user == null)
+            return;
 
         lblMoney.setText("Số dư: " + user.getMoney() + "$");
 
         for (SkinItem item : skinItems) {
             boolean owned = user.hasPaddleSkin(item.name);
             boolean equipped = user.getEquippedPaddleSkin().equals(item.name);
+            boolean canAfford = user.getMoney() >= item.price;
 
-            item.buyButton.setVisible(!owned);
-            item.equipButton.setVisible(owned);
+            item.buyButton.getStyleClass().removeAll("buy-button", "owned-button");
+            item.equipButton.getStyleClass().removeAll("equip-button", "equipped-button");
 
-            if (equipped) {
-                item.equipButton.setText("Đang trang bị");
-                item.equipButton.setDisable(true);
+            // BUY BUTTON
+            if (!owned) {
+                item.buyButton.getStyleClass().add("buy-button"); // chưa mua
+                item.buyButton.setDisable(!canAfford);
             } else {
-                item.equipButton.setText("Trang bị");
-                item.equipButton.setDisable(false);
+                item.buyButton.getStyleClass().add("owned-button"); // đã mua
+            }
+
+            // EQUIP BUTTON
+            if (owned) {
+                item.equipButton.setVisible(true);
+                if (equipped) {
+                    item.equipButton.getStyleClass().add("equipped-button"); // đang trang bị
+                    item.equipButton.setDisable(true);
+                } else {
+                    item.equipButton.getStyleClass().add("equip-button"); // chưa trang bị
+                    item.equipButton.setDisable(false);
+                }
+            } else {
+                item.equipButton.setVisible(false);
             }
         }
     }
