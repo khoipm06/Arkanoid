@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 
 public class EntityFactory {
     
-    public Brick createBrick(JsonObject data) {
+    public Brick createBrick(JsonObject data, int row, int col) {
         String type = data.get("type").getAsString();
         double x = data.get("x").getAsDouble();
         double y = data.get("y").getAsDouble();
@@ -13,15 +13,15 @@ public class EntityFactory {
         double height = data.get("height").getAsDouble();
 
         return switch (type.toLowerCase()) {
-            case "normal" -> new NormalBrick(x, y, width, height);
-            case "strong" -> new StrongBrick(x, y, width, height);
-            case "unbreakable" -> new UnbreakableBrick(x, y, width, height);
+            case "normal" -> new NormalBrick(x, y, width, height, row, col);
+            case "strong" -> new StrongBrick(x, y, width, height, row, col);
+            case "unbreakable" -> new UnbreakableBrick(x, y, width, height, row, col);
             case "moving" -> {
                 double minX = data.has("minX") ? data.get("minX").getAsDouble() : 0;
                 double maxX = data.has("maxX") ? data.get("maxX").getAsDouble() : 800;
-                yield new MovingBrick(x, y, width, height, minX, maxX);
+                yield new MovingBrick(x, y, width, height, minX, maxX, row, col);
             }
-            default -> new NormalBrick(x, y, width, height);
+            default -> new NormalBrick(x, y, width, height, row, col);
         };
     }
 

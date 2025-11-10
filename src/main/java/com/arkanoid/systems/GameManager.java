@@ -8,6 +8,7 @@ import com.arkanoid.systems.player.Player;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 public class GameManager {
     public enum GameState {
@@ -20,6 +21,8 @@ public class GameManager {
     private List<Ball> balls;
     private List<Brick> bricks;
     private List<PowerUp> powerUps;
+    private List<Explosion> explosions;
+    private List<LineEffect> lineEffects;
     private Player player;
     private double gameWidth;
     private double gameHeight;
@@ -33,6 +36,14 @@ public class GameManager {
         this.balls = new ArrayList<>();
         this.bricks = new ArrayList<>();
         this.powerUps = new ArrayList<>();
+        this.explosions = new ArrayList<>();
+        this.lineEffects = new ArrayList<>();
+        this.levelManager = new LevelManager();
+        this.levelNumber = levelNumber;
+        this.bricks = levelManager.loadLevel(levelNumber);
+        Paddle paddle = new Paddle(gameWidth / 2 - 30, gameHeight - 30, 100, 25, 400, 0, gameWidth);
+        player = new Player("Player1", 1, paddle);
+        playerManager.addPlayer(1, player);
     }
 
     public void startGame() {
@@ -69,18 +80,20 @@ public class GameManager {
         }
 
         for (Ball ball : balls) {
-            CollisionDetector.checkBallBrickCollisions(ball, bricks, this::onBrickDestroyed);
+            CollisionDetector.checkBallBrickCollisions(ball, bricks, this::onBrickDestroyed, this);
         }
 
         Iterator<PowerUp> powerUpIterator = powerUps.iterator();
         while (powerUpIterator.hasNext()) {
             PowerUp powerUp = powerUpIterator.next();
             powerUp.update(deltaTime);
-            
-            if (powerUp.checkPaddleCollision(player.getPaddle())) {
+
+            PowerUp collectedPowerUp = powerUp.checkPaddleCollision(player.getPaddle());
+            if (collectedPowerUp != null) {
                 player.getState().addScore(50);
+                applyPowerUpEffect(collectedPowerUp, player.getPaddle());
             }
-            
+
             if (!powerUp.isActive() || powerUp.getY() > gameHeight) {
                 powerUpIterator.remove();
             }
@@ -106,6 +119,32 @@ public class GameManager {
         if (bricks.isEmpty()) {
             currentState = GameState.LEVEL_COMPLETE;
         }
+
+        Iterator<Explosion> explosionIterator = explosions.iterator();
+        while (explosionIterator.hasNext()) {
+            Explosion explosion = explosionIterator.next();
+            explosion.update(deltaTime);
+            if (!explosion.isActive()) {
+                explosionIterator.remove();
+            }
+        }
+
+        Iterator<LineEffect> lineEffectIterator = lineEffects.iterator();
+        while (lineEffectIterator.hasNext()) {
+            LineEffect lineEffect = lineEffectIterator.next();
+            lineEffect.update(deltaTime);
+            if (!lineEffect.isActive()) {
+                lineEffectIterator.remove();
+            }
+        }
+    }
+
+    public List<LineEffect> getLineEffects() {
+        return lineEffects;
+    }
+
+    public void addExplosion(double x, double y, double radius, double duration) {
+        explosions.add(new Explosion(x, y, radius, duration));
     }
 
     private void onBrickDestroyed(Brick brick) {
@@ -149,6 +188,56 @@ public class GameManager {
     public List<Ball> getBalls() { return balls; }
     public List<Brick> getBricks() { return bricks; }
     public List<PowerUp> getPowerUps() { return powerUps; }
+    public List<Explosion> getExplosions() { return explosions; }
     public Player getPlayer() { return player; }
     public PlayerManager getPlayerManager() { return playerManager; }
+    public int getLevelNumber() {
+        return levelNumber;
+    }
+    public int getScore() {
+        return player.getState().getScore();
+    }
+
+//    public int getHighestScore() {
+//        return playerManager.getHighestScore();
+//    }
+
+    private void applyPowerUpEffect(PowerUp powerUp, Paddle paddle) {
+        if (powerUp instanceof ExplosiveBallPowerUp) {
+            for (Ball ball : balls) {
+                ball.setExplosive(true);
+            }
+        }
+        // Other power-up effects will be added here
+        else if (powerUp instanceof RowClearPowerUp) {
+            Random random = new Random();
+            boolean clearRow = random.nextBoolean(); // true for row, false for column
+
+            int maxRow = bricks.stream().mapToInt(Brick::getRow).max().orElse(0);
+            int maxCol = bricks.stream().mapToInt(Brick::getCol).max().orElse(0);
+
+            if (clearRow) {
+                int rowToClear = random.nextInt(maxRow + 1);
+                double y = bricks.stream().filter(b -> b.getRow() == rowToClear).findFirst().map(Brick::getY).orElse(0.0);
+                lineEffects.add(new LineEffect(0, y, gameWidth, y, 0.5));
+                for (Brick brick : bricks) {
+                    if (!brick.isDestroyed() && brick.getRow() == rowToClear) {
+                        brick.destroy();
+                        onBrickDestroyed(brick);
+                    }
+                }
+            } else {
+                int colToClear = random.nextInt(maxCol + 1);
+                double x = bricks.stream().filter(b -> b.getCol() == colToClear).findFirst().map(Brick::getX).orElse(0.0);
+                lineEffects.add(new LineEffect(x, 0, x, gameHeight, 0.5));
+                for (Brick brick : bricks) {
+                    if (!brick.isDestroyed() && brick.getCol() == colToClear) {
+                        brick.destroy();
+                        onBrickDestroyed(brick);
+                    }
+                }
+            }
+        }
+    }
+
 }

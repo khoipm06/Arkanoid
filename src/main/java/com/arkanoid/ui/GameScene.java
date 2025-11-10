@@ -1,21 +1,31 @@
 package com.arkanoid.ui;
 
-import com.arkanoid.core.entities.Ball;
-import com.arkanoid.core.entities.Brick;
-import com.arkanoid.core.entities.PowerUp;
-import com.arkanoid.systems.GameManager;
-import javafx.animation.AnimationTimer;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
+    import com.arkanoid.core.entities.Ball;
+    import com.arkanoid.core.entities.Brick;
+    import com.arkanoid.core.entities.Explosion;
+    import com.arkanoid.core.entities.LineEffect;
+    import com.arkanoid.core.entities.Paddle;
+    import com.arkanoid.core.entities.PowerUp;
+    import com.arkanoid.systems.GameManager;
+    import com.arkanoid.ui.view.*;
+    import javafx.animation.AnimationTimer;
+    import javafx.application.Platform;
+    import javafx.fxml.FXMLLoader;
+    import javafx.geometry.Pos;
+    import javafx.scene.Parent;
+    import javafx.scene.Scene;
+    import javafx.scene.canvas.Canvas;
+    import javafx.scene.canvas.GraphicsContext;
+    import javafx.scene.control.Button;
+    import javafx.scene.input.KeyCode;
+    import javafx.scene.layout.AnchorPane;
+    import javafx.scene.layout.StackPane;
+    import javafx.scene.layout.VBox;
+    import javafx.scene.paint.Color;
+    import javafx.scene.text.Font;
+    import javafx.scene.text.Text;
+    import javafx.stage.Stage;
+    import javafx.scene.image.Image;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -109,8 +119,57 @@ public class GameScene {
     private void handleInput(double deltaTime) {
         if (gameManager.getCurrentState() != GameManager.GameState.PLAYING) return;
 
-        for (KeyCode key : pressedKeys) {
-            gameManager.getPlayerManager().handleInput(key, true, deltaTime);
+            for (Brick brick : gameManager.getBricks()) {
+                brick.render(gc);
+            }
+
+            for (Ball ball : gameManager.getBalls()) {
+                ball.render(gc);
+            }
+
+            for (PowerUp powerUp : gameManager.getPowerUps()) {
+                powerUp.render(gc);
+            }
+            for (Bullet bullet : gameManager.getBullets()) {
+                bullet.render(gc);
+            }
+
+            for (Explosion explosion : gameManager.getExplosions()) {
+                explosion.render(gc);
+            }
+
+            for (LineEffect lineEffect : gameManager.getLineEffects()) {
+                lineEffect.render(gc);
+            }
+
+            if (gameManager.getPlayer() != null) {
+                gameManager.getPlayer().getPaddle().render(gc);
+            }
+
+            renderUI();
+        }
+
+        private void renderUI() {
+            if (gameManager.getPlayer() == null) return;
+
+            gc.setFill(Color.WHITE);
+            gc.setFont(Font.font("Arial", 20));
+
+            String scoreText = "Score: " + gameManager.getPlayer().getState().getScore();
+            gc.fillText(scoreText, 10, 25);
+
+            String livesText = "Lives: " + gameManager.getPlayer().getState().getLives();
+            gc.fillText(livesText, canvas.getWidth() - 100, 25);
+        }
+
+//        private void showGameOver() {
+//        }
+//
+//        private void showLevelComplete() {}
+
+
+        public Scene getScene() {
+            return scene;
         }
     }
 
