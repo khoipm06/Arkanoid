@@ -11,8 +11,4 @@ public class ExplosiveBallPowerUp extends PowerUp {
     @Override
     public void applyEffect(Paddle paddle) {
     }
-    @Override
-    public void removeEffect(Paddle paddle) {
-
-    }
 }

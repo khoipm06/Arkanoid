@@ -4,8 +4,6 @@ import com.arkanoid.core.entities.*;
 import com.arkanoid.core.physics.CollisionDetector;
 import com.arkanoid.systems.level.LevelManager;
 import com.arkanoid.systems.player.Player;
-import com.arkanoid.systems.sound.SoundManager;
-import javafx.scene.input.KeyCode;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,13 +26,8 @@ public class GameManager {
     private Player player;
     private double gameWidth;
     private double gameHeight;
-    private int levelNumber;
 
-    private List<Bullet> bullets;
-    private double gunFireCooldown = 0.0; // thời gian đếm ngược tới lần bắn tiếp theo (giây)
-    private static final double GUN_FIRE_INTERVAL = 0.2; // 0.2s ~ 5 viên/s
-
-    public GameManager(double gameWidth, double gameHeight, int levelNumber) {
+    public GameManager(double gameWidth, double gameHeight) {
         this.gameWidth = gameWidth;
         this.gameHeight = gameHeight;
         this.currentState = GameState.MENU;
@@ -55,38 +48,31 @@ public class GameManager {
 
     public void startGame() {
         currentState = GameState.PLAYING;
-
-        double ballRadius = 8;
-        double ballSpeed = 300;
-
-        Paddle paddle = player.getPaddle();
-        double ballX = paddle.getX() + paddle.getWidth() / 2;
-        double ballY = paddle.getY() - ballRadius * 2;
-        Ball ball = new Ball(ballX, ballY, ballRadius, ballSpeed);
+        
+        Paddle paddle = new Paddle(gameWidth / 2 - 50, gameHeight - 50, 100, 15, 400, 0, gameWidth);
+        player = new Player("Player1", 1, paddle);
+        playerManager.addPlayer(1, player);
+        
+        Ball ball = new Ball(gameWidth / 2, gameHeight - 100, 8, 300);
         ball.setBounds(0, 0, gameWidth, gameHeight);
         balls.add(ball);
+        
+        loadLevel(1);
     }
 
     public void loadLevel(int levelNumber) {
-        String mapPath = "/levels/level" + levelNumber + ".json";
-        bricks = levelManager.loadLevelFromFile(mapPath);
+        bricks = levelManager.loadLevel(levelNumber);
         powerUps.clear();
-        bullets.clear();
     }
 
     public void update(double deltaTime) {
         if (currentState != GameState.PLAYING) return;
 
         playerManager.update(deltaTime);
-        Paddle paddle = player.getPaddle();
 
         for (Ball ball : balls) {
-            if (ball.isAttachedToPaddle()) {
-                ball.setX(paddle.getX() + paddle.getWidth() / 2 - ball.getRadius());
-                ball.setY(paddle.getY() - ball.getRadius() * 2);
-            }
             ball.update(deltaTime);
-            ball.checkPaddleCollision(paddle);
+            ball.checkPaddleCollision(player.getPaddle());
         }
 
         for (Brick brick : bricks) {
@@ -127,7 +113,7 @@ public class GameManager {
         });
 
         if (balls.isEmpty() && currentState == GameState.PLAYING) {
-            resetBall(paddle);
+            resetBall();
         }
 
         if (bricks.isEmpty()) {
@@ -171,15 +157,9 @@ public class GameManager {
         }
     }
 
-    private void resetBall(Paddle paddle) {
-        double ballRadius = 8;
-        double ballSpeed = 300;
-
-        double ballX = paddle.getX() + paddle.getWidth() / 2;
-        double ballY = paddle.getY() - ballRadius * 2;
-        Ball ball = new Ball(ballX, ballY, ballRadius, ballSpeed);
+    private void resetBall() {
+        Ball ball = new Ball(gameWidth / 2, gameHeight - 100, 8, 300);
         ball.setBounds(0, 0, gameWidth, gameHeight);
-        ball.setAttachedToPaddle(true);
         balls.add(ball);
     }
 
