@@ -7,6 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 
 public class SettingView {
+    private static final SoundManager soundManager = SoundManager.getInstance();
+
     @FXML
     private Slider volumeSlider;
 
@@ -25,15 +27,16 @@ public class SettingView {
         volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             int vol = newVal.intValue();
             valueLabel.setText(vol + "%");
-            SoundManager.setVolume(vol / 100.0);
+            soundManager.setVolume(vol / 100.0);
         });
     }
+
     @FXML
     private void onOKClick() {
         savedVolume = (int) volumeSlider.getValue();
         System.out.println("Volume saved: " + savedVolume + "%");
 
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
         SceneManager.switchTo("mainMenuView");
     }
 
@@ -42,7 +45,7 @@ public class SettingView {
         volumeSlider.setValue(savedVolume); // quay lại giá trị cũ
         System.out.println("Volume reverted to: " + savedVolume + "%");
 
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("mainMenuView");
     }

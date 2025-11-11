@@ -15,6 +15,8 @@ import javafx.util.Duration;
 import java.util.Optional;
 
 public class ShopView {
+    private static final SoundManager soundManager = SoundManager.getInstance();
+
     @FXML
     private final IntegerProperty money = new SimpleIntegerProperty(1000);
     @FXML
@@ -79,7 +81,7 @@ public class ShopView {
 
     @FXML
     public void onBallShopClick(MouseEvent event) {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         PlayerProfile player = SessionManager.getActiveProfile();
         PlayerProfile.setCurrentPlayer(player);
@@ -101,7 +103,7 @@ public class ShopView {
 
     @FXML
     public void onPaddleShopClick(MouseEvent event) {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         PlayerProfile player = SessionManager.getActiveProfile();
         PlayerProfile.setCurrentPlayer(player);
@@ -121,13 +123,13 @@ public class ShopView {
 
     @FXML
     public void onBackClick(MouseEvent event) {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("mainMenuView");
     }
 
     public void onDepositClick(MouseEvent event) {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         // Tạo dialog
         TextInputDialog dialog = new TextInputDialog();

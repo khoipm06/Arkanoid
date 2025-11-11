@@ -13,6 +13,8 @@ import java.util.List;
 import javafx.scene.control.Button;
 
 public class Map {
+    private static final SoundManager soundManager = SoundManager.getInstance();
+
     @FXML
     private Button nextMapButton;
     @FXML
@@ -60,7 +62,7 @@ public class Map {
 
     @FXML
     public void onNextMapButtonClick(MouseEvent event) {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
         if (currentMapIndex < mapImages.size() - 1) {
             currentMapIndex++;
             updatePreview();
@@ -72,7 +74,7 @@ public class Map {
 
     @FXML
     public void onPreMapButtonClick(MouseEvent event) {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
         if (currentMapIndex > 0) {
             currentMapIndex--;
             updatePreview();
@@ -84,7 +86,7 @@ public class Map {
     @FXML
     private void onPlayGameButtonClick(MouseEvent event) {
 
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         if (stage == null) {
             stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();

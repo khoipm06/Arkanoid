@@ -7,6 +7,8 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 
 public class SignIn {
+    private static final SoundManager soundManager = SoundManager.getInstance();
+
     @FXML
     private Button signIn;
     @FXML
@@ -22,7 +24,7 @@ public class SignIn {
     @FXML
     public void onSignInClick() {
 
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         String username = userNameField.getText();
         String password = passwordField.getText();
@@ -45,10 +47,11 @@ public class SignIn {
 
         SceneManager.switchTo("mainMenuView");
     }
+
     @FXML
     public void onCancelClick(MouseEvent event) {
 
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         SessionManager.logout();
         userNameField.clear();
@@ -56,10 +59,11 @@ public class SignIn {
 
         SceneManager.switchTo("authScreen");
     }
+
     @FXML
     public void onSignUpLinkClick(MouseEvent event) {
 
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("signUpView");
     }

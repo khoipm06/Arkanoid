@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShopBall {
+    private static final SoundManager soundManager = SoundManager.getInstance();
+
     @FXML
     private Button buy1, buy2, buy3;
     @FXML
@@ -51,7 +53,7 @@ public class ShopBall {
 
     @FXML
     public void onBackClick(MouseEvent event) {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
         SceneManager.switchTo("shopView");
     }
 
@@ -132,7 +134,8 @@ public class ShopBall {
 
     private void updateShopUI() {
         SessionManager.User user = SessionManager.getCurrentUser();
-        if (user == null) return;
+        if (user == null)
+            return;
 
         lblMoney.setText("Tiền của bạn: " + user.getMoney() + "$");
 
@@ -145,7 +148,7 @@ public class ShopBall {
             item.equipButton.getStyleClass().removeAll("equip-button", "equipped-button");
 
             if (!owned) {
-                item.buyButton.getStyleClass().add("buy-button");   // chưa mua
+                item.buyButton.getStyleClass().add("buy-button"); // chưa mua
                 item.buyButton.setDisable(!canAfford);
             } else {
                 item.buyButton.getStyleClass().add("owned-button"); // đã mua

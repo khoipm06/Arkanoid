@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShopPaddle {
+    private static final SoundManager soundManager = SoundManager.getInstance();
 
     @FXML
     private Button backHome;
@@ -52,7 +53,7 @@ public class ShopPaddle {
 
     @FXML
     public void onBackHomeClick(MouseEvent event) {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
         SceneManager.switchTo("shopView");
     }
 

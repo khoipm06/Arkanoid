@@ -6,12 +6,9 @@ import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -72,7 +69,7 @@ public class MainMenuView {
     public void onSettingClick(MouseEvent event) {
         System.out.println("setting");
 
-        SoundManager.playSound("Accept.wav");
+        SoundManager.getInstance().playSound("Accept.wav");
 
         SceneManager.switchTo("settingView");
     }
@@ -80,7 +77,7 @@ public class MainMenuView {
     @FXML
     public void onQuitClick(MouseEvent event) {
 
-        SoundManager.playSound("Accept.wav");
+        SoundManager.getInstance().playSound("Accept.wav");
         Platform.exit(); // thoát toàn bộ ứng dụng
         System.exit(0);
 
@@ -90,7 +87,7 @@ public class MainMenuView {
     public void onShopClick(MouseEvent event) {
         System.out.println("Shop");
 
-        SoundManager.playSound("Accept.wav");
+        SoundManager.getInstance().playSound("Accept.wav");
 
         SceneManager.switchTo("shopView");
     }
@@ -98,14 +95,14 @@ public class MainMenuView {
     public void onProfileClick(MouseEvent event) {
         System.out.println("Profile");
 
-        SoundManager.playSound("Accept.wav");
+        SoundManager.getInstance().playSound("Accept.wav");
 
         Main.switchToProfileOrAuth();
     }
 
     @FXML
     public void onStartGameClick(MouseEvent event) {
-        SoundManager.playSound("Accept.wav");
+        SoundManager.getInstance().playSound("Accept.wav");
         VBox modePopup = createModeSelectPopup();
         root.getChildren().add(modePopup);
     }
@@ -131,7 +128,7 @@ public class MainMenuView {
         Button singleBtn = new Button("Single Player");
         styleModeSelectButton(singleBtn);
         singleBtn.setOnAction(e -> {
-            SoundManager.playSound("Accept.wav");
+            SoundManager.getInstance().playSound("Accept.wav");
             SceneManager.switchTo("map"); // hoặc start game
             root.getChildren().remove(overlay);
         });
@@ -140,7 +137,7 @@ public class MainMenuView {
         Button multiBtn = new Button("Multi Player");
         styleModeSelectButton(multiBtn);
         multiBtn.setOnAction(e -> {
-            SoundManager.playSound("Accept.wav");
+            SoundManager.getInstance().playSound("Accept.wav");
             SceneManager.switchTo("multiPlayerScene");
             root.getChildren().remove(overlay);
         });
@@ -149,7 +146,7 @@ public class MainMenuView {
         Button backBtn = new Button("Back");
         styleModeSelectButton(backBtn);
         backBtn.setOnAction(e -> {
-            SoundManager.playSound("Accept.wav");
+            SoundManager.getInstance().playSound("Accept.wav");
             root.getChildren().remove(overlay);
         });
 
@@ -196,14 +193,14 @@ public class MainMenuView {
 
     public void closeModePopup() {
 
-        SoundManager.playSound("Accept.wav");
+        SoundManager.getInstance().playSound("Accept.wav");
 
         root.getChildren().remove(modePopup);
     }
 
     public void onLeaderBoardClick(MouseEvent event) {
 
-        SoundManager.playSound("Accept.wav");
+        SoundManager.getInstance().playSound("Accept.wav");
 
         SceneManager.switchTo("leaderboard");
     }

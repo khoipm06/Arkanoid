@@ -13,8 +13,9 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-
 public class WinLevel {
+    private static final SoundManager soundManager = SoundManager.getInstance();
+
     @FXML
     private Label score;
     @FXML
@@ -41,8 +42,8 @@ public class WinLevel {
             nextLevel.setDisable(true);
             nextLevel.setOpacity(0.5);
         }
-        SoundManager.stopBackground();
-        SoundManager.playSound("win.wav");
+        soundManager.stopBackground();
+        soundManager.playSound("win.wav");
         try {
             Image img = new Image(getClass().getResource("/images/You_Win.png").toExternalForm());
             winImage.setImage(img);
@@ -60,11 +61,11 @@ public class WinLevel {
 
     @FXML
     private void onNextLevelClick() {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         if (currentLevel < maxLevel) {
             int next = currentLevel + 1;
-            SoundManager.playBackground("background.mp3", true);
+            soundManager.playBackground("background.mp3", true);
 
             Stage stage = (Stage) nextLevel.getScene().getWindow();
             GameScene nextScene = new GameScene(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT, next);
@@ -79,10 +80,10 @@ public class WinLevel {
 
     @FXML
     private void onPreLevelClick() {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         int prev = Math.max(1, currentLevel - 1);
-        SoundManager.playBackground("background.mp3", true);
+        soundManager.playBackground("background.mp3", true);
 
         Stage stage = (Stage) preLevel.getScene().getWindow();
         GameScene prevScene = new GameScene(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT, prev);
@@ -94,15 +95,15 @@ public class WinLevel {
 
     @FXML
     private void onHomeClick() {
-        SoundManager.playSound("Accept.wav");
-        SoundManager.playBackground("background.mp3", true);
+        soundManager.playSound("Accept.wav");
+        soundManager.playBackground("background.mp3", true);
         SceneManager.switchTo("mainMenuView");
     }
 
     @FXML
     private void onReplayClick() {
-        SoundManager.playSound("Accept.wav");
-        SoundManager.playBackground("background.mp3", true);
+        soundManager.playSound("Accept.wav");
+        soundManager.playBackground("background.mp3", true);
 
         Stage stage = (Stage) replay.getScene().getWindow();
 

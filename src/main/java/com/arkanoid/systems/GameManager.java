@@ -33,7 +33,7 @@ public class GameManager {
         this.gameHeight = gameHeight;
         this.currentState = GameState.MENU;
         this.levelManager = new LevelManager();
-        this.playerManager = new PlayerManager();
+        this.playerManager = PlayerManager.getInstance();
         this.balls = new ArrayList<>();
         this.bricks = new ArrayList<>();
         this.powerUps = new ArrayList<>();

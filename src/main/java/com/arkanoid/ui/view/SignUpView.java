@@ -10,6 +10,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
 public class SignUpView {
+    private static final SoundManager soundManager = SoundManager.getInstance();
+
     @FXML
     private TextField userNameField;
     @FXML
@@ -26,7 +28,7 @@ public class SignUpView {
     @FXML
     public void onSignUpClick() {
 
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         String username = userNameField.getText();
         String password = passwordField.getText();
@@ -56,16 +58,17 @@ public class SignUpView {
     @FXML
     public void onCancelClick(MouseEvent event) {
 
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         userNameField.clear();
         passwordField.clear();
         confirmPasswordField.clear();
         SceneManager.switchTo("signIn");
     }
+
     @FXML
     public void onSignInLinkClick(MouseEvent event) {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("signIn");
     }

@@ -11,13 +11,11 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.image.ImageView;
 
-
-
-
 public class GameOver {
     @FXML
     private Label score;
-    @FXML private Label timePlayed;
+    @FXML
+    private Label timePlayed;
     @FXML
     private ImageView youLostImage;
 
@@ -26,6 +24,7 @@ public class GameOver {
     private GameScene gameScene;
     private Stage stage;
     private GameManager gameManager;
+    private static final SoundManager soundManager = SoundManager.getInstance();
 
     public void init(int level, int scoreValue, String timePlyed) {
         this.currentLevel = level;
@@ -33,10 +32,9 @@ public class GameOver {
         score.setText("Score: " + scoreValue);
         timePlayed.setText("Time :" + timePlyed);
 
-
         this.stage = (Stage) score.getScene().getWindow();
-        SoundManager.stopBackground();
-        SoundManager.playSound("GameOver.wav");
+        soundManager.stopBackground();
+        soundManager.playSound("GameOver.wav");
         youLostImage.setImage(new Image(getClass().getResource("/images/You_Lose.png").toExternalForm()));
         youLostImage.setTranslateY(-200);
         youLostImage.setOpacity(1);
@@ -61,15 +59,15 @@ public class GameOver {
 
     @FXML
     private void onBackHomeClick() {
-        SoundManager.playSound("Accept.wav");
-        SoundManager.playBackground("background.mp3", true);
+        soundManager.playSound("Accept.wav");
+        soundManager.playBackground("background.mp3", true);
         SceneManager.switchTo("mainMenuView");
     }
 
     @FXML
     private void onNewGameClick() {
-        SoundManager.playSound("Accept.wav");
-        SoundManager.playBackground("background.mp3", true);
+        soundManager.playSound("Accept.wav");
+        soundManager.playBackground("background.mp3", true);
         if (stage == null) {
             stage = (Stage) score.getScene().getWindow();
         }
