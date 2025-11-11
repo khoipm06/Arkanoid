@@ -20,4 +20,5 @@ public interface Brick {
     
     boolean intersects(GameObject other);
     PowerUp dropPowerUp();
+    void instantDestroy();
 }

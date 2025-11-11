@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="com.arkanoid.ui.view.TwoPlayerGameView"
+    stylesheets="@../multiplayer_styles.css">
+    <center>
+        <Canvas fx:id="gameCanvas" width="800" height="600" />
+    </center>
+    <right>
+        <VBox fx:id="statsPane" spacing="10" style="-fx-padding: 10; -fx-background-color: #1a1a1a;">
+            <Label fx:id="player1ScoreLabel" text="Player 1 Score: 0" style="-fx-text-fill: white;" />
+            <Label fx:id="player1LivesLabel" text="Player 1 Lives: 3" style="-fx-text-fill: white;" />
+            <Label fx:id="player2ScoreLabel" text="Player 2 Score: 0" style="-fx-text-fill: white;" />
+            <Label fx:id="player2LivesLabel" text="Player 2 Lives: 3" style="-fx-text-fill: white;" />
+        </VBox>
+    </right>
+</BorderPane>

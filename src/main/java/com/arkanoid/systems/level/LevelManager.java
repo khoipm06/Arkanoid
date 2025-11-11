@@ -1,7 +1,6 @@
 package com.arkanoid.systems.level;
 
 import com.arkanoid.core.entities.Brick;
-import com.arkanoid.core.entities.NormalBrick;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -9,6 +8,7 @@ import com.google.gson.JsonParser;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,25 +22,24 @@ public class LevelManager {
     }
 
     public List<Brick> loadLevel(int levelNumber) {
-        try {
-            String levelFile = "/levels/level" + levelNumber + ".json";
-            InputStream is = getClass().getResourceAsStream(levelFile);
-            
-            if (is == null) {
-                return createDefaultLevel();
+        List<Brick> bricks = new ArrayList<>();
+        try (InputStream inputStream = getClass().getResourceAsStream("/levels/level" + levelNumber + ".json")) {
+            if (inputStream == null) {
+                System.out.println(" Không tìm thấy file level" + levelNumber);
+                return bricks;
             }
+            JsonObject json = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
+            JsonArray brickArray = json.getAsJsonArray("bricks");
 
             for (JsonElement element : brickArray) {
                 JsonObject brickData = element.getAsJsonObject();
                 double x = brickData.get("x").getAsDouble();
                 double y = brickData.get("y").getAsDouble();
-                double brickWidth = brickData.get("width").getAsDouble(); // Assuming brickWidth is available in data or
-                                                                          // fixed
-                double brickHeight = brickData.get("height").getAsDouble(); // Assuming brickHeight is available in data
-                                                                            // or fixed
-                double startX = 50; // Based on createDefaultLevel
-                double startY = 50; // Based on createDefaultLevel
-                double gap = 5; // Based on createDefaultLevel
+                double brickWidth = brickData.get("width").getAsDouble();
+                double brickHeight = brickData.get("height").getAsDouble();
+                double startX = 50;
+                double startY = 50;
+                double gap = 5;
 
                 int row = (int) ((y - startY) / (brickHeight + gap));
                 int col = (int) ((x - startX) / (brickWidth + gap));
@@ -50,8 +49,9 @@ public class LevelManager {
                     bricks.add(brick);
             }
         } catch (Exception e) {
-            return createDefaultLevel();
+            e.printStackTrace();
         }
+        return bricks;
     }
 
     private List<Brick> parseLevelData(JsonObject levelData) {
@@ -91,7 +91,7 @@ public class LevelManager {
             for (int col = 0; col < 10; col++) {
                 double x = startX + col * (brickWidth + gap);
                 double y = startY + row * (brickHeight + gap);
-                
+
                 String type = "normal";
                 if (row == 0) {
                     type = "strong";
@@ -106,7 +106,7 @@ public class LevelManager {
                 brickData.addProperty("y", y);
                 brickData.addProperty("width", brickWidth);
                 brickData.addProperty("height", brickHeight);
-                
+
                 if (type.equals("moving")) {
                     brickData.addProperty("minX", 0);
                     brickData.addProperty("maxX", 800);
@@ -134,7 +134,8 @@ public class LevelManager {
                 System.err.println("Could not find level file: " + mapPath);
                 return bricks;
             }
-            JsonObject json = JsonParser.parseReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).getAsJsonObject();
+            JsonObject json = JsonParser.parseReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                    .getAsJsonObject();
             JsonArray brickArray = json.getAsJsonArray("bricks");
 
             for (JsonElement element : brickArray) {
@@ -143,8 +144,9 @@ public class LevelManager {
                 double y = brickData.get("y").getAsDouble();
                 double brickWidth = brickData.get("width").getAsDouble();
                 double brickHeight = brickData.get("height").getAsDouble();
-                
-                // Row and col are not essential for loading, can be calculated differently if needed.
+
+                // Row and col are not essential for loading, can be calculated differently if
+                // needed.
                 // Passing 0 for now.
                 Brick brick = entityFactory.createBrick(brickData, 0, 0);
                 if (brick != null)

@@ -8,15 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerManager {
-    private Map<Integer, Player> players;
-    private Map<Integer, KeyCode> leftKeys;
-    private Map<Integer, KeyCode> rightKeys;
+    private final Map<Integer, Player> players;
+    private final Map<Integer, KeyCode> leftKeys;
+    private final Map<Integer, KeyCode> rightKeys;
 
     public PlayerManager() {
         this.players = new HashMap<>();
         this.leftKeys = new HashMap<>();
         this.rightKeys = new HashMap<>();
-        
+
         leftKeys.put(1, KeyCode.LEFT);
         rightKeys.put(1, KeyCode.RIGHT);
         leftKeys.put(2, KeyCode.A);

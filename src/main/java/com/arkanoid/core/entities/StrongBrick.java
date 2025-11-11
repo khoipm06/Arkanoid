@@ -7,6 +7,7 @@ import javafx.scene.paint.Color;
 public class StrongBrick extends BaseBrick {
     private final Image[] crackImages;
     private int hitCount = 0;
+    private boolean destroyed = false;
     public StrongBrick(double x, double y, double width, double height, int row, int col, String path) {
         super(x, y, width, height, 3, null, row, col, path);
         crackImages = new Image[3];
@@ -26,15 +27,26 @@ public class StrongBrick extends BaseBrick {
         if (isDestroyed()) return;
 
         hitCount++;
+        super.hit();
         if (hitCount >= 3) {
             destroy();
         }
     }
     @Override
+    public void destroy() {
+        this.destroyed = true;
+
+    }
+
+    @Override
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+    @Override
     public void render(GraphicsContext gc) {
         if (isDestroyed()) return;
 
-        int state = Math.min(hitCount, 2); // 0, 1, 2
+        int state = Math.min(hitCount, 2);
         Image img = crackImages[state];
         if (img != null) {
             gc.drawImage(img, getX(), getY(), getWidth(), getHeight());
@@ -45,11 +57,12 @@ public class StrongBrick extends BaseBrick {
     }
 
     @Override
-    public boolean isDestroyed() {
-        return hitCount >= 3;
+    public void instantDestroy() {
+        super.instantDestroy();
+        this.hitCount = 3;
+        this.destroyed = true;
     }
 
-    // Helper: load ảnh an toàn
     private Image loadImage(String path) {
         try {
             var stream = getClass().getResourceAsStream(path);

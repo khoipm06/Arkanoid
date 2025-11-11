@@ -1,0 +1,137 @@
+#root {
+    -fx-background-color: linear-gradient(to bottom right, #12043b, #3b0a45, #000010);
+}
+
+/* Label chính WIN */
+#winLevel {
+    -fx-text-fill: #00ffff;
+    -fx-font-size: 60px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,255,0.8), 15, 0.4, 0, 0);
+}
+
+/* Label điểm số */
+#score {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.6), 10, 0.3, 0, 0);
+}
+#timePlayed {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.6), 10, 0.3, 0, 0);
+}
+
+#preLevel {
+    -fx-pref-width: 50px;
+    -fx-pref-height: 50px;
+
+    -fx-background-image: url("images/preMap.png");
+    -fx-background-size: 51px 51px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+    -fx-background-radius: 5;
+
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 3, 0.0, 0, 1);
+
+       /* Kiểu chữ */
+       -fx-text-fill: white;
+       -fx-font-size: 14px;
+       -fx-font-weight: bold;
+}
+
+#preLevel:hover {
+    /* Hiệu ứng phát sáng mạnh hơn khi hover */
+    -fx-background-color: #0055AA;
+    -fx-border-color: #66FFFF;
+}
+
+#nextLevel {
+    -fx-pref-width: 50px;
+    -fx-pref-height: 50px;
+
+    -fx-background-image: url("images/nextMap.png");
+    -fx-background-size: 51px 51px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+    -fx-background-radius: 5;
+
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 3, 0.0, 0, 1);
+
+       /* Kiểu chữ */
+       -fx-text-fill: white;
+       -fx-font-size: 14px;
+       -fx-font-weight: bold;
+}
+
+#nextLevel:hover {
+    /* Hiệu ứng phát sáng mạnh hơn khi hover */
+    -fx-background-color: #0055AA;
+    -fx-border-color: #66FFFF;
+}
+
+/* Nút Home */
+#home {
+    -fx-background-color: transparent;
+            -fx-background-image: url("images/home.png");
+            -fx-background-size: 100% 100%; /* ảnh lấp đầy button */
+            -fx-background-repeat: no-repeat;
+            -fx-background-position: center; /* vẫn căn giữa nếu muốn */
+
+            -fx-text-fill: white;
+            -fx-font-weight: bold;
+
+            -fx-border-color: #00ffff;
+            -fx-border-radius: 10;
+            -fx-border-width: 2;
+            -fx-background-radius: 10;
+            -fx-cursor: hand;
+}
+
+#home:hover {
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,255,1), 15, 0.5, 0, 0);
+}
+
+/* Nút disabled */
+.button:disabled {
+    -fx-background-color: #333;
+    -fx-text-fill: gray;
+    -fx-border-color: #444;
+    -fx-opacity: 0.6;
+}
+#replay {
+    -fx-background-color: transparent;
+            -fx-background-image: url("images/New_Game.png");
+            -fx-background-size: 100% 100%; /* ảnh lấp đầy button */
+            -fx-background-repeat: no-repeat;
+            -fx-background-position: center; /* vẫn căn giữa nếu muốn */
+
+            -fx-text-fill: white;
+            -fx-font-weight: bold;
+
+            -fx-border-color: #00ffff;
+            -fx-border-radius: 10;
+            -fx-border-width: 2;
+            -fx-background-radius: 10;
+            -fx-cursor: hand;
+}
+
+#replay:hover {
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,255,1), 15, 0.5, 0, 0);
+}
+
+/* Nút disabled */
+.button:disabled {
+    -fx-background-color: #333;
+    -fx-text-fill: gray;
+    -fx-border-color: #444;
+    -fx-opacity: 0.6;
+}

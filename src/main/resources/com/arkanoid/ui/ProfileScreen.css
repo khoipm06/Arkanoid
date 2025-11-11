@@ -1,0 +1,84 @@
+/* Nền tổng thể */
+#root {
+  -fx-background-image: url("../../../images/bg.png");
+  -fx-background-repeat: no-repeat;
+  -fx-background-size: cover; /* phủ toàn màn hình */
+  -fx-background-position: center center;
+}
+
+/* Bảng thông tin */
+.anchor-pane > .anchor-pane {
+  -fx-background-color: rgba(20, 20, 25, 0.8);
+  -fx-background-radius: 12;
+  -fx-border-radius: 12;
+  -fx-border-color: rgba(255, 255, 255, 0.1);
+  -fx-border-width: 1;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 10, 0, 0, 4);
+}
+
+/* Tiêu đề "Thông tin người chơi" */
+#thongtin {
+  -fx-text-fill: #00bfff; /* Xanh dương sáng */
+  -fx-font-weight: bold;
+  -fx-effect: dropshadow(gaussian, rgba(0, 191, 255, 0.7), 6, 0, 0, 2);
+}
+
+/* Label giá trị username / balance */
+#usernameLabel,
+#balance {
+  -fx-text-fill: #ffffff; /* Trắng */
+  -fx-font-size: 20px;
+  -fx-font-weight: bold;
+  -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.8), 8, 0.5, 0, 0);
+}
+
+/* Nút chung */
+.button {
+  -fx-background-color: transparent;
+  -fx-cursor: hand;
+}
+
+/* Nút Back - dùng ảnh */
+#back {
+  -fx-background-color: transparent;
+  -fx-background-image: url("../../../images/back.png");
+  -fx-background-size: 100% 100%; /* ảnh lấp đầy button */
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: center; /* vẫn căn giữa nếu muốn */
+
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+
+  -fx-border-color: #00ffff;
+  -fx-border-radius: 10;
+  -fx-border-width: 2;
+  -fx-background-radius: 10;
+  -fx-cursor: hand;
+}
+
+/* Nút Log out - dùng ảnh */
+#logOut {
+  -fx-background-color: transparent;
+  -fx-background-image: url("../../../images/logout.png");
+  -fx-background-size: 100% 100%; /* ảnh lấp đầy button */
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: center; /* vẫn căn giữa nếu muốn */
+
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+
+  -fx-border-color: #00ffff;
+  -fx-border-radius: 10;
+  -fx-border-width: 2;
+  -fx-background-radius: 10;
+  -fx-cursor: hand;
+}
+
+/* Hover effect cho nút */
+.img-button:hover,
+.img-logout:hover {
+  -fx-opacity: 0.85;
+  -fx-scale-x: 1.05;
+  -fx-scale-y: 1.05;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 8, 0, 0, 3);
+}

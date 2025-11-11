@@ -26,7 +26,6 @@ class GameManagerTest {
     void testUpdate_PlayingState() {
         gameManager.startGame();
         gameManager.update(0.16);
-        // More assertions can be added here to check the state after update
     }
 
     @Test
@@ -36,12 +35,10 @@ class GameManagerTest {
         assertFalse(ball.isExplosive());
 
         ExplosiveBallPowerUp powerUp = new ExplosiveBallPowerUp(0, 0);
-        gameManager.getPlayer().getPaddle().setY(100); // Move paddle to avoid immediate collection
+        gameManager.getPlayer().getPaddle().setY(100);
         powerUp.setY(100);
         powerUp.checkPaddleCollision(gameManager.getPlayer().getPaddle());
 
-        // This test is not ideal as it depends on the internal implementation of applyPowerUpEffect
-        // A better approach would be to have a direct way to apply powerups for testing
     }
 
     @Test

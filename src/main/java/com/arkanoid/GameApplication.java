@@ -6,6 +6,8 @@ import com.arkanoid.ui.view.SceneManager;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 public class GameApplication extends Application {
     public static final double GAME_WIDTH = 1000;
     public static final double GAME_HEIGHT = 650;
@@ -39,12 +41,9 @@ public class GameApplication extends Application {
         }
 
         primaryStage.setTitle("Arkanoid Game");
-        primaryStage.setResizable(false);
-
-        MainMenuScene mainMenu = new MainMenuScene(primaryStage, GAME_WIDTH, GAME_HEIGHT);
-        primaryStage.setScene(mainMenu.getScene());
-        
         primaryStage.show();
+
+        SoundManager.playBackground("background.mp3", true);
     }
 
     public static void main(String[] args) {

@@ -1,0 +1,80 @@
+#mapRoot {
+  -fx-background-image: url("../../../images/map.png");
+  -fx-background-size: cover;
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: center;
+}
+#preMapButton {
+  -fx-pref-width: 50px;
+  -fx-pref-height: 50px;
+
+  -fx-background-image: url("../../../images/preMap.png");
+  -fx-background-size: 51px 51px;
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: center;
+  -fx-background-color: transparent;
+  -fx-background-radius: 5;
+
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 3, 0, 0, 1);
+
+  /* Kiểu chữ */
+  -fx-text-fill: white;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+}
+
+#preMapButton:hover {
+  /* Hiệu ứng phát sáng mạnh hơn khi hover */
+  -fx-background-color: #0055aa;
+  -fx-border-color: #66ffff;
+}
+
+#nextMapButton {
+  -fx-pref-width: 50px;
+  -fx-pref-height: 50px;
+
+  -fx-background-image: url("../../../images/nextMap.png");
+  -fx-background-size: 51px 51px;
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: center;
+  -fx-background-color: transparent;
+  -fx-background-radius: 5;
+
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 3, 0, 0, 1);
+
+  /* Kiểu chữ */
+  -fx-text-fill: white;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+}
+
+#nextMapButton:hover {
+  /* Hiệu ứng phát sáng mạnh hơn khi hover */
+  -fx-background-color: #0055aa;
+  -fx-border-color: #66ffff;
+}
+
+#playGameButton {
+  -fx-pref-width: 150px;
+  -fx-pref-height: 70px;
+
+  -fx-background-image: url("../../../images/playGame.png");
+  -fx-background-size: 151px 71px;
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: center;
+  -fx-background-color: transparent;
+  -fx-background-radius: 5;
+
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 3, 0, 0, 1);
+
+  /* Kiểu chữ */
+  -fx-text-fill: white;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+}
+
+#playGameButton:hover {
+  /* Hiệu ứng phát sáng mạnh hơn khi hover */
+  -fx-background-color: #0055aa;
+  -fx-border-color: #66ffff;
+}

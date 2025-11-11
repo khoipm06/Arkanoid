@@ -17,7 +17,7 @@ import javafx.scene.image.ImageView;
 public class GameOver {
     @FXML
     private Label score;
-    @FXML private Label highestScore;
+    @FXML private Label timePlayed;
     @FXML
     private ImageView youLostImage;
 
@@ -27,33 +27,32 @@ public class GameOver {
     private Stage stage;
     private GameManager gameManager;
 
-    public void init(int level, int scoreValue, int highest) {
+    public void init(int level, int scoreValue, String timePlyed) {
         this.currentLevel = level;
         this.currentScore = scoreValue;
         score.setText("Score: " + scoreValue);
-        highestScore.setText("Highest Score: " + highest);
+        timePlayed.setText("Time :" + timePlyed);
+
 
         this.stage = (Stage) score.getScene().getWindow();
         SoundManager.stopBackground();
         SoundManager.playSound("GameOver.wav");
         youLostImage.setImage(new Image(getClass().getResource("/images/You_Lose.png").toExternalForm()));
-
-        // Đặt ảnh bắt đầu ở phía trên (ẩn ra ngoài khung nhìn)
-        youLostImage.setTranslateY(-200);  // Rơi từ đâu xuống
+        youLostImage.setTranslateY(-200);
         youLostImage.setOpacity(1);
 
         TranslateTransition fall = new TranslateTransition(Duration.seconds(0.9), youLostImage);
         fall.setFromY(-200);
         fall.setToY(0);
-        fall.setInterpolator(Interpolator.EASE_OUT); // Tạo giảm tốc lúc gần dừng
+        fall.setInterpolator(Interpolator.EASE_OUT);
 
         ScaleTransition bounce = new ScaleTransition(Duration.seconds(0.25), youLostImage);
         bounce.setFromX(1.0);
         bounce.setFromY(1.0);
-        bounce.setToX(1.06);   // Phóng to 6%
-        bounce.setToY(0.94);   // Thu dọc 6%
+        bounce.setToX(1.06);
+        bounce.setToY(0.94);
         bounce.setAutoReverse(true);
-        bounce.setCycleCount(2); // to → back → stop
+        bounce.setCycleCount(2);
 
         // Chạy hiệu ứng nối tiếp nhau
         SequentialTransition sequence = new SequentialTransition(fall, bounce);
