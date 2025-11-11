@@ -14,12 +14,13 @@ public abstract class BaseBrick extends GameObject implements Brick {
     protected int col;
     protected Image texture;
 
-
     public BaseBrick(double x, double y, double width, double height,
-                     int hitPoints, Color color, int row, int col) {
-        this(x, y, width, height, hitPoints, color, row, col, null); // mặc định không có texture
+            int hitPoints, Color color, int row, int col) {
+        this(x, y, width, height, hitPoints, color, row, col, null);
     }
-    public BaseBrick(double x, double y, double width, double height, int hitPoints, Color color, int row, int col, String texturePath) {
+
+    public BaseBrick(double x, double y, double width, double height, int hitPoints, Color color, int row, int col,
+            String texturePath) {
         super(x, y, width, height);
         this.hitPoints = hitPoints;
         this.maxHitPoints = hitPoints;
@@ -47,6 +48,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
         destroyed = true;
         active = false;
     }
+
     @Override
     public boolean isDestroyed() {
         return destroyed;
@@ -58,7 +60,8 @@ public abstract class BaseBrick extends GameObject implements Brick {
 
     @Override
     public void render(GraphicsContext gc) {
-        if(destroyed) return;
+        if (destroyed)
+            return;
 
         if (texture != null) {
             gc.drawImage(texture, x, y, width, height);
@@ -77,29 +80,31 @@ public abstract class BaseBrick extends GameObject implements Brick {
         }
         return null;
     }
+
     @Override
     public void instantDestroy() {
         this.destroyed = true;
         this.active = false;
         this.hitPoints = 0;
     }
+
     private PowerUp createRandomPowerUp() {
         double random = Math.random();
         double centerX = getCenterX();
         double centerY = getCenterY();
 
-        if (random < 0.1) {
+        if (random < 0.1) { // range [0,0.1) ~ 10%
             return new RowClearPowerUp(centerX, centerY);
-        } else if (random < 0.3) {
+        } else if (random < 0.3) { // range [0.1,0.3) ~ 20%
             return new ExplosiveBallPowerUp(centerX, centerY);
-        } else if (random < 0.7) {
+        } else if (random < 0.7) { // range [0.3,0.7) ~ 40%
             return new GunPaddlePowerUp(centerX, centerY);
+        } else { // range [0.7,1) ~ 30%
+            return new ExpandPaddlePowerUp(centerX, centerY);
         }
-        else {
-                return new ExpandPaddlePowerUp(centerX, centerY);
-            }
 
     }
+
     public int getRow() {
         return row;
     }

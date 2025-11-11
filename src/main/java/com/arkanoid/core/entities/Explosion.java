@@ -8,7 +8,7 @@ public class Explosion extends GameObject {
     private double currentRadius;
     private final double duration;
     private double age;
-    private final int frameCount = 6;     // số frame trong sprite sheet
+    private final int frameCount = 6; // number of explosion frames in the sprite sheet
     private int currentFrame = 0;
     private final double frameWidth;
     private final double frameHeight;
@@ -35,7 +35,7 @@ public class Explosion extends GameObject {
         double progress = Math.min(age / duration, 1.0);
         currentFrame = Math.min((int) (progress * frameCount), frameCount - 1);
 
-        // Khi hết thời gian vụ nổ thì tắt
+        // Deactivate explosion after its duration
         if (age >= duration) {
             active = false;
         }
@@ -43,13 +43,14 @@ public class Explosion extends GameObject {
 
     @Override
     public void render(GraphicsContext gc) {
-        if (image == null) return;
+        if (image == null)
+            return;
 
-        // Vẽ frame hiện tại
+        // Draw the current frame
         gc.drawImage(
                 image,
-                currentFrame * frameWidth, 0, frameWidth, frameHeight,   // cắt frame từ sprite sheet
-                x - frameWidth / 2, y - frameHeight / 2, frameWidth, frameHeight // vẽ tại tâm (x,y)
+                currentFrame * frameWidth, 0, frameWidth, frameHeight, // cut frame from sprite sheet
+                x - frameWidth / 2, y - frameHeight / 2, frameWidth, frameHeight // draw at center (x,y)
         );
     }
 }

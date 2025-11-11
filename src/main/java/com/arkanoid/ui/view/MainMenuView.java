@@ -1,5 +1,6 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.GameApplication;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -20,6 +21,8 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 public class MainMenuView {
+    private final SoundManager soundManager = SoundManager.getInstance();
+
     @FXML
     private Button startGame;
     @FXML
@@ -41,11 +44,11 @@ public class MainMenuView {
     @FXML
     public void initialize() {
         try {
-            Image logo = new Image(getClass().getResourceAsStream("/images/arkanoid.png"));
+            Image logo = new Image(getClass().getResourceAsStream("/images/arkanoid_intro.png"));
             welcome.setImage(logo);
             applyIntroEffect();
         } catch (Exception e) {
-            System.err.println("Không thể tải ảnh logo");
+            System.err.println("Cannot load intro image");
             e.printStackTrace();
         }
     }
@@ -69,7 +72,7 @@ public class MainMenuView {
     public void onSettingClick(MouseEvent event) {
         System.out.println("setting");
 
-        SoundManager.getInstance().playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("settingView");
     }
@@ -77,7 +80,7 @@ public class MainMenuView {
     @FXML
     public void onQuitClick(MouseEvent event) {
 
-        SoundManager.getInstance().playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
         Platform.exit(); // thoát toàn bộ ứng dụng
         System.exit(0);
 
@@ -87,7 +90,7 @@ public class MainMenuView {
     public void onShopClick(MouseEvent event) {
         System.out.println("Shop");
 
-        SoundManager.getInstance().playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("shopView");
     }
@@ -95,14 +98,14 @@ public class MainMenuView {
     public void onProfileClick(MouseEvent event) {
         System.out.println("Profile");
 
-        SoundManager.getInstance().playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
-        Main.switchToProfileOrAuth();
+        GameApplication.switchToProfileOrAuth();
     }
 
     @FXML
     public void onStartGameClick(MouseEvent event) {
-        SoundManager.getInstance().playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
         VBox modePopup = createModeSelectPopup();
         root.getChildren().add(modePopup);
     }
@@ -128,7 +131,7 @@ public class MainMenuView {
         Button singleBtn = new Button("Single Player");
         styleModeSelectButton(singleBtn);
         singleBtn.setOnAction(e -> {
-            SoundManager.getInstance().playSound("Accept.wav");
+            soundManager.playSound("Accept.wav");
             SceneManager.switchTo("map"); // hoặc start game
             root.getChildren().remove(overlay);
         });
@@ -137,8 +140,8 @@ public class MainMenuView {
         Button multiBtn = new Button("Multi Player");
         styleModeSelectButton(multiBtn);
         multiBtn.setOnAction(e -> {
-            SoundManager.getInstance().playSound("Accept.wav");
-            SceneManager.switchTo("multiPlayerScene");
+            soundManager.playSound("Accept.wav");
+            SceneManager.switchTo("twoPlayerGame");
             root.getChildren().remove(overlay);
         });
 
@@ -146,7 +149,7 @@ public class MainMenuView {
         Button backBtn = new Button("Back");
         styleModeSelectButton(backBtn);
         backBtn.setOnAction(e -> {
-            SoundManager.getInstance().playSound("Accept.wav");
+            soundManager.playSound("Accept.wav");
             root.getChildren().remove(overlay);
         });
 
@@ -193,14 +196,14 @@ public class MainMenuView {
 
     public void closeModePopup() {
 
-        SoundManager.getInstance().playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         root.getChildren().remove(modePopup);
     }
 
     public void onLeaderBoardClick(MouseEvent event) {
 
-        SoundManager.getInstance().playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("leaderboard");
     }

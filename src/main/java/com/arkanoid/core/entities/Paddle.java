@@ -26,6 +26,7 @@ public class Paddle extends MovableObject {
     private boolean gunMode = false;
     private long gunExpiryNano = -1;
     private Image gunImage;
+    private double hitFlashTime = 0.0; // New field for hit flash effect
 
     public Paddle(double x, double y, double width, double height) {
         super(x, y, height, width, 0);
@@ -106,7 +107,6 @@ public class Paddle extends MovableObject {
 
     @Override
     public void update(double deltaTime) {
-
         constrainToBounds();
         if (gunMode && gunExpiryNano != -1 && System.nanoTime() > gunExpiryNano) {
             gunMode = false;
@@ -115,6 +115,9 @@ public class Paddle extends MovableObject {
         if (!currentSkin.equals(originalSkin)) {
             this.paddleImage = getSkin(originalSkin);
             currentSkin = originalSkin;
+        }
+        if (hitFlashTime > 0) { // Update hit flash timer
+            hitFlashTime -= deltaTime;
         }
     }
 
@@ -136,6 +139,11 @@ public class Paddle extends MovableObject {
             double gunW = 12, gunH = 24;
             gc.drawImage(gunImage, getLeftGunX(), getGunY(), gunW, gunH);
             gc.drawImage(gunImage, getRightGunX(), getGunY(), gunW, gunH);
+        }
+
+        if (hitFlashTime > 0) { // Render hit flash overlay
+            gc.setFill(new Color(1, 1, 1, hitFlashTime / 0.2)); // White, fading opacity
+            gc.fillRect(x, y, width, height);
         }
     }
 
@@ -192,4 +200,7 @@ public class Paddle extends MovableObject {
         return y - 10; // phía trên paddle
     }
 
+    public void triggerHitFlash(double duration) {
+        this.hitFlashTime = duration;
+    }
 }

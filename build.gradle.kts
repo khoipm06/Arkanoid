@@ -3,6 +3,7 @@ plugins {
     application
     id("org.openjfx.javafxplugin") version "0.1.0"
     id("com.gradleup.shadow") version "9.2.2"
+    id("org.beryx.jlink") version "3.1.3"
 }
 
 group = "com.arkanoid"
@@ -31,8 +32,14 @@ application {
 javafx {
     version = "21.0.9"
     modules = listOf("javafx.controls", "javafx.graphics", "javafx.fxml", "javafx.media" )
-
 }
+
+// jlink {
+//     options = listOf("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages")
+//     launcher {
+//         name = "com.arkanoid"
+//     }
+// }
 
 dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
@@ -41,11 +48,11 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.openjfx:javafx-controls:21.0.9")
-        testImplementation("org.openjfx:javafx-fxml:21.0.9")
-        testImplementation("org.openjfx:javafx-graphics:21.0.9")
-    }
-    
+    implementation("org.openjfx:javafx-media:21.0.9:win")
+    implementation("org.openjfx:javafx-controls:21.0.9:win")
+    implementation("org.openjfx:javafx-fxml:21.0.9:win")
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }

@@ -3,6 +3,8 @@ package com.arkanoid;
 import com.arkanoid.database.DatabaseManager;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.view.SceneManager;
+import com.arkanoid.ui.view.SessionManager;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -32,6 +34,7 @@ public class GameApplication extends Application {
         SceneManager.loadScene("gameOver", "GameOver.fxml");
         SceneManager.loadScene("winLevel", "WinLevel.fxml");
         SceneManager.loadScene("leaderboard", "Leaderboard.fxml");
+        SceneManager.loadScene("twoPlayerGame", "TwoPlayerGame.fxml");
 
         SceneManager.switchTo("mainMenuView");
 
@@ -46,6 +49,14 @@ public class GameApplication extends Application {
         primaryStage.show();
 
         soundManager.playBackground("background.mp3", true);
+    }
+
+    public static void switchToProfileOrAuth() {
+        if (SessionManager.isLoggedIn()) {
+            SceneManager.switchTo("profileScreen");
+        } else {
+            SceneManager.switchTo("authScreen");
+        }
     }
 
     public static void main(String[] args) {

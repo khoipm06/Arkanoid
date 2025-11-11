@@ -8,7 +8,8 @@ public class MovingBrick extends BaseBrick {
     private double maxX;
     private double moveSpeed;
 
-    public MovingBrick(double x, double y, double width, double height, double minX, double maxX, int row, int col, String path) {
+    public MovingBrick(double x, double y, double width, double height, double minX, double maxX, int row, int col,
+            String path) {
         super(x, y, width, height, 1, Color.CYAN, row, col, path);
         this.minX = minX;
         this.maxX = maxX;
@@ -22,10 +23,10 @@ public class MovingBrick extends BaseBrick {
 
         if (newX < minX) {
             newX = minX;
-            velocityX = moveSpeed;           // Đi sang phải
+            velocityX = moveSpeed;
         } else if (newX + width > maxX) {
             newX = maxX - width;
-            velocityX = -moveSpeed;          // Đi sang trái
+            velocityX = -moveSpeed;
         }
 
         x = newX;

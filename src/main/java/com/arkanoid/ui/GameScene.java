@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
-
 public class GameScene {
     private final Scene scene;
     private final Stage stage;
@@ -48,7 +47,6 @@ public class GameScene {
     private long startTime;
     private Text highestscoreLabel;
 
-
     public GameScene(Stage stage, double width, double height, int levelNumber) {
         this.stage = stage;
         this.pressedKeys = new HashSet<>();
@@ -62,7 +60,7 @@ public class GameScene {
 
         if (gameManager.getPlayer() != null) {
             String equippedSkin = SessionManager.getCurrentUser().getEquippedPaddleSkin();
-            System.out.println("🎨 Skin paddle đang dùng: " + equippedSkin);
+            System.out.println("Current paddle skin: " + equippedSkin);
             gameManager.getPlayer().getPaddle().equipSkin(equippedSkin);
         }
 
@@ -70,12 +68,11 @@ public class GameScene {
             if (streamBackGround != null) {
                 this.backgroundImage = new Image(streamBackGround);
             } else {
-                System.err.println("Cảnh báo: Không tìm thấy file ảnh background.png. Dùng nền đen.");
+                System.err.println("Background warning: Cannot find background.png file. Using black background.");
             }
         } catch (Exception e) {
-            System.err.println("Lỗi khi tải ảnh nền: " + e.getMessage());
+            System.err.println("Error loading background image: " + e.getMessage());
         }
-
 
         BorderPane mainLayout = new BorderPane();
 
@@ -117,8 +114,7 @@ public class GameScene {
                         "-fx-border-color: #00ffff; " + // viền cyan nổi bật
                         "-fx-border-width: 2; " +
                         "-fx-background-radius: 15; " +
-                        "-fx-border-radius: 15;"
-        );
+                        "-fx-border-radius: 15;");
 
         // Tiêu đề game
         Text title = new Text("ARKANOID");
@@ -195,7 +191,8 @@ public class GameScene {
         Button newGameBtn = new Button("New Game");
         stylePauseButton(newGameBtn);
         newGameBtn.setOnAction(e -> {
-            GameScene newScene = new GameScene(stage, stage.getWidth(), stage.getHeight(), gameManager.getLevelNumber());
+            GameScene newScene = new GameScene(stage, stage.getWidth(), stage.getHeight(),
+                    gameManager.getLevelNumber());
             newScene.start();
             stage.setScene(newScene.getScene());
         });
@@ -225,15 +222,16 @@ public class GameScene {
         button.setPrefHeight(50);
 
         // Hiệu ứng hover
-        button.setOnMouseEntered(e -> button.setStyle("-fx-background-color: linear-gradient(to bottom right, #2a5298, #1e3c72);"
-                + "-fx-text-fill: yellow;"
-                + "-fx-font-size: 22px;"
-                + "-fx-font-weight: bold;"
-                + "-fx-background-radius: 15;"
-                + "-fx-border-radius: 15;"
-                + "-fx-border-color: white;"
-                + "-fx-border-width: 2;"
-                + "-fx-cursor: hand;"));
+        button.setOnMouseEntered(
+                e -> button.setStyle("-fx-background-color: linear-gradient(to bottom right, #2a5298, #1e3c72);"
+                        + "-fx-text-fill: yellow;"
+                        + "-fx-font-size: 22px;"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-background-radius: 15;"
+                        + "-fx-border-radius: 15;"
+                        + "-fx-border-color: white;"
+                        + "-fx-border-width: 2;"
+                        + "-fx-cursor: hand;"));
         button.setOnMouseExited(e -> stylePauseButton(button));
     }
 
@@ -286,7 +284,8 @@ public class GameScene {
     }
 
     private void handleInput(double deltaTime) {
-        if (gameManager.getCurrentState() != GameManager.GameState.PLAYING) return;
+        if (gameManager.getCurrentState() != GameManager.GameState.PLAYING)
+            return;
 
         for (KeyCode key : pressedKeys) {
             gameManager.getPlayerManager().handleInput(key, true, deltaTime);
@@ -365,12 +364,17 @@ public class GameScene {
         for (LineEffect lineEffect : gameManager.getLineEffects()) {
             lineEffect.render(gc);
         }
+        for (TrailEffect trailEffect : gameManager.getTrailEffects()) {
+            trailEffect.render(gc);
+        }
+        for (FloatingText floatingText : gameManager.getFloatingTexts()) {
+            floatingText.render(gc);
+        }
         if (gameManager.getPlayer() != null) {
             gameManager.getPlayer().getPaddle().render(gc);
         }
 
     }
-
 
     public Scene getScene() {
         return scene;

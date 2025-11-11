@@ -67,9 +67,9 @@ public class Ball extends MovableObject {
     public static void setCurrentSkin(String skinName) {
         if (SKINS.containsKey(skinName)) {
             currentSkin = skinName;
-            System.out.println("🎨 Skin bóng hiện tại: " + skinName);
+            System.out.println("Skin bóng hiện tại: " + skinName);
         } else {
-            System.err.println("⚠️ Skin không tồn tại: " + skinName);
+            System.err.println("Skin không tồn tại: " + skinName);
         }
     }
 
@@ -112,6 +112,7 @@ public class Ball extends MovableObject {
     public void checkPaddleCollision(Paddle paddle) {
         if (intersects(paddle) && velocityY > 0) {
             soundManager.playSound("paddleBounce.wav");
+            paddle.triggerHitFlash(0.2); // Trigger paddle hit flash
             y = paddle.getY() - height;
 
             double hitPosition = (getCenterX() - paddle.getCenterX()) / (paddle.getWidth() / 2);

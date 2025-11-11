@@ -12,9 +12,8 @@ public class LineEffect extends GameObject {
     private double age;
     private double endX;
     private double endY;
-    private List<double[]> segments; // từng đoạn nhỏ của tia sét
+    private List<double[]> segments; // each lightning segment
     private Random random;
-
 
     public LineEffect(double x, double y, double endX, double endY, double duration) {
         super(x, y, 0, 0);
@@ -26,6 +25,7 @@ public class LineEffect extends GameObject {
         this.random = new Random();
         generateLightning();
     }
+
     private void generateLightning() {
         int steps = 20;
         double dx = (endX - x) / steps;
@@ -34,15 +34,14 @@ public class LineEffect extends GameObject {
         double prevY = y;
 
         for (int i = 1; i <= steps; i++) {
-            // ±2 px để tia sét hơi gợn, nhưng vẫn là 1 tia
+            // make the lightning slightly wavy, but still a single bolt
             double nx = x + dx * i + (random.nextDouble() - 0.5) * 8;
             double ny = y + dy * i + (random.nextDouble() - 0.5) * 6;
-            segments.add(new double[]{prevX, prevY, nx, ny});
+            segments.add(new double[] { prevX, prevY, nx, ny });
             prevX = nx;
             prevY = ny;
         }
     }
-
 
     @Override
     public void update(double deltaTime) {
@@ -54,8 +53,8 @@ public class LineEffect extends GameObject {
 
     @Override
     public void render(GraphicsContext gc) {
-        double alpha = 1.0 - (age / duration); // mờ dần
-        gc.setStroke(new Color(0.3, 0.8, 1.0, alpha)); // vàng nhạt
+        double alpha = 1.0 - (age / duration); // fade out
+        gc.setStroke(new Color(0.3, 0.8, 1.0, alpha)); // light blue color
         gc.setLineWidth(2);
 
         for (double[] seg : segments) {

@@ -24,9 +24,13 @@ public class GameManager {
     private final List<Explosion> explosions;
     private final List<LineEffect> lineEffects;
     private final List<Particle> particles;
+    private final List<TrailEffect> trailEffects; // New field for trail effects
+    private double trailSpawnTimer = 0.0; // Timer for spawning trail effects
+    private static final double TRAIL_SPAWN_INTERVAL = 0.02; // Spawn a trail effect every 0.02 seconds
 
     private final List<Bullet> bullets;
     private double gunFireCooldown = 0.0; // thời gian đếm ngược tới lần bắn tiếp theo (giây)
+    private final List<FloatingText> floatingTexts; // New field for floating score texts
 
     public GameManager(double gameWidth, double gameHeight, int levelNumber) {
         this.gameWidth = gameWidth;
@@ -41,6 +45,8 @@ public class GameManager {
         this.explosions = new ArrayList<>();
         this.lineEffects = new ArrayList<>();
         this.particles = new ArrayList<>();
+        this.trailEffects = new ArrayList<>(); // Initialize trail effects list
+        this.floatingTexts = new ArrayList<>(); // Initialize floating texts list
         this.levelNumber = levelNumber;
         this.bricks = levelManager.loadLevel(levelNumber);
         Paddle paddle = new Paddle(gameWidth / 2 - 30, gameHeight - 30, 100, 25, 400, 0, gameWidth);
@@ -76,13 +82,24 @@ public class GameManager {
         playerManager.update(deltaTime);
         Paddle paddle = player.getPaddle();
 
+        trailSpawnTimer += deltaTime;
+        boolean canSpawnTrail = trailSpawnTimer >= TRAIL_SPAWN_INTERVAL;
+
         for (Ball ball : balls) {
             if (ball.isAttachedToPaddle()) {
                 ball.setX(paddle.getX() + paddle.getWidth() / 2 - ball.getRadius());
                 ball.setY(paddle.getY() - ball.getRadius() * 2);
+            } else {
+                if (canSpawnTrail) {
+                    trailEffects.add(new TrailEffect(ball.getCenterX(), ball.getCenterY(), ball.getRadius(), 0.5, javafx.scene.paint.Color.CYAN));
+                }
             }
             ball.update(deltaTime);
             ball.checkPaddleCollision(paddle);
+        }
+
+        if (canSpawnTrail) {
+            trailSpawnTimer = 0.0;
         }
 
         for (Brick brick : bricks) {
@@ -100,6 +117,7 @@ public class GameManager {
 
             if (powerUp.checkPaddleCollision(player.getPaddle())) {
                 player.getState().addScore(50);
+                floatingTexts.add(new FloatingText("+50", powerUp.getCenterX(), powerUp.getCenterY(), 1.0, 50, javafx.scene.paint.Color.YELLOW)); // Floating text for power-up
                 applyPowerUpEffect(powerUp, paddle); // 🔥 kích hoạt hiệu ứng power-up
                 powerUpIterator.remove(); // ❌ xoá luôn khỏi list sau khi ăn
                 continue;
@@ -212,10 +230,38 @@ public class GameManager {
                 particleIterator.remove();
             }
         }
+
+        // Update trail effects
+        Iterator<TrailEffect> trailIterator = trailEffects.iterator();
+        while (trailIterator.hasNext()) {
+            TrailEffect trail = trailIterator.next();
+            trail.update(deltaTime);
+            if (!trail.isActive()) {
+                trailIterator.remove();
+            }
+        }
+
+        // Update floating texts
+        Iterator<FloatingText> textIterator = floatingTexts.iterator();
+        while (textIterator.hasNext()) {
+            FloatingText text = textIterator.next();
+            text.update(deltaTime);
+            if (!text.isActive()) {
+                textIterator.remove();
+            }
+        }
     }
 
     public List<LineEffect> getLineEffects() {
         return lineEffects;
+    }
+
+    public List<TrailEffect> getTrailEffects() {
+        return trailEffects;
+    }
+
+    public List<FloatingText> getFloatingTexts() {
+        return floatingTexts;
     }
 
     public void addExplosion(double x, double y, double frameWidth, double frameHeight, double duration) {
@@ -225,6 +271,7 @@ public class GameManager {
     public void onBrickDestroyed(Brick brick) {
         if (brick.isDestroyed()) {
             player.getState().addScore(100);
+            floatingTexts.add(new FloatingText("+100", brick.getCenterX(), brick.getCenterY(), 1.0, 50, javafx.scene.paint.Color.WHITE)); // Floating text for brick
             PowerUp powerUp = brick.dropPowerUp();
             if (powerUp != null) {
                 powerUps.add(powerUp);

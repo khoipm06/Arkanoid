@@ -2,7 +2,6 @@ package com.arkanoid.core.entities;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 
 public class Bullet extends GameObject {
     private double speedY;
