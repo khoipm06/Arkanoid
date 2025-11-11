@@ -111,6 +111,7 @@ assets/**
 .specify/templates/plan-template.md
 .specify/templates/spec-template.md
 .specify/templates/tasks-template.md
+specs/**
 GEMINI.md
 
 temporary_files/**

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerProfileManager {
-    
+
     public static class ProfileData {
         public int coins;
         public int highScore;
@@ -37,23 +37,22 @@ public class PlayerProfileManager {
     public static List<LeaderboardEntry> getLeaderboardData() {
         List<LeaderboardEntry> leaderboard = new ArrayList<>();
         String sql = """
-            SELECT u.username, pp.high_score, IFNULL(MAX(gh.level_reached), 1) as max_level
-            FROM users u
-            JOIN player_profiles pp ON u.id = pp.user_id
-            LEFT JOIN game_history gh ON u.id = gh.user_id
-            GROUP BY u.id
-            ORDER BY pp.high_score DESC
-        """;
+                    SELECT u.username, pp.high_score, IFNULL(MAX(gh.level_reached), 1) as max_level
+                    FROM users u
+                    JOIN player_profiles pp ON u.id = pp.user_id
+                    LEFT JOIN game_history gh ON u.id = gh.user_id
+                    GROUP BY u.id
+                    ORDER BY pp.high_score DESC
+                """;
 
         try (Statement stmt = DatabaseManager.getConnection().createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+                ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 leaderboard.add(new LeaderboardEntry(
-                    rs.getString("username"),
-                    rs.getInt("high_score"),
-                    rs.getInt("max_level")
-                ));
+                        rs.getString("username"),
+                        rs.getInt("high_score"),
+                        rs.getInt("max_level")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -68,12 +67,11 @@ public class PlayerProfileManager {
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     return new ProfileData(
-                        rs.getInt("coins"),
-                        rs.getInt("high_score"),
-                        rs.getString("current_skin"),
-                        rs.getInt("games_played"),
-                        rs.getInt("total_score")
-                    );
+                            rs.getInt("coins"),
+                            rs.getInt("high_score"),
+                            rs.getString("current_skin"),
+                            rs.getInt("games_played"),
+                            rs.getInt("total_score"));
                 }
             }
         } catch (SQLException e) {

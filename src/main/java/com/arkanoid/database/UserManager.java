@@ -4,7 +4,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 
 public class UserManager {
-    
+
     public static class User {
         private int id;
         private String username;
@@ -20,40 +20,56 @@ public class UserManager {
             this.lastLogin = lastLogin;
         }
 
-        public int getId() { return id; }
-        public String getUsername() { return username; }
-        public String getEmail() { return email; }
-        public LocalDateTime getCreatedAt() { return createdAt; }
-        public LocalDateTime getLastLogin() { return lastLogin; }
+        public int getId() {
+            return id;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public LocalDateTime getCreatedAt() {
+            return createdAt;
+        }
+
+        public LocalDateTime getLastLogin() {
+            return lastLogin;
+        }
     }
 
     public static User register(String username, String password, String email) {
         String sql = "INSERT INTO users (username, password, email, created_at) VALUES (?, ?, ?, ?)";
         String createProfileSql = "INSERT INTO player_profiles (user_id) VALUES (?)";
-        
+
         if (usernameExists(username)) {
             return null; // User already exists
         }
 
-        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql,
+                Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             pstmt.setString(3, email);
             pstmt.setString(4, LocalDateTime.now().toString());
-            
+
             int affectedRows = pstmt.executeUpdate();
-            
+
             if (affectedRows > 0) {
                 try (ResultSet rs = pstmt.getGeneratedKeys()) {
                     if (rs.next()) {
                         int userId = rs.getInt(1);
-                        
+
                         // Create default profile
-                        try (PreparedStatement profileStmt = DatabaseManager.getConnection().prepareStatement(createProfileSql)) {
+                        try (PreparedStatement profileStmt = DatabaseManager.getConnection()
+                                .prepareStatement(createProfileSql)) {
                             profileStmt.setInt(1, userId);
                             profileStmt.executeUpdate();
                         }
-                        
+
                         return new User(userId, username, email, LocalDateTime.now(), null);
                     }
                 }
@@ -67,11 +83,11 @@ public class UserManager {
     public static User login(String username, String password) {
         String sql = "SELECT id, username, email, created_at, last_login FROM users WHERE username = ? AND password = ?";
         String updateLoginSql = "UPDATE users SET last_login = ? WHERE id = ?";
-        
+
         try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
-            
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     int id = rs.getInt("id");
@@ -79,14 +95,15 @@ public class UserManager {
                     LocalDateTime createdAt = LocalDateTime.parse(rs.getString("created_at"));
                     String lastLoginStr = rs.getString("last_login");
                     LocalDateTime lastLogin = lastLoginStr != null ? LocalDateTime.parse(lastLoginStr) : null;
-                    
+
                     // Update login time
-                    try (PreparedStatement updateStmt = DatabaseManager.getConnection().prepareStatement(updateLoginSql)) {
+                    try (PreparedStatement updateStmt = DatabaseManager.getConnection()
+                            .prepareStatement(updateLoginSql)) {
                         updateStmt.setString(1, LocalDateTime.now().toString());
                         updateStmt.setInt(2, id);
                         updateStmt.executeUpdate();
                     }
-                    
+
                     return new User(id, username, email, createdAt, lastLogin);
                 }
             }

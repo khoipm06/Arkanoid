@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="root" prefHeight="521.0" prefWidth="758.0" stylesheets="@../Win.css"
    xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
@@ -15,8 +16,12 @@
          onMouseClicked="#onPreLevelClick" prefHeight="42.0" prefWidth="47.0" />
       <Label fx:id="score" layoutX="266.0" layoutY="197.0" prefHeight="35.0" prefWidth="226.0"
          text="Score :" />
-      <Label fx:id="highestScore" layoutX="266.0" layoutY="272.0" prefHeight="35.0"
-         prefWidth="171.0" text="Highest Score :" />
+      <Label fx:id="timePlayed" layoutX="266.0" layoutY="272.0" prefHeight="35.0" prefWidth="171.0"
+         text="Time :">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </Label>
       <Button fx:id="replay" layoutX="335.0" layoutY="346.0" mnemonicParsing="false"
          onMouseClicked="#onReplayClick" prefHeight="40.0" prefWidth="106.0" />
       <Button fx:id="home" layoutX="335.0" layoutY="427.0" mnemonicParsing="false"
