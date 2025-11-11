@@ -18,7 +18,7 @@ public class WinLevel {
     @FXML
     private Label score;
     @FXML
-    private Label highestScore;
+    private Label timePlayed;
     @FXML
     private Button nextLevel;
     @FXML
@@ -32,11 +32,11 @@ public class WinLevel {
     private int currentScore;
     private final int maxLevel = 3;
 
-    public void init(int level, int scoreValue, int highest) {
+    public void init(int level, int scoreValue, String timePlayedS) {
         this.currentLevel = level;
         this.currentScore = scoreValue;
         score.setText("Score: " + scoreValue);
-        highestScore.setText("Highest Score: " + highest);
+        timePlayed.setText("Time: " + timePlayedS);
         if (currentLevel >= maxLevel) {
             nextLevel.setDisable(true);
             nextLevel.setOpacity(0.5);

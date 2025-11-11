@@ -17,7 +17,7 @@ import javafx.scene.image.ImageView;
 public class GameOver {
     @FXML
     private Label score;
-    @FXML private Label highestScore;
+    @FXML private Label timePlayed;
     @FXML
     private ImageView youLostImage;
 
@@ -27,11 +27,12 @@ public class GameOver {
     private Stage stage;
     private GameManager gameManager;
 
-    public void init(int level, int scoreValue, int highest) {
+    public void init(int level, int scoreValue, String timePlyed) {
         this.currentLevel = level;
         this.currentScore = scoreValue;
         score.setText("Score: " + scoreValue);
-        highestScore.setText("Highest Score: " + highest);
+        timePlayed.setText("Time :" + timePlyed);
+
 
         this.stage = (Stage) score.getScene().getWindow();
         SoundManager.stopBackground();

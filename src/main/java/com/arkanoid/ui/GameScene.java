@@ -310,11 +310,11 @@ public class GameScene {
         if (gameManager.getCurrentState() == GameManager.GameState.GAME_OVER) {
             gameLoop.stop();
             Platform.runLater(() -> {
-                int highest = 0;
+
                 SceneManager.showGameOver(
                         gameManager.getLevelNumber(),
                         gameManager.getScore(),
-                        highest);
+                        timeStr);
             });
             return;
         }
@@ -326,7 +326,7 @@ public class GameScene {
                 SceneManager.showWinLevel(
                         gameManager.getLevelNumber(),
                         gameManager.getScore(),
-                        highest);
+                        timeStr);
             });
         }
     }
