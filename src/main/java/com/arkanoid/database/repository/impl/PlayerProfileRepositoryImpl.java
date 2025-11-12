@@ -22,7 +22,7 @@ public class PlayerProfileRepositoryImpl implements PlayerProfileRepository {
 
     @Override
     public PlayerProfile create(int userId) {
-        String sql = "INSERT INTO player_profiles (user_id, coins, high_score, current_skin, games_played, total_score) "
+        String sql = "INSERT INTO player_profiles (user_id, money, high_score, current_skin, games_played, total_score) "
                 +
                 "VALUES (?, 0, 0, 'default', 0, 0)";
 
@@ -60,12 +60,12 @@ public class PlayerProfileRepositoryImpl implements PlayerProfileRepository {
 
     @Override
     public void update(PlayerProfile profile) {
-        String sql = "UPDATE player_profiles SET coins = ?, high_score = ?, current_skin = ?, " +
+        String sql = "UPDATE player_profiles SET money = ?, high_score = ?, current_skin = ?, " +
                 "games_played = ?, total_score = ? WHERE user_id = ?";
 
         dbManager.executeUpdate(conn -> {
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setInt(1, profile.getCoins());
+                pstmt.setInt(1, profile.getMoney());
                 pstmt.setInt(2, profile.getHighScore());
                 pstmt.setString(3, profile.getCurrentSkin());
                 pstmt.setInt(4, profile.getGamesPlayed());
@@ -109,12 +109,12 @@ public class PlayerProfileRepositoryImpl implements PlayerProfileRepository {
 
     private PlayerProfile mapResultSetToProfile(ResultSet rs) throws SQLException {
         int userId = rs.getInt("user_id");
-        int coins = rs.getInt("coins");
+        int money = rs.getInt("money");
         int highScore = rs.getInt("high_score");
         String currentSkin = rs.getString("current_skin");
         int gamesPlayed = rs.getInt("games_played");
         int totalScore = rs.getInt("total_score");
 
-        return new PlayerProfile(userId, coins, highScore, currentSkin, gamesPlayed, totalScore);
+        return new PlayerProfile(userId, money, highScore, currentSkin, gamesPlayed, totalScore);
     }
 }

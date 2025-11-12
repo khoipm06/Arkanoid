@@ -11,13 +11,13 @@
    fx:controller="com.arkanoid.ui.view.GameOver">
    <children>
       <Label fx:id="score" layoutX="253.0" layoutY="206.0" prefHeight="30.0" prefWidth="305.0"
-         text="Score :">
+         text="Score: ">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
       <Label fx:id="timePlayed" layoutX="253.0" layoutY="264.0" prefHeight="30.0" prefWidth="189.0"
-         text="Time :">
+         text="Time: ">
          <font>
             <Font size="24.0" />
          </font>

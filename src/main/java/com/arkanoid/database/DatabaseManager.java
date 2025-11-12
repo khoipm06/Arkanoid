@@ -93,7 +93,7 @@ public class DatabaseManager implements AutoCloseable {
         String createPlayerProfilesTable = """
                     CREATE TABLE IF NOT EXISTS player_profiles (
                         user_id INTEGER PRIMARY KEY,
-                        coins INTEGER DEFAULT 0,
+                        money INTEGER DEFAULT 0,
                         high_score INTEGER DEFAULT 0,
                         current_skin TEXT DEFAULT 'default',
                         games_played INTEGER DEFAULT 0,
@@ -141,12 +141,21 @@ public class DatabaseManager implements AutoCloseable {
                     )
                 """;
 
+        String createUserPreferencesTable = """
+                    CREATE TABLE IF NOT EXISTS user_preferences (
+                        user_id INTEGER PRIMARY KEY,
+                        music_volume INTEGER DEFAULT 50,
+                        FOREIGN KEY (user_id) REFERENCES users(id)
+                    )
+                """;
+
         try (Statement stmt = conn.createStatement()) {
             stmt.execute(createUsersTable);
             stmt.execute(createPlayerProfilesTable);
             stmt.execute(createInventoryTable);
             stmt.execute(createGameHistoryTable);
             stmt.execute(createGameSavesTable);
+            stmt.execute(createUserPreferencesTable);
         }
     }
 

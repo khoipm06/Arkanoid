@@ -15,9 +15,9 @@
       <Button fx:id="preLevel" layoutX="124.0" layoutY="236.0" mnemonicParsing="false"
          onMouseClicked="#onPreLevelClick" prefHeight="42.0" prefWidth="47.0" />
       <Label fx:id="score" layoutX="266.0" layoutY="197.0" prefHeight="35.0" prefWidth="226.0"
-         text="Score :" />
+         text="Score: " />
       <Label fx:id="timePlayed" layoutX="266.0" layoutY="272.0" prefHeight="35.0" prefWidth="171.0"
-         text="Time :">
+         text="Time: ">
          <font>
             <Font size="30.0" />
          </font>

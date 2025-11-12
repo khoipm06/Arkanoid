@@ -97,7 +97,7 @@ public class ShopPaddle {
                     // Add to inventory database
                     user.addOwnedPaddleSkin(skinName);
                     logger.info("Purchase successful paddle skin: {} | Price: {}", skinName, item.price);
-                    logger.info("Remaining balance: {} coins", user.getMoney());
+                    logger.info("Remaining balance: ${}", user.getMoney());
                     lblMoney.setText("Balance: " + user.getMoney() + "$");
                     ((ShopView) SceneManager.getController("shopView")).refreshMoney();
                 } else {
@@ -141,19 +141,19 @@ public class ShopPaddle {
             item.equipButton.getStyleClass().removeAll("equip-button", "equipped-button");
 
             if (!owned) {
-                item.buyButton.getStyleClass().add("buy-button"); // chưa mua
+                item.buyButton.getStyleClass().add("buy-button"); // not purchased
                 item.buyButton.setDisable(!canAfford);
             } else {
-                item.buyButton.getStyleClass().add("owned-button"); // đã mua
+                item.buyButton.getStyleClass().add("owned-button"); // already purchased
             }
 
             if (owned) {
                 item.equipButton.setVisible(true);
                 if (equipped) {
-                    item.equipButton.getStyleClass().add("equipped-button"); // đang trang bị
+                    item.equipButton.getStyleClass().add("equipped-button"); // currently equipped
                     item.equipButton.setDisable(true);
                 } else {
-                    item.equipButton.getStyleClass().add("equip-button"); // chưa trang bị
+                    item.equipButton.getStyleClass().add("equip-button"); // not equipped
                     item.equipButton.setDisable(false);
                 }
             } else {

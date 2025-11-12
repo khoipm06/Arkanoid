@@ -58,7 +58,7 @@ public class ProfileScreen {
             // Display user info
             usernameLabel.setText("Username: " + user.getUsername());
             userIdLabel.setText("User ID: " + user.getId());
-            balance.setText("Balance: " + user.getMoney() + " coins");
+            balance.setText("Balance: $" + String.format("%,d", user.getMoney()));
 
             // Display game statistics
             if (profile != null) {
@@ -104,7 +104,7 @@ public class ProfileScreen {
         } else {
             usernameLabel.setText("Username: Guest");
             userIdLabel.setText("User ID: N/A");
-            balance.setText("Balance: 0 coins");
+            balance.setText("Balance: $0");
             highScoreLabel.setText("🏆 High Score: 0");
             gamesPlayedLabel.setText("🎮 Games Played: 0");
             totalScoreLabel.setText("📊 Total Score: 0");

@@ -127,7 +127,7 @@ public class ShopView {
         // Create dialog
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Deposit Money");
-        dialog.setHeaderText("💰 Enter the amount you want to deposit:");
+        dialog.setHeaderText("Enter the amount you want to deposit:");
         dialog.setContentText("Amount:");
 
         DialogPane dialogPane = dialog.getDialogPane();
@@ -176,7 +176,7 @@ public class ShopView {
         });
 
         Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        okButton.setText("💸 Nạp Ngay");
+        okButton.setText("Deposit");
         okButton.setStyle(
                 "-fx-background-color: linear-gradient(to bottom, #00d4ff, #0099cc);" + "-fx-text-fill: white;"
                         + "-fx-font-weight: bold;" + "-fx-font-size: 15px;" + "-fx-background-radius: 12;"
@@ -192,7 +192,7 @@ public class ShopView {
                         + "-fx-padding: 10 24;" + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);"));
 
         Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
-        cancelButton.setText("❌ Hủy");
+        cancelButton.setText("Cancel");
         cancelButton.setStyle("-fx-background-color: #2d2d2d;" + "-fx-text-fill: #ff6b6b;" + "-fx-font-weight: bold;"
                 + "-fx-font-size: 14px;" + "-fx-background-radius: 12;" + "-fx-padding: 10 20;");
 
@@ -216,7 +216,7 @@ public class ShopView {
                     if (shopBall != null) {
                         shopBall.refreshMoney();
                     }
-                    showMessage("🎉 Deposit successful! +" + String.format("%,d", amount) + " coins");
+                    showMessage("Deposit successful! +$" + String.format("%,d", amount));
                 } else {
                     showMessage("Amount must be greater than 0!");
                 }

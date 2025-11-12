@@ -96,7 +96,9 @@ public class MainMenuView {
         soundManager.playSound("Accept.wav");
 
         if (SessionManager.getCurrentUser() == null) {
-            ToastNotification.showToast("⚠️ Please log in to access the shop!", root, ToastNotification.ToastType.ERROR);
+            String message = "Please log in to access the shop!";
+            ToastNotification.showToast(message, root, ToastNotification.ToastType.ERROR);
+            logger.warn(message);
             return;
         }
 
@@ -148,7 +150,9 @@ public class MainMenuView {
             soundManager.playSound("Accept.wav");
             if (SessionManager.getCurrentUser() == null) {
                 root.getChildren().remove(overlay);
-                ToastNotification.showToast("⚠️ Please log in to play Single Player mode!", root, ToastNotification.ToastType.ERROR);
+                String message = "Please log in to play Single Player mode!";
+                ToastNotification.showToast(message, root, ToastNotification.ToastType.ERROR);
+                logger.warn(message);
                 return;
             }
             SceneManager.switchTo("map");

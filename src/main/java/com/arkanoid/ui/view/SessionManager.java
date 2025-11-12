@@ -2,16 +2,19 @@ package com.arkanoid.ui.view;
 
 import com.arkanoid.database.InventoryManager;
 import com.arkanoid.database.PlayerProfileManager;
+import com.arkanoid.database.UserPreferencesManager;
+import com.arkanoid.database.entity.UserPreferences;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.PlayerProfile;
+import com.arkanoid.systems.sound.SoundManager;
 import org.slf4j.Logger;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Manages user session state
- * Now works with database for persistent user data
+ * Manages user session state Now works with database for persistent user data
  */
 public class SessionManager {
     private static final Logger logger = GameLogger.getLogger(SessionManager.class);
@@ -40,18 +43,18 @@ public class SessionManager {
         }
 
         /**
-         * Get current coins from database
+         * Get current money from database
          */
         public int getMoney() {
             PlayerProfileManager.ProfileData profile = PlayerProfileManager.getProfile(id);
-            return profile != null ? profile.coins : 0;
+            return profile != null ? profile.money : 0;
         }
 
         /**
          * Set money in database
          */
         public void setMoney(int money) {
-            PlayerProfileManager.updateCoins(id, money);
+            PlayerProfileManager.updateMoney(id, money);
         }
 
         /**
@@ -60,7 +63,7 @@ public class SessionManager {
         public void addMoney(int amount) {
             PlayerProfileManager.ProfileData profile = PlayerProfileManager.getProfile(id);
             if (profile != null) {
-                PlayerProfileManager.updateCoins(id, profile.coins + amount);
+                PlayerProfileManager.updateMoney(id, profile.money + amount);
             }
         }
 
@@ -69,8 +72,8 @@ public class SessionManager {
          */
         public boolean spendMoney(int amount) {
             PlayerProfileManager.ProfileData profile = PlayerProfileManager.getProfile(id);
-            if (profile != null && profile.coins >= amount) {
-                PlayerProfileManager.updateCoins(id, profile.coins - amount);
+            if (profile != null && profile.money >= amount) {
+                PlayerProfileManager.updateMoney(id, profile.money - amount);
                 return true;
             }
             return false;
@@ -155,8 +158,7 @@ public class SessionManager {
             List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(id);
             return items.stream()
                     .filter(item -> item.getItemId().startsWith("skin:") && !item.getItemId().contains("equipped"))
-                    .map(item -> item.getItemId().substring("skin:".length()))
-                    .collect(Collectors.toList());
+                    .map(item -> item.getItemId().substring("skin:".length())).collect(Collectors.toList());
         }
 
         /**
@@ -166,8 +168,7 @@ public class SessionManager {
             List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(id);
             return items.stream()
                     .filter(item -> item.getItemId().startsWith("paddle:") && !item.getItemId().contains("equipped"))
-                    .map(item -> item.getItemId().substring("paddle:".length()))
-                    .collect(Collectors.toList());
+                    .map(item -> item.getItemId().substring("paddle:".length())).collect(Collectors.toList());
         }
     }
 
@@ -184,6 +185,18 @@ public class SessionManager {
     public static void login(User user) {
         currentUserId = user.getId();
         currentUsername = user.getUsername();
+        // Load and apply user's saved volume preferences
+        // and refresh SettingView UI if it's currently open
+        try {
+            Object controller = SceneManager.getController("settingView");
+            if (controller instanceof SettingView) {
+                ((SettingView) controller).initialize();
+                logger.debug("Refreshed SettingView after login");
+            }
+        } catch (Exception e) {
+            // SettingView not loaded yet, ignore
+            logger.debug("SettingView not available for refresh");
+        }
     }
 
     /**
@@ -196,8 +209,8 @@ public class SessionManager {
     }
 
     /**
-     * Get the current logged-in user
-     * Returns a User wrapper that fetches data from database
+     * Get the current logged-in user Returns a User wrapper that fetches data from
+     * database
      */
     public static User getCurrentUser() {
         if (currentUserId != null && currentUsername != null) {
@@ -271,8 +284,8 @@ public class SessionManager {
         if (currentUserId != null) {
             User user = getCurrentUser();
             if (user != null) {
-                logger.info("Saved user: {} | Money: {} | Equipped skin: {}",
-                        user.getUsername(), user.getMoney(), user.getEquippedSkin());
+                logger.info("Saved user: {} | Money: {} | Equipped skin: {}", user.getUsername(), user.getMoney(),
+                        user.getEquippedSkin());
             }
         }
     }

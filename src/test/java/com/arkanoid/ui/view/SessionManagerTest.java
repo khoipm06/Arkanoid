@@ -28,7 +28,7 @@ class SessionManagerTest {
     }
 
     private static void ensureTestUserProfile() {
-        String sql = "INSERT OR IGNORE INTO player_profiles (user_id, coins, high_score, current_skin, games_played, total_score) VALUES (?, 1000, 0, 'Default', 0, 0)";
+        String sql = "INSERT OR IGNORE INTO player_profiles (user_id, money, high_score, current_skin, games_played, total_score) VALUES (?, 1000, 0, 'Default', 0, 0)";
         Connection conn = null;
         try {
             conn = DatabaseManager.getInstance().getConnection();

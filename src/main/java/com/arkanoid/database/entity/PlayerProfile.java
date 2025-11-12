@@ -5,15 +5,15 @@ package com.arkanoid.database.entity;
  */
 public class PlayerProfile {
     private final int userId;
-    private int coins;
+    private int money;
     private int highScore;
     private String currentSkin;
     private int gamesPlayed;
     private int totalScore;
 
-    public PlayerProfile(int userId, int coins, int highScore, String currentSkin, int gamesPlayed, int totalScore) {
+    public PlayerProfile(int userId, int money, int highScore, String currentSkin, int gamesPlayed, int totalScore) {
         this.userId = userId;
-        this.coins = coins;
+        this.money = money;
         this.highScore = highScore;
         this.currentSkin = currentSkin;
         this.gamesPlayed = gamesPlayed;
@@ -24,12 +24,12 @@ public class PlayerProfile {
         return userId;
     }
 
-    public int getCoins() {
-        return coins;
+    public int getMoney() {
+        return money;
     }
 
-    public void setCoins(int coins) {
-        this.coins = coins;
+    public void setMoney(int money) {
+        this.money = money;
     }
 
     public int getHighScore() {

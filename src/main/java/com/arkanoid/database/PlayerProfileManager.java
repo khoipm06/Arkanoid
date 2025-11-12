@@ -8,14 +8,14 @@ public class PlayerProfileManager {
     private static final DatabaseManager databaseManager = DatabaseManager.getInstance();
 
     public static class ProfileData {
-        public int coins;
+        public int money;
         public int highScore;
         public String currentSkin;
         public int gamesPlayed;
         public int totalScore;
 
-        public ProfileData(int coins, int highScore, String currentSkin, int gamesPlayed, int totalScore) {
-            this.coins = coins;
+        public ProfileData(int money, int highScore, String currentSkin, int gamesPlayed, int totalScore) {
+            this.money = money;
             this.highScore = highScore;
             this.currentSkin = currentSkin;
             this.gamesPlayed = gamesPlayed;
@@ -79,7 +79,7 @@ public class PlayerProfileManager {
                 try (ResultSet rs = pstmt.executeQuery()) {
                     if (rs.next()) {
                         return new ProfileData(
-                                rs.getInt("coins"),
+                                rs.getInt("money"),
                                 rs.getInt("high_score"),
                                 rs.getString("current_skin"),
                                 rs.getInt("games_played"),
@@ -97,9 +97,9 @@ public class PlayerProfileManager {
         return null;
     }
 
-    public static void updateCoins(int userId, int coins) {
-        String sql = "UPDATE player_profiles SET coins = ? WHERE user_id = ?";
-        executeUpdate(sql, coins, userId);
+    public static void updateMoney(int userId, int money) {
+        String sql = "UPDATE player_profiles SET money = ? WHERE user_id = ?";
+        executeUpdate(sql, money, userId);
     }
 
     public static void updateHighScore(int userId, int highScore) {

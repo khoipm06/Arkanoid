@@ -10,11 +10,7 @@ public class AuthScreen {
     @FXML
     public void onSignInButtonClick() {
         soundManager.playSound("Accept.wav");
-
         SceneManager.switchTo("signIn");
-        SessionManager.User user = new SessionManager.User(1, "TenNguoiChoi");
-        SessionManager.login(user);
-
     }
 
     public void onBackClick(MouseEvent event) {
@@ -27,10 +23,7 @@ public class AuthScreen {
     @FXML
     public void onSignUpButtonClick(MouseEvent event) {
         soundManager.playSound("Accept.wav");
-
         SceneManager.switchTo("signUpView");
-        SessionManager.User user = new SessionManager.User(1, "TenNguoiChoi");
-        SessionManager.login(user);
     }
 
 }
