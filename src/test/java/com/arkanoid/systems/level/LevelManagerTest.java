@@ -19,14 +19,14 @@ class LevelManagerTest {
     void testLoadLevel() {
         // This test assumes that the test resources are correctly loaded.
         // In a real project, you might need to configure the build system to handle resources.
-        List<Brick> bricks = levelManager.loadLevelFromFile("/levels/test_level.json");
+        List<Brick> bricks = levelManager.loadLevel(99);
         assertNotNull(bricks);
         assertEquals(2, bricks.size());
     }
 
     @Test
     void testLoadNonExistentLevel() {
-        List<Brick> bricks = levelManager.loadLevelFromFile("/levels/non_existent_level.json");
+        List<Brick> bricks = levelManager.loadLevel(1234);
         assertNotNull(bricks);
         assertTrue(bricks.isEmpty());
     }

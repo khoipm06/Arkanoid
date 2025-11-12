@@ -52,7 +52,6 @@ public class GameScene {
     private Text levelLabel;
     private Text timeLabel;
     private long startTime;
-    private Text highestscoreLabel;
 
     public GameScene(Stage stage, double width, double height, int levelNumber) {
         this.stage = stage;
@@ -63,7 +62,7 @@ public class GameScene {
 
         canvas = new Canvas(gameAreaWidth, gameAreaHeight);
         gc = canvas.getGraphicsContext2D();
-        this.gameManager = new GameManager(canvas.getWidth(), canvas.getHeight(), levelNumber);
+        this.gameManager = GameManager.getInstance(canvas.getWidth(), canvas.getHeight(), levelNumber);
 
         if (gameManager.getPlayer() != null) {
             String equippedSkin = SessionManager.getCurrentUser().getEquippedPaddleSkin();
@@ -286,7 +285,7 @@ public class GameScene {
                 return;
             }
 
-            // F5 - Quick save (T062)
+            // F5 - Quick save
             if (key == KeyCode.F5) {
                 if (gameManager.getCurrentState() == GameManager.GameState.PAUSED) {
                     try {
@@ -294,7 +293,7 @@ public class GameScene {
                                 gameManager);
                         int userId = SessionManager.getCurrentUser() != null 
                             ? SessionManager.getCurrentUser().getId() 
-                            : 0; // Fallback to 0 if not logged in (FIXED: was 1)
+                            : 0;
                         GameLogger.info("F5 Quick save for userId: {}", userId);
                         WritableImage snapshot = captureCanvasSnapshot();
                         gameSaveManager.saveCurrentGameWithAutoName(userId, snapshot);
@@ -381,7 +380,6 @@ public class GameScene {
         if (gameManager.getCurrentState() == GameManager.GameState.LEVEL_COMPLETE) {
             gameLoop.stop();
             Platform.runLater(() -> {
-                int highest = 0;
                 SceneManager.showWinLevel(
                         gameManager.getLevelNumber(),
                         gameManager.getScore(),

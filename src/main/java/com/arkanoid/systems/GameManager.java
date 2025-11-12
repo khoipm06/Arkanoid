@@ -36,7 +36,7 @@ public class GameManager {
     private double gunFireCooldown = 0.0;
     private final List<FloatingText> floatingTexts;
 
-    public GameManager(double gameWidth, double gameHeight, int levelNumber) {
+    private GameManager(double gameWidth, double gameHeight, int levelNumber) {
         this.gameWidth = gameWidth;
         this.gameHeight = gameHeight;
         this.currentState = GameManager.GameState.MENU;
@@ -56,6 +56,10 @@ public class GameManager {
         Paddle paddle = new Paddle(gameWidth / 2 - 30, gameHeight - 30, 100, 25, 400, 0, gameWidth);
         player = new Player("Player1", 1, paddle);
         playerManager.addPlayer(1, player);
+    }
+
+    public static GameManager getInstance(double gameWidth, double gameHeight, int levelNumber) {
+        return new GameManager(gameWidth, gameHeight, levelNumber);
     }
 
     public void startGame() {
@@ -257,7 +261,6 @@ public class GameManager {
         
         } catch (ConcurrentModificationException e) {
             GameLogger.error("ConcurrentModificationException in GameManager.update(): {}", e.getMessage(), e);
-            throw e;
         } catch (Exception e) {
             GameLogger.error("Exception in GameManager.update(): {}", e.getMessage(), e);
             throw e;
