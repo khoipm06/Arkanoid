@@ -1,15 +1,18 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 
 public class ModeSelectView {
+    private static final Logger logger = GameLogger.getLogger(ModeSelectView.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
     @FXML
@@ -42,13 +45,13 @@ public class ModeSelectView {
             TwoPlayerGameScreen twoPlayerScreen = new TwoPlayerGameScreen(mainStage);
             twoPlayerScreen.show();
         } else {
-            System.err.println("Error: Main stage not found");
+            logger.error("Main stage not found");
         }
     }
 
     @FXML
     public void onBackClick(MouseEvent event) {
-        System.out.println("Quay lại menu chính");
+        logger.debug("Back to main menu");
 
         soundManager.playSound("Accept.wav");
 

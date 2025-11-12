@@ -1,7 +1,9 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.database.UserManager;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
+import org.slf4j.Logger;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -10,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
 public class SignUpView {
+    private static final Logger logger = GameLogger.getLogger(SignUpView.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
     @FXML
@@ -34,12 +37,12 @@ public class SignUpView {
         String confirmPassword = confirmPasswordField.getText();
 
         if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            System.out.println("⚠️ Vui lòng nhập đầy đủ thông tin!");
+            logger.warn("Please enter all required information!");
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            System.out.println("❌ Mật khẩu không khớp! Vui lòng nhập lại.");
+            logger.warn("Passwords do not match! Please try again.");
             return;
         }
 
@@ -47,14 +50,14 @@ public class SignUpView {
         UserManager.User newUser = UserManager.register(username, password);
 
         if (newUser == null) {
-            System.out.println("❌ Tên người chơi đã tồn tại!");
+            logger.warn("Username already exists!");
             return;
         }
 
-        System.out.println("✅ Đăng ký thành công!");
-        System.out.println("👤 Username: " + username);
-        System.out.println("🆔 User ID: " + newUser.getId());
-        System.out.println("📅 Created: " + newUser.getCreatedAt());
+        logger.info("Registration successful!");
+        logger.info("Username: {}", username);
+        logger.info("User ID: {}", newUser.getId());
+        logger.info("Created: {}", newUser.getCreatedAt());
 
         SceneManager.switchTo("signIn");
     }

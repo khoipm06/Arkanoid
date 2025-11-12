@@ -1,6 +1,8 @@
 package com.arkanoid.database;
 
 import com.arkanoid.database.exception.DatabaseException;
+import com.arkanoid.systems.logging.GameLogger;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.sql.Connection;
@@ -18,6 +20,7 @@ import java.util.function.Function;
  * Singleton pattern with thread-safe initialization.
  */
 public class DatabaseManager implements AutoCloseable {
+    private static final Logger logger = GameLogger.getLogger(DatabaseManager.class);
     private static volatile DatabaseManager instance;
     private static final String DB_URL = "jdbc:sqlite:data/arkanoid.db";
     private static final int POOL_SIZE = 5;
@@ -70,7 +73,7 @@ public class DatabaseManager implements AutoCloseable {
             }
 
             initialized = true;
-            System.out.println("Database initialized successfully with connection pool");
+            logger.info("Database initialized successfully with connection pool");
         } catch (SQLException e) {
             throw new DatabaseException("Failed to initialize database", e);
         }
@@ -159,7 +162,7 @@ public class DatabaseManager implements AutoCloseable {
             }
         }
         // If pool exhausted, create a temporary connection
-        System.err.println("Warning: Connection pool exhausted, creating temporary connection");
+        logger.warn("Connection pool exhausted, creating temporary connection");
         return DriverManager.getConnection(DB_URL);
     }
 
@@ -175,7 +178,7 @@ public class DatabaseManager implements AutoCloseable {
             try {
                 conn.close();
             } catch (SQLException e) {
-                System.err.println("Error closing temporary connection: " + e.getMessage());
+                logger.error("Error closing temporary connection: {}", e.getMessage());
             }
         }
     }
@@ -199,7 +202,7 @@ public class DatabaseManager implements AutoCloseable {
                 try {
                     conn.rollback();
                 } catch (SQLException rollbackEx) {
-                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                    logger.error("Error rolling back transaction: {}", rollbackEx.getMessage());
                 }
             }
             throw new DatabaseException("Transaction failed", e);
@@ -208,7 +211,7 @@ public class DatabaseManager implements AutoCloseable {
                 try {
                     conn.setAutoCommit(true);
                 } catch (SQLException e) {
-                    System.err.println("Error resetting auto-commit: " + e.getMessage());
+                    logger.error("Error resetting auto-commit: {}", e.getMessage());
                 }
                 releaseConnection(conn);
             }
@@ -250,7 +253,7 @@ public class DatabaseManager implements AutoCloseable {
                     conn.close();
                 }
             } catch (SQLException e) {
-                System.err.println("Error closing connection: " + e.getMessage());
+                logger.error("Error closing connection: {}", e.getMessage());
             }
         }
         connectionPool.clear();

@@ -2,6 +2,7 @@ package com.arkanoid.ui.view;
 
 import com.arkanoid.GameApplication;
 import com.arkanoid.database.PlayerProfileManager;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.GameScene;
 import javafx.animation.Interpolator;
@@ -13,8 +14,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.slf4j.Logger;
 
 public class WinLevel {
+    private static final Logger logger = GameLogger.getLogger(WinLevel.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
     @FXML
@@ -53,7 +56,7 @@ public class WinLevel {
             Image img = new Image(getClass().getResource("/images/You_Win.png").toExternalForm());
             winImage.setImage(img);
         } catch (Exception e) {
-            System.err.println("Không tìm thấy ảnh win.png: " + e.getMessage());
+            logger.error("Could not find image win.png: {}", e.getMessage());
         }
         winImage.setScaleX(0.1);
         winImage.setScaleY(0.1);
@@ -73,7 +76,7 @@ public class WinLevel {
             PlayerProfileManager.incrementGamesPlayed(user.getId());
             // Add to total score
             PlayerProfileManager.addToTotalScore(user.getId(), scoreValue);
-            System.out.println("💾 Saved game stats for user: " + user.getUsername() + " | Score: " + scoreValue);
+            logger.info("Saved game stats for user: {} | Score: {}", user.getUsername(), scoreValue);
         }
     }
 
@@ -92,7 +95,7 @@ public class WinLevel {
             stage.show();
             nextScene.start();
         } else {
-            System.out.println("Bạn đã ở level cuối cùng!");
+            logger.debug("Already at the last level");
         }
     }
 

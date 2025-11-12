@@ -1,5 +1,6 @@
 package com.arkanoid.systems.save.impl;
 
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.save.GameState;
 import com.arkanoid.systems.save.GameStateSerializer;
 import com.google.gson.Gson;
@@ -7,11 +8,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import org.slf4j.Logger;
 
 /**
  * Implementation of GameStateSerializer using Gson for JSON serialization.
  */
 public class GameStateSerializerImpl implements GameStateSerializer {
+    private static final Logger logger = GameLogger.getLogger(GameStateSerializerImpl.class);
 
     private final Gson gson;
 
@@ -47,7 +50,7 @@ public class GameStateSerializerImpl implements GameStateSerializer {
 
             return json;
         } catch (Exception e) {
-            System.err.println("Failed to serialize GameState: " + e.getMessage());
+            logger.error("Failed to serialize GameState: {}", e.getMessage());
             return "{\"error\": \"Serialization failed\"}";
         }
     }

@@ -1,10 +1,12 @@
 package com.arkanoid.systems.level;
 
 import com.arkanoid.core.entities.Brick;
+import com.arkanoid.systems.logging.GameLogger;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import org.slf4j.Logger;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LevelManager {
+    private static final Logger logger = GameLogger.getLogger(LevelManager.class);
     private EntityFactory entityFactory;
     private int currentLevel;
 
@@ -29,9 +32,9 @@ public class LevelManager {
         try (InputStream inputStream = getClass().getResourceAsStream(levelPath)) {
             if (inputStream == null) {
                 if (multiplayer) {
-                    System.err.println("ERROR: Could not find level_multiplayer.json");
+                    logger.error("Could not find level_multiplayer.json");
                 } else {
-                    System.out.println("ERROR: Could not find " + levelPath);
+                    logger.error("Could not find {}", levelPath);
                 }
                 return bricks;
             }
@@ -58,17 +61,15 @@ public class LevelManager {
             }
 
             if (multiplayer) {
-                System.out.println("Loaded " + bricks.size() + " bricks for multiplayer level");
+                logger.info("Loaded {} bricks for multiplayer level", bricks.size());
             } else {
-                System.out.println("Loaded " + bricks.size() + " bricks for level " + levelPath);
+                logger.info("Loaded {} bricks for level {}", bricks.size(), levelPath);
             }
         } catch (Exception e) {
             if (multiplayer) {
-                System.err.println("ERROR loading multiplayer level: " + e.getMessage());
-                e.printStackTrace();
+                logger.error("Error loading multiplayer level", e);
             } else {
-                System.err.println("ERROR loading level " + levelPath + ": " + e.getMessage());
-                e.printStackTrace();
+                logger.error("Error loading level {}", levelPath, e);
             }
         }
         return bricks;

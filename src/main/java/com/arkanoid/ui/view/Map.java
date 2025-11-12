@@ -1,18 +1,21 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.GameApplication;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.GameScene;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.scene.image.ImageView;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.control.Button;
 
 public class Map {
+    private static final Logger logger = GameLogger.getLogger(Map.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
     @FXML
@@ -35,7 +38,7 @@ public class Map {
     public static void setUnlockedLevel(int level) {
         if (level > unlockedLevel) {
             unlockedLevel = level;
-            System.out.println("Đã mở khóa map " + unlockedLevel);
+            logger.info("Unlocked map {}", unlockedLevel);
         }
     }
 
@@ -69,7 +72,7 @@ public class Map {
             currentMapIndex++;
             updatePreview();
         } else {
-            System.out.println("We're at the last map!");
+            logger.debug("Already at the last map");
         }
 
     }
@@ -81,7 +84,7 @@ public class Map {
             currentMapIndex--;
             updatePreview();
         } else {
-            System.out.println("We're at the first map!");
+            logger.debug("Already at the first map");
         }
     }
 
@@ -122,7 +125,7 @@ public class Map {
                 e.printStackTrace();
             }
         } else {
-            System.err.println("Cannot find the image path: " + imagePath);
+            logger.error("Cannot find the image path: {}", imagePath);
         }
         if (currentMapIndex + 1 > unlockedLevel) {
             mapView.setOpacity(0.4);

@@ -7,8 +7,10 @@ import com.arkanoid.core.entities.MultiBallPowerUp;
 import com.arkanoid.core.entities.Paddle;
 import com.arkanoid.core.entities.PowerUp;
 import com.arkanoid.core.entities.RowClearPowerUp;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.Orientation;
 import com.arkanoid.systems.player.Player;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,6 +21,7 @@ import java.util.List;
  * spawning, movement, and ownership.
  */
 public class PowerUpServiceImpl implements PowerUpService {
+    private static final Logger logger = GameLogger.getLogger(PowerUpServiceImpl.class);
 
     private final Player player1;
     private final Player player2;
@@ -57,8 +60,8 @@ public class PowerUpServiceImpl implements PowerUpService {
         if (powerUp != null) {
             powerUp.setVelocityY(velocityY);
             activePowerUps.add(new PowerUpInstance(powerUp, ownerPlayerNumber));
-            System.out.println("Power-up spawned at (" + brickX + ", " + brickY + ") for Player " + ownerPlayerNumber
-                    + ": " + powerUp.getClass().getSimpleName());
+            logger.debug("Power-up spawned at ({}, {}) for Player {}: {}", brickX, brickY, ownerPlayerNumber,
+                    powerUp.getClass().getSimpleName());
         }
     }
 
@@ -118,13 +121,13 @@ public class PowerUpServiceImpl implements PowerUpService {
         // Filter out opponent-affecting power-ups for fairness
         powerUp.applyEffect(paddle);
 
-        System.out.println("Player " + playerNumber + " collected power-up: " + powerUp.getClass().getSimpleName());
+        logger.debug("Player {} collected power-up: {}", playerNumber, powerUp.getClass().getSimpleName());
     }
 
     @Override
     public void clear() {
         activePowerUps.clear();
-        System.out.println("All power-ups cleared.");
+        logger.debug("All power-ups cleared");
     }
 
     /**

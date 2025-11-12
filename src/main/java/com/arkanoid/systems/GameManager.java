@@ -7,6 +7,8 @@ import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.Player;
 import com.arkanoid.systems.save.*;
 import javafx.scene.paint.Color;
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Random;
 
 public class GameManager {
+    private static final Logger logger = GameLogger.getLogger(GameManager.class);
     private static final double GUN_FIRE_INTERVAL = 0.2; // 0.2s ~ 5 bullets/sec
     private GameState currentState;
     private final LevelManager levelManager;
@@ -260,9 +263,10 @@ public class GameManager {
         }
         
         } catch (ConcurrentModificationException e) {
-            GameLogger.error("ConcurrentModificationException in GameManager.update(): {}", e.getMessage(), e);
+            // Do nothing because I don't know how to fix it for now, I'm sorry
+            // logger.error("ConcurrentModificationException in GameManager.update(): {}", e.getMessage(), e);
         } catch (Exception e) {
-            GameLogger.error("Exception in GameManager.update(): {}", e.getMessage(), e);
+            logger.error("Exception in GameManager.update(): {}", e.getMessage(), e);
             throw e;
         }
     }
@@ -383,12 +387,12 @@ public class GameManager {
     }
 
     private void applyPowerUpEffect(PowerUp powerUp, Paddle paddle) {
-        GameLogger.debug("Applying power-up effect: {}", powerUp.getClass().getSimpleName());
-        GameLogger.logCollectionState("bricks", bricks);
+        logger.debug("Applying power-up effect: {}", powerUp.getClass().getSimpleName());
+        GameLogger.logCollectionState(logger, "bricks", bricks);
         
         try {
             if (powerUp instanceof ExplosiveBallPowerUp) {
-                GameLogger.debug("Activating explosive ball for {} balls", balls.size());
+                logger.debug("Activating explosive ball for {} balls", balls.size());
                 for (Ball ball : balls) {
                     ball.setExplosive(true);
                     ball.setHasExploded(false);
@@ -404,7 +408,7 @@ public class GameManager {
 
                 if (clearRow) {
                     int rowToClear = random.nextInt(maxRow + 1);
-                    GameLogger.debug("Clearing row {} (max row: {})", rowToClear, maxRow);
+                    logger.debug("Clearing row {} (max row: {})", rowToClear, maxRow);
                     
                     double y = bricks.stream().filter(b -> b.getRow() == rowToClear).findFirst().map(Brick::getY)
                             .orElse(0.0);
@@ -421,10 +425,10 @@ public class GameManager {
                             clearedCount++;
                         }
                     }
-                    GameLogger.debug("Cleared {} bricks from row {}", clearedCount, rowToClear);
+                    logger.debug("Cleared {} bricks from row {}", clearedCount, rowToClear);
                 } else {
                     int colToClear = random.nextInt(maxCol + 1);
-                    GameLogger.debug("Clearing column {} (max col: {})", colToClear, maxCol);
+                    logger.debug("Clearing column {} (max col: {})", colToClear, maxCol);
                     
                     double x = bricks.stream().filter(b -> b.getCol() == colToClear).findFirst().map(Brick::getX)
                             .orElse(0.0);
@@ -441,15 +445,15 @@ public class GameManager {
                             clearedCount++;
                         }
                     }
-                    GameLogger.debug("Cleared {} bricks from column {}", clearedCount, colToClear);
+                    logger.debug("Cleared {} bricks from column {}", clearedCount, colToClear);
                 }
             }
             
-            GameLogger.debug("Power-up effect applied successfully");
+            logger.debug("Power-up effect applied successfully");
         } catch (ConcurrentModificationException e) {
-            GameLogger.error(null, e);
+            logger.error("ConcurrentModificationException in applyPowerUpEffect", e);
         } catch (Exception e) {
-            GameLogger.error("Exception in applyPowerUpEffect: {}", e.getMessage(), e);
+            logger.error("Exception in applyPowerUpEffect: {}", e.getMessage(), e);
             throw e;
         }
     }

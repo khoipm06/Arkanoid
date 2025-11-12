@@ -1,10 +1,13 @@
 package com.arkanoid.core.entities;
 
+import com.arkanoid.systems.logging.GameLogger;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import org.slf4j.Logger;
 
 public class StrongBrick extends BaseBrick {
+    private static final Logger logger = GameLogger.getLogger(StrongBrick.class);
     private final Image[] crackImages;
     private int hitCount = 0;
     private boolean destroyed = false;
@@ -76,7 +79,7 @@ public class StrongBrick extends BaseBrick {
                 return new Image(stream);
             }
         } catch (Exception e) {
-            System.err.println("Không load được ảnh: " + path);
+            logger.error("Could not load image: {}", path);
         }
         return null;
     }

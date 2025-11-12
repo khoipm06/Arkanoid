@@ -1,20 +1,22 @@
 package com.arkanoid.systems.sound;
 
+import com.arkanoid.systems.logging.GameLogger;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import org.slf4j.Logger;
 
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SoundManager {
+    private static final Logger logger = GameLogger.getLogger(SoundManager.class);
     private static SoundManager instance;
     private MediaPlayer backgroundMusic;
     private final Map<String, AudioClip> soundEffects = new HashMap<>();
     private double currentVolume = 0.6;
 
-    // Private constructor to prevent instantiation
     private SoundManager() {
     }
 
@@ -51,7 +53,7 @@ public class SoundManager {
                 backgroundMusic.setCycleCount(MediaPlayer.INDEFINITE);
             backgroundMusic.play();
         } else {
-            System.out.println("Không tìm thấy file nhạc: " + fileName);
+            logger.warn("Could not find music file: {}", fileName);
         }
     }
 
@@ -72,7 +74,7 @@ public class SoundManager {
         if (clip != null) {
             clip.play();
         } else {
-            System.out.println("Không tìm thấy sound effect: " + fileName);
+            logger.warn("Could not find sound effect: {}", fileName);
         }
     }
 }

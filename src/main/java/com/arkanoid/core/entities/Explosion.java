@@ -1,9 +1,12 @@
 package com.arkanoid.core.entities;
 
+import com.arkanoid.systems.logging.GameLogger;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import org.slf4j.Logger;
 
 public class Explosion extends GameObject {
+    private static final Logger logger = GameLogger.getLogger(Explosion.class);
     private double maxRadius;
     private double currentRadius;
     private final double duration;
@@ -25,7 +28,7 @@ public class Explosion extends GameObject {
         if (url != null) {
             this.image = new Image(url.toExternalForm());
         } else {
-            System.out.println("Explosion image not found!");
+            logger.warn("Explosion image not found");
         }
     }
 

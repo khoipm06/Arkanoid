@@ -1,6 +1,7 @@
 package com.arkanoid.systems.threading;
 
 import com.arkanoid.systems.logging.GameLogger;
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * included in logs.
  */
 public class ThreadContext {
+    private static final Logger logger = GameLogger.getLogger(ThreadContext.class);
     private static final ThreadLocal<Map<String, Object>> CONTEXT = ThreadLocal.withInitial(ConcurrentHashMap::new);
     private static final Map<Long, ThreadMetadata> THREAD_METADATA = new ConcurrentHashMap<>();
 
@@ -57,14 +59,14 @@ public class ThreadContext {
         ThreadMetadata metadata = new ThreadMetadata(current.threadId(), current.getName(), purpose);
         THREAD_METADATA.put(current.threadId(), metadata);
         GameLogger.setThreadContext("purpose", purpose);
-        GameLogger.logThreadInfo("Thread registered: " + purpose);
+        GameLogger.logThreadInfo(logger, "Thread registered: " + purpose);
     }
 
     public static void unregister() {
         Thread current = Thread.currentThread();
         ThreadMetadata metadata = THREAD_METADATA.remove(current.threadId());
         if (metadata != null) {
-            GameLogger.logThreadInfo(
+            GameLogger.logThreadInfo(logger,
                     "Thread unregistered: " + metadata.getPurpose() + " (lived " + metadata.getAgeMs() + "ms)");
         }
         GameLogger.clearThreadContext();

@@ -7,11 +7,13 @@ import com.arkanoid.core.entities.UnbreakableBrick;
 import com.arkanoid.systems.GameManager;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CollisionDetector {
+    private static final Logger logger = GameLogger.getLogger(CollisionDetector.class);
 
     public static void checkBallBrickCollisions(Ball ball, List<Brick> bricks, CollisionCallback callback,
             GameManager gameManager) {
@@ -21,7 +23,7 @@ public class CollisionDetector {
                 continue;
 
             if (ball.intersects((GameObject) brick)) {
-                GameLogger.debug("Ball-brick collision detected at ({}, {})", brick.getCenterX(), brick.getCenterY());
+                logger.debug("Ball-brick collision detected at ({}, {})", brick.getCenterX(), brick.getCenterY());
                 SoundManager.getInstance().playSound("brickBounce.wav");
                 handleBallBrickCollision(ball, brick);
                 brick.hit();
@@ -32,7 +34,7 @@ public class CollisionDetector {
                     double explosionRadius = 80;
                     double explosionX = brick.getCenterX();
                     double explosionY = brick.getCenterY();
-                    GameLogger.debug("Explosive ball triggered at ({}, {}) with radius {}", explosionX, explosionY, explosionRadius);
+                    logger.debug("Explosive ball triggered at ({}, {}) with radius {}", explosionX, explosionY, explosionRadius);
 
                     gameManager.addExplosion(explosionX, explosionY, 64, 64, 1);
 
@@ -40,7 +42,7 @@ public class CollisionDetector {
                         if (otherBrick.isDestroyed())
                             continue;
 
-                        // Bỏ qua gạch không phá được
+                        // Skip unbreakable bricks
                         if (otherBrick instanceof UnbreakableBrick)
                             continue;
 

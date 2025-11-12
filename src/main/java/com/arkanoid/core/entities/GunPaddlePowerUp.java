@@ -16,7 +16,7 @@ public class GunPaddlePowerUp extends PowerUp {
         if (url != null) {
             this.image = new Image(url.toExternalForm());
         } else {
-            System.out.println("GunPaddlePowerUp image not found!");
+            logger.warn("GunPaddlePowerUp image not found");
         }
         this.expiryNano = 0;
     }

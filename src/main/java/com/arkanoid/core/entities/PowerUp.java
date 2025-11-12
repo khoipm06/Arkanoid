@@ -6,8 +6,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import org.slf4j.Logger;
 
 public abstract class PowerUp extends MovableObject {
+    protected static final Logger logger = GameLogger.getLogger(PowerUp.class);
     protected double lifetime;
     protected double age;
     protected Color color;
@@ -60,20 +62,20 @@ public abstract class PowerUp extends MovableObject {
 
     public boolean checkPaddleCollision(Paddle paddle) {
         if (!collected && intersects(paddle)) {
-            GameLogger.debug("PowerUp collected: {} at ({}, {})", this.getClass().getSimpleName(), x, y);
+            logger.debug("PowerUp collected: {} at ({}, {})", this.getClass().getSimpleName(), x, y);
             setCollected(true);
             applyEffect(paddle);
-            GameLogger.debug("PowerUp effect applied: {}", this.getClass().getSimpleName());
+            logger.debug("PowerUp effect applied: {}", this.getClass().getSimpleName());
             PauseTransition pause = new PauseTransition(Duration.seconds(2));
 
-            // Khi hết 2 giây, tắt hiệu ứng
+            // After 2 seconds, remove the effect
             pause.setOnFinished(e -> {
-                GameLogger.debug("PowerUp effect removed: {}", this.getClass().getSimpleName());
+                logger.debug("PowerUp effect removed: {}", this.getClass().getSimpleName());
                 removeEffect(paddle);
                 setCollected(false);
             });
 
-            // Bắt đầu đếm ngược
+            // Start countdown
             pause.play();
             return true;
         }

@@ -8,7 +8,7 @@ public class RowClearPowerUp extends PowerUp {
         try {
             this.image = new Image(getClass().getResource("/images/Thunder_powerup.png").toExternalForm());
         } catch (Exception e) {
-            System.out.println("Cannot load the power-up image: " + e.getMessage());
+            logger.error("Cannot load the power-up image: {}", e.getMessage());
             this.color = javafx.scene.paint.Color.BLUE; // Fallback color
         }
     }

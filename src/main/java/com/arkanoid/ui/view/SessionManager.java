@@ -2,7 +2,9 @@ package com.arkanoid.ui.view;
 
 import com.arkanoid.database.InventoryManager;
 import com.arkanoid.database.PlayerProfileManager;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.PlayerProfile;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
  * Now works with database for persistent user data
  */
 public class SessionManager {
+    private static final Logger logger = GameLogger.getLogger(SessionManager.class);
     private static Integer currentUserId = null;
     private static String currentUsername = null;
     private static PlayerProfile activeProfile;
@@ -142,7 +145,6 @@ public class SessionManager {
         public void setEquippedPaddleSkin(String skin) {
             // Remove old equipped marker
             List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(id);
-            // Add new equipped marker
             InventoryManager.addItem(id, "paddle:equipped:" + skin, 1);
         }
 
@@ -269,8 +271,8 @@ public class SessionManager {
         if (currentUserId != null) {
             User user = getCurrentUser();
             if (user != null) {
-                System.out.println("💾 Đã lưu user: " + user.getUsername() + " | Tiền: " + user.getMoney()
-                        + " | Skin đang dùng: " + user.getEquippedSkin());
+                logger.info("Saved user: {} | Money: {} | Equipped skin: {}",
+                        user.getUsername(), user.getMoney(), user.getEquippedSkin());
             }
         }
     }

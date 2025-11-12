@@ -2,6 +2,7 @@ package com.arkanoid.ui.view;
 
 import com.arkanoid.database.entity.GameSave;
 import com.arkanoid.systems.GameManager;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.save.GameSaveManager;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.components.ToastNotification;
@@ -14,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.image.WritableImage;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
 
 import java.util.Optional;
 
@@ -22,6 +24,7 @@ import java.util.Optional;
  * deletion.
  */
 public class SaveLoadScene {
+    private static final Logger logger = GameLogger.getLogger(SaveLoadScene.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
     @FXML
@@ -63,20 +66,20 @@ public class SaveLoadScene {
         this.rootPane = rootPane;
         this.gameScene = gameScene;
 
-        // Set custom cell factory for visual thumbnails (T045)
+        // Set custom cell factory for visual thumbnails
         saveListView.setCellFactory(lv -> new GameSaveListCell());
 
         // Load saves into ListView
         refreshSaveList();
 
-        // Enable/disable buttons based on selection (T031)
+        // Enable/disable buttons based on selection
         saveListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             boolean hasSelection = newVal != null;
             loadButton.setDisable(!hasSelection);
             deleteButton.setDisable(!hasSelection);
         });
 
-        // Add keyboard shortcuts (T062)
+        // Add keyboard shortcuts
         setupKeyboardShortcuts();
     }
 
@@ -148,7 +151,7 @@ public class SaveLoadScene {
                     try {
                         canvasSnapshot = gameScene.captureCanvasSnapshot();
                     } catch (Exception thumbEx) {
-                        System.err.println("Failed to capture thumbnail: " + thumbEx.getMessage());
+                        logger.error("Failed to capture thumbnail: {}", thumbEx.getMessage());
                         // Continue without thumbnail
                     }
                 }
@@ -173,21 +176,13 @@ public class SaveLoadScene {
 
         try {
             gameSaveManager.loadGame(selectedSave.getId());
-            // if (gameScene != null) {
-            // javafx.application.Platform.runLater(() -> {
-            // gameScene.renderOnce();
-            // });
-            // }
-
             showSuccess("Game loaded successfully!");
 
-            // Return to game (T037)
-            // onBack(event);
         } catch (JsonSyntaxException e) {
-            // T038: Handle corrupted save files
+            // Handle corrupted save files
             showError("Save file is corrupted");
         } catch (IllegalArgumentException e) {
-            // T039: Handle missing saves
+            // Handle missing saves
             if (e.getMessage().contains("not found")) {
                 showError("Save not found");
             } else {
@@ -242,14 +237,14 @@ public class SaveLoadScene {
     }
 
     private void showError(String message) {
-        System.err.println("ERROR: " + message);
+        logger.error("Save/Load error: {}", message);
         if (rootPane != null) {
             ToastNotification.showToast(message, rootPane, ToastNotification.ToastType.ERROR);
         }
     }
 
     private void showSuccess(String message) {
-        System.out.println("SUCCESS: " + message);
+        logger.info("Save/Load success: {}", message);
         if (rootPane != null) {
             ToastNotification.showToast(message, rootPane, ToastNotification.ToastType.SUCCESS);
         }

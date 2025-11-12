@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.TimeUnit;
 
 public class LoggingManager {
+    private static final org.slf4j.Logger logger = GameLogger.getLogger(LoggingManager.class);
     private static final LoggingManager instance = new LoggingManager();
     private LoggingConfig config;
     private boolean initialized = false;
@@ -25,7 +26,7 @@ public class LoggingManager {
      */
     public synchronized void initialize(LoggingConfig config) {
         if (initialized) {
-            GameLogger.warn("LoggingManager already initialized");
+            logger.warn("LoggingManager already initialized");
             return;
         }
         
@@ -39,7 +40,7 @@ public class LoggingManager {
         System.setProperty("LOG_LEVEL", config.getLogLevel().toString());
         
         initialized = true;
-        GameLogger.info("LoggingManager initialized with level: {}", config.getLogLevel());
+        logger.info("LoggingManager initialized with level: {}", config.getLogLevel());
     }
     
     /**
@@ -50,7 +51,7 @@ public class LoggingManager {
             return;
         }
         
-        GameLogger.info("LoggingManager shutting down...");
+        logger.info("LoggingManager shutting down...");
         
         // Stop Logback and flush all appenders
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -80,7 +81,7 @@ public class LoggingManager {
             LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
             Logger rootLogger = loggerContext.getLogger(ROOT_LOGGER_NAME);
             rootLogger.setLevel(level);
-            GameLogger.info("Log level changed to: {}", level);
+            logger.info("Log level changed to: {}", level);
         }
     }
     

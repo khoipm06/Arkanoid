@@ -1,9 +1,12 @@
 package com.arkanoid.core.entities;
 
+import com.arkanoid.systems.logging.GameLogger;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import org.slf4j.Logger;
 
 public class Bullet extends GameObject {
+    private static final Logger logger = GameLogger.getLogger(Bullet.class);
     private final double speedY;
     private Image bulletImage;
 
@@ -14,7 +17,7 @@ public class Bullet extends GameObject {
         try {
             bulletImage = new Image(getClass().getResourceAsStream("/images/bullet.png"));
         } catch (Exception e) {
-            System.err.println("Không tải được ảnh bullet: " + e.getMessage());
+            logger.error("Could not load bullet image: {}", e.getMessage());
             bulletImage = null;
         }
     }

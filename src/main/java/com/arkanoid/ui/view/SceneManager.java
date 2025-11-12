@@ -1,14 +1,17 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.systems.logging.GameLogger;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SceneManager {
+    private static final Logger logger = GameLogger.getLogger(SceneManager.class);
     private static Stage mainStage;
     private static final Map<String, Scene> scenes = new HashMap<>();
     private static final Map<String, Object> controllers = new HashMap<>();
@@ -34,7 +37,7 @@ public class SceneManager {
             refreshSceneIfNeeded(name);
             mainStage.setScene(scenes.get(name));
         } else {
-            System.out.println("Scene not found: " + name);
+            logger.error("Scene not found: {}", name);
         }
     }
 

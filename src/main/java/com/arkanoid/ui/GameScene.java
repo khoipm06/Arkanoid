@@ -4,6 +4,7 @@ import com.arkanoid.core.entities.*;
 import com.arkanoid.systems.GameManager;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.PlayerState;
+import org.slf4j.Logger;
 import com.arkanoid.systems.save.GameSaveManager;
 import com.arkanoid.systems.save.impl.GameSaveManagerImpl;
 import com.arkanoid.ui.view.SaveLoadScene;
@@ -35,6 +36,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class GameScene {
+    private static final Logger logger = GameLogger.getLogger(GameScene.class);
     private final Scene scene;
     private final Stage stage;
     private final Canvas canvas;
@@ -66,7 +68,7 @@ public class GameScene {
 
         if (gameManager.getPlayer() != null) {
             String equippedSkin = SessionManager.getCurrentUser().getEquippedPaddleSkin();
-            System.out.println("Current paddle skin: " + equippedSkin);
+            logger.info("Current paddle skin: {}", equippedSkin);
             gameManager.getPlayer().getPaddle().equipSkin(equippedSkin);
         }
 
@@ -74,10 +76,10 @@ public class GameScene {
             if (streamBackGround != null) {
                 this.backgroundImage = new Image(streamBackGround);
             } else {
-                System.err.println("Background warning: Cannot find background.png file. Using black background.");
+                logger.warn("Background warning: Cannot find background.png file. Using black background.");
             }
         } catch (Exception e) {
-            System.err.println("Error loading background image: " + e.getMessage());
+            logger.error("Error loading background image: {}", e.getMessage());
         }
 
         BorderPane mainLayout = new BorderPane();
@@ -118,7 +120,7 @@ public class GameScene {
             int userId = SessionManager.getCurrentUser() != null 
                 ? SessionManager.getCurrentUser().getId() 
                 : 0; // Fallback to 0 if not logged in
-            GameLogger.debug("Opening save/load scene for userId: {}", userId);
+            logger.debug("Opening save/load scene for userId: {}", userId);
             GameSaveManager gameSaveManager = new GameSaveManagerImpl(gameManager);
             Scene saveLoadScene = new Scene(saveLoadRoot);
             saveLoadScene.getStylesheets().add(
@@ -137,7 +139,7 @@ public class GameScene {
             stage.setScene(saveLoadScene);
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.err.println("Failed to open Save/Load scene: " + ex.getMessage());
+            logger.error("Failed to open Save/Load scene: {}", ex.getMessage());
         }
     }
 
@@ -294,12 +296,12 @@ public class GameScene {
                         int userId = SessionManager.getCurrentUser() != null 
                             ? SessionManager.getCurrentUser().getId() 
                             : 0;
-                        GameLogger.info("F5 Quick save for userId: {}", userId);
+                        logger.info("F5 Quick save for userId: {}", userId);
                         WritableImage snapshot = captureCanvasSnapshot();
                         gameSaveManager.saveCurrentGameWithAutoName(userId, snapshot);
-                        GameLogger.info("Quick save created successfully (F5)");
+                        logger.info("Quick save created successfully (F5)");
                     } catch (Exception e) {
-                        System.err.println("Quick save failed: " + e.getMessage());
+                        logger.error("Quick save failed: {}", e.getMessage());
                     }
                 }
                 return;

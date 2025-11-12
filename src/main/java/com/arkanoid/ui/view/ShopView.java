@@ -2,8 +2,10 @@ package com.arkanoid.ui.view;
 
 import com.arkanoid.core.entities.Ball;
 import com.arkanoid.core.entities.Paddle;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.PlayerProfile;
 import com.arkanoid.systems.sound.SoundManager;
+import org.slf4j.Logger;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -14,6 +16,7 @@ import javafx.util.Duration;
 import java.util.Optional;
 
 public class ShopView {
+    private static final Logger logger = GameLogger.getLogger(ShopView.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
     @FXML
@@ -50,10 +53,7 @@ public class ShopView {
     private void showMessage(String text) {
         lblMessage.setText(text);
         lblMessage.setStyle("-fx-text-fill: #FFFFFF;" + "-fx-font-weight: bold;" + "-fx-font-size: 16px;"
-                + "-fx-effect: dropshadow( gaussian , rgba(0,0,0,0.7) , 5, 0.0 , 0 , 1 );" // Thêm bóng đổ đen để
-                                                                                           // chữ trắng nổi bật
-                                                                                           // hơn
-        );
+                + "-fx-effect: dropshadow( gaussian , rgba(0,0,0,0.7) , 5, 0.0 , 0 , 1 );"); // Add drop shadow to make white text stand out
 
         lblMessage.setVisible(true);
 
@@ -66,9 +66,9 @@ public class ShopView {
         int itemPrice = 200;
         if (money.get() >= itemPrice) {
             money.set(money.get() - itemPrice);
-            lblMessage.setText("Mua đồ thành công!");
+            lblMessage.setText("Purchase successful!");
         } else {
-            lblMessage.setText("Không đủ tiền!");
+            lblMessage.setText("Insufficient funds!");
         }
     }
 
@@ -88,7 +88,7 @@ public class ShopView {
         if (shopBallController != null) {
             shopBallController.setPlayer(player, ball);
         } else {
-            System.out.println("Không tìm thấy controller shopBall!");
+            logger.warn("Could not find shopBall controller!");
         }
 
         SceneManager.switchTo("shopBall");
@@ -108,7 +108,7 @@ public class ShopView {
         if (shopPaddleController != null) {
             shopPaddleController.setPlayer(paddle);
         } else {
-            System.out.println("Không tìm thấy controller shopPaddle!");
+            logger.warn("Could not find shopPaddle controller!");
         }
 
         SceneManager.switchTo("shopPaddle");
@@ -124,11 +124,11 @@ public class ShopView {
     public void onDepositClick(MouseEvent event) {
         soundManager.playSound("Accept.wav");
 
-        // Tạo dialog
+        // Create dialog
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Nạp Tiền");
-        dialog.setHeaderText("💰 Nhập số tiền bạn muốn nạp:");
-        dialog.setContentText("Số tiền:");
+        dialog.setTitle("Deposit Money");
+        dialog.setHeaderText("💰 Enter the amount you want to deposit:");
+        dialog.setContentText("Amount:");
 
         DialogPane dialogPane = dialog.getDialogPane();
         dialogPane.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
@@ -216,12 +216,12 @@ public class ShopView {
                     if (shopBall != null) {
                         shopBall.refreshMoney();
                     }
-                    showMessage("🎉 Nạp thành công! +" + String.format("%,d", amount) + " xu");
+                    showMessage("🎉 Deposit successful! +" + String.format("%,d", amount) + " coins");
                 } else {
-                    showMessage("Số tiền phải lớn hơn 0!");
+                    showMessage("Amount must be greater than 0!");
                 }
             } catch (NumberFormatException e) {
-                showMessage("Vui lòng chỉ nhập số!");
+                showMessage("Please enter numbers only!");
             }
         });
     }

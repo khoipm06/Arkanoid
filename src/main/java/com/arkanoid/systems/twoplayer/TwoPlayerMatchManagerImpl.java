@@ -1,7 +1,9 @@
 package com.arkanoid.systems.twoplayer;
 
 import com.arkanoid.core.entities.Brick;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.Player;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -11,6 +13,7 @@ import java.util.List;
  * competitive mode.
  */
 public class TwoPlayerMatchManagerImpl implements TwoPlayerMatchManager {
+    private static final Logger logger = GameLogger.getLogger(TwoPlayerMatchManagerImpl.class);
 
     private final Player player1;
     private final Player player2;
@@ -55,7 +58,7 @@ public class TwoPlayerMatchManagerImpl implements TwoPlayerMatchManager {
     public void startMatch() {
         if (state == MatchState.READY) {
             state = MatchState.PLAYING;
-            System.out.println("Two-player match started!");
+            logger.info("Two-player match started");
         }
     }
 
@@ -110,8 +113,7 @@ public class TwoPlayerMatchManagerImpl implements TwoPlayerMatchManager {
     public void applyBrickHit(int playerNumber, int brickValue) {
         Player player = (playerNumber == 1) ? player1 : player2;
         player.getState().addScore(brickValue);
-        System.out.println(
-                "Player " + playerNumber + " scored " + brickValue + " points. Total: " + player.getState().getScore());
+        logger.debug("Player {} scored {} points. Total: {}", playerNumber, brickValue, player.getState().getScore());
     }
 
     @Override
@@ -125,8 +127,8 @@ public class TwoPlayerMatchManagerImpl implements TwoPlayerMatchManager {
         Player player = (playerNumber == 1) ? player1 : player2;
         player.getState().loseLife();
 
-        System.out.println("Player " + playerNumber + " lost a life (" + cause + "). Lives remaining: "
-                + player.getState().getLives());
+        logger.debug("Player {} lost a life ({}). Lives remaining: {}", playerNumber, cause,
+                player.getState().getLives());
 
         // Check if player lost all lives
         if (player.getState().getLives() <= 0) {
@@ -166,10 +168,10 @@ public class TwoPlayerMatchManagerImpl implements TwoPlayerMatchManager {
                 resultMessage = "Match ended.";
         }
 
-        System.out.println("=== GAME OVER ===");
-        System.out.println(resultMessage);
-        System.out.println("Player 1 Score: " + player1.getState().getScore());
-        System.out.println("Player 2 Score: " + player2.getState().getScore());
+        logger.info("=== GAME OVER ===");
+        logger.info(resultMessage);
+        logger.info("Player 1 Score: {}", player1.getState().getScore());
+        logger.info("Player 2 Score: {}", player2.getState().getScore());
     }
 
     /**
@@ -226,7 +228,7 @@ public class TwoPlayerMatchManagerImpl implements TwoPlayerMatchManager {
     public void pause() {
         if (state == MatchState.PLAYING) {
             state = MatchState.PAUSED;
-            System.out.println("Match paused.");
+            logger.debug("Match paused");
         }
     }
 
@@ -234,7 +236,7 @@ public class TwoPlayerMatchManagerImpl implements TwoPlayerMatchManager {
     public void resume() {
         if (state == MatchState.PAUSED) {
             state = MatchState.PLAYING;
-            System.out.println("Match resumed.");
+            logger.debug("Match resumed");
         }
     }
 

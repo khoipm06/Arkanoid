@@ -4,10 +4,12 @@ import com.arkanoid.core.entities.Ball;
 import com.arkanoid.core.entities.Brick;
 import com.arkanoid.core.entities.Paddle;
 import com.arkanoid.systems.level.LevelManager;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.Orientation;
 import com.arkanoid.systems.player.Player;
 import com.arkanoid.systems.twoplayer.*;
 import javafx.animation.AnimationTimer;
+import org.slf4j.Logger;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -31,6 +33,7 @@ import java.util.Set;
  * match coordination.
  */
 public class TwoPlayerGameScreen {
+    private static final Logger logger = GameLogger.getLogger(TwoPlayerGameScreen.class);
 
     private final Stage stage;
     private final Canvas canvas;
@@ -68,7 +71,7 @@ public class TwoPlayerGameScreen {
         try {
             backgroundImage = new Image(getClass().getResourceAsStream("/images/backgroundGame.png"));
         } catch (Exception e) {
-            System.err.println("Could not load background image: " + e.getMessage());
+            logger.error("Could not load background image: {}", e.getMessage());
             backgroundImage = null;
         }
     }
@@ -102,7 +105,7 @@ public class TwoPlayerGameScreen {
         // Load level bricks
         levelManager = new LevelManager();
         bricks = levelManager.loadLevel(0);
-        System.out.println("Loaded " + bricks.size() + " bricks for two-player mode");
+        logger.info("Loaded {} bricks for two-player mode", bricks.size());
 
         // Create Player 1 (bottom)
         Paddle paddle1 = new Paddle(CANVAS_WIDTH / 2 - 50, CANVAS_HEIGHT - 40, 100, 15, PADDLE_SPEED, 0, CANVAS_WIDTH);
@@ -130,7 +133,7 @@ public class TwoPlayerGameScreen {
                 bricks);
 
         matchManager.startMatch();
-        com.arkanoid.systems.logging.GameLogger.info("Two-player game initialized: {} bricks, P1 at ({}, {}), P2 at ({}, {})",
+        logger.info("Two-player game initialized: {} bricks, P1 at ({}, {}), P2 at ({}, {})",
             bricks.size(), paddle1.getX(), paddle1.getY(), paddle2.getX(), paddle2.getY());
     }
 
@@ -170,7 +173,7 @@ public class TwoPlayerGameScreen {
         ball.setVelocityX(0);
         ball.setVelocityY(-direction * BALL_SPEED);
 
-        com.arkanoid.systems.logging.GameLogger.info("Player {} launched ball from ({}, {}) with velocity ({}, {})",
+        logger.info("Player {} launched ball from ({}, {}) with velocity ({}, {})",
             player.getPlayerNumber(), ball.getX(), ball.getY(), ball.getVelocityX(), ball.getVelocityY());
     }
 
@@ -250,7 +253,7 @@ public class TwoPlayerGameScreen {
                 brick.hit();
                 hitThisFrame = true;
                 if (brick.isDestroyed()) {
-                    com.arkanoid.systems.logging.GameLogger.debug("Player 1 destroyed brick at ({}, {})", brick.getX(), brick.getY());
+                    logger.debug("Player 1 destroyed brick at ({}, {})", brick.getX(), brick.getY());
                     matchManager.applyBrickHit(1, 100); // Award points to player 1
                 }
             }
@@ -261,7 +264,7 @@ public class TwoPlayerGameScreen {
                 handleBallBrickCollision(ball2, brick);
                 brick.hit();
                 if (brick.isDestroyed()) {
-                    com.arkanoid.systems.logging.GameLogger.debug("Player 2 destroyed brick at ({}, {})", brick.getX(), brick.getY());
+                    logger.debug("Player 2 destroyed brick at ({}, {})", brick.getX(), brick.getY());
                     matchManager.applyBrickHit(2, 100); // Award points to player 2
                 }
             }
@@ -461,7 +464,7 @@ public class TwoPlayerGameScreen {
     private void showGameOver() {
         TwoPlayerMatchManagerImpl managerImpl = (TwoPlayerMatchManagerImpl) matchManager;
 
-        com.arkanoid.systems.logging.GameLogger.info("Two-player game ended: Winner={}, Reason={}, P1Score={}, P2Score={}",
+        logger.info("Two-player game ended: Winner={}, Reason={}, P1Score={}, P2Score={}",
             managerImpl.getWinningPlayer(), managerImpl.getEndReason(),
             player1.getState().getScore(), player2.getState().getScore());
 

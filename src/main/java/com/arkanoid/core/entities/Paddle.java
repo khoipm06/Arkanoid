@@ -1,17 +1,20 @@
 package com.arkanoid.core.entities;
 
+import com.arkanoid.systems.logging.GameLogger;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
+import org.slf4j.Logger;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Paddle extends MovableObject {
+    private static final Logger logger = GameLogger.getLogger(Paddle.class);
     private static final Map<String, Image> paddleSkins = new HashMap<>();
     private static String currentSkin = "paddle_Default";
 
@@ -47,9 +50,9 @@ public class Paddle extends MovableObject {
             if (stream != null)
                 gunImage = new Image(stream);
             else
-                System.err.println("Could not find the asset: gun.png");
+                logger.warn("Could not find the asset: gun.png");
         } catch (Exception e) {
-            System.err.println("Error loading gun.png: " + e.getMessage());
+            logger.error("Error loading gun.png: {}", e.getMessage());
         }
 
     }
@@ -61,10 +64,10 @@ public class Paddle extends MovableObject {
                 if (stream != null) {
                     paddleSkins.put(name, new Image(stream));
                 } else {
-                    System.err.println("Could not find the asset: paddle_" + name + ".png");
+                    logger.warn("Could not find the asset: paddle_{}.png", name);
                 }
             } catch (Exception e) {
-                System.err.println("Error loading skin " + name + ": " + e.getMessage());
+                logger.error("Error loading skin {}: {}", name, e.getMessage());
             }
         }
     }
@@ -81,7 +84,7 @@ public class Paddle extends MovableObject {
         if (paddleSkins.containsKey(skinName)) {
             currentSkin = skinName;
         } else {
-            System.err.println("Could not find skin: " + skinName);
+            logger.warn("Could not find skin: {}", skinName);
         }
     }
 

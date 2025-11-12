@@ -1,15 +1,18 @@
 package com.arkanoid.core.entities;
 
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import org.slf4j.Logger;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Ball extends MovableObject {
+    private static final Logger logger = GameLogger.getLogger(Ball.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
     private static final Map<String, Image> SKINS = new HashMap<>();
     private static String currentSkin = "Default";
@@ -44,14 +47,14 @@ public class Ball extends MovableObject {
                 if (stream != null) {
                     SKINS.put(name, new Image(stream));
                 } else {
-                    System.err.println("Không tìm thấy ảnh: " + name + ".png");
+                    logger.warn("Could not find image: {}.png", name);
                 }
             } catch (Exception e) {
-                System.err.println("Lỗi khi load skin " + name + ": " + e.getMessage());
+                logger.error("Error loading skin {}: {}", name, e.getMessage());
             }
         }
 
-        // Nếu Default không load được, tạo 1 hình tròn mặc định
+        // If Default skin can't be loaded, create a default circle
         if (!SKINS.containsKey("Default")) {
             SKINS.put("Default", null);
         }
@@ -68,9 +71,9 @@ public class Ball extends MovableObject {
     public static void setCurrentSkin(String skinName) {
         if (SKINS.containsKey(skinName)) {
             currentSkin = skinName;
-            System.out.println("Skin bóng hiện tại: " + skinName);
+            logger.info("Current ball skin: {}", skinName);
         } else {
-            System.err.println("Skin không tồn tại: " + skinName);
+            logger.warn("Skin does not exist: {}", skinName);
         }
     }
 
@@ -130,7 +133,7 @@ public class Ball extends MovableObject {
         boolean isTopPaddleHit = topIsDeadSide && velocityY < 0;
 
         if (isBottomPaddleHit || isTopPaddleHit) {
-            com.arkanoid.systems.logging.GameLogger.debug("Paddle collision: topIsDeadSide={}, velocityY={}, isBottom={}, isTop={}", 
+            logger.debug("Paddle collision: topIsDeadSide={}, velocityY={}, isBottom={}, isTop={}", 
                 topIsDeadSide, velocityY, isBottomPaddleHit, isTopPaddleHit);
             soundManager.playSound("paddleBounce.wav");
             paddle.triggerHitFlash(0.2);

@@ -4,13 +4,14 @@ import com.arkanoid.database.RepositoryFactory;
 import com.arkanoid.database.entity.GameSave;
 import com.arkanoid.database.repository.GameSaveRepository;
 import com.arkanoid.systems.GameManager;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.save.*;
+import org.slf4j.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.WritableImage;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.Optional;
  * Handles save/load operations with database persistence.
  */
 public class GameSaveManagerImpl implements GameSaveManager {
+    private static final Logger logger = GameLogger.getLogger(GameSaveManagerImpl.class);
     private final GameStateSerializer serializer;
     private final ThumbnailCapture thumbnailCapture;
     private final GameManager gameManager;
@@ -74,13 +76,10 @@ public class GameSaveManagerImpl implements GameSaveManager {
                     long thumbStart = System.currentTimeMillis();
                     thumbnailPng = thumbnailCapture.captureThumbnailPNG(canvas);
                     long thumbDuration = System.currentTimeMillis() - thumbStart;
-                    System.out.println(String.format("[%s] Thumbnail captured: %d bytes - %dms",
-                            LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-                            thumbnailPng.length, thumbDuration));
+                    logger.debug("Thumbnail captured: {} bytes - {}ms",
+                            thumbnailPng.length, thumbDuration);
                 } catch (IOException e) {
-                    System.err.println(String.format("[%s] Failed to capture thumbnail: %s",
-                            LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-                            e.getMessage()));
+                    logger.error("Failed to capture thumbnail: {}", e.getMessage());
                     // Continue without thumbnail
                 }
             }
@@ -104,14 +103,12 @@ public class GameSaveManagerImpl implements GameSaveManager {
                     thumbnailPng);
             long duration = System.currentTimeMillis() - startTime;
 
-            System.out.println(String.format("[%s] Game saved successfully: '%s' (Level %d, Score %d) - %dms",
-                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-                    saveName, gameState.getLevelNumber(), gameState.getScore(), duration));
+            logger.info("Game saved successfully: '{}' (Level {}, Score {}) - {}ms",
+                    saveName, gameState.getLevelNumber(), gameState.getScore(), duration);
             return savedGame;
 
         } catch (Exception e) {
-            System.err.println("Failed to save game: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Failed to save game: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to save game: " + e.getMessage(), e);
         }
     }
@@ -173,16 +170,13 @@ public class GameSaveManagerImpl implements GameSaveManager {
             gameManager.restoreGameState(gameState);
             long duration = System.currentTimeMillis() - startTime;
 
-            System.out.println(String.format(
-                    "[%s] Game loaded successfully: '%s' (Level %d, Score %d, %d balls, %d bricks) - %dms",
-                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+            logger.info("Game loaded successfully: '{}' (Level {}, Score {}, {} balls, {} bricks) - {}ms",
                     gameSave.getSaveName(), gameState.getLevelNumber(), gameState.getScore(),
-                    gameState.getBallStates().size(), gameState.getBrickStates().size(), duration));
+                    gameState.getBallStates().size(), gameState.getBrickStates().size(), duration);
             return gameSave;
 
         } catch (Exception e) {
-            System.err.println("Failed to load game: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Failed to load game: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to load game: " + e.getMessage(), e);
         }
     }
@@ -199,7 +193,7 @@ public class GameSaveManagerImpl implements GameSaveManager {
             List<GameSave> saves = repository.findByUserId(userId);
             return FXCollections.observableArrayList(saves);
         } catch (Exception e) {
-            System.err.println("Failed to get saves: " + e.getMessage());
+            logger.error("Failed to get saves: {}", e.getMessage());
             return FXCollections.observableArrayList();
         }
     }
@@ -227,15 +221,12 @@ public class GameSaveManagerImpl implements GameSaveManager {
             boolean deleted = repository.deleteById(saveId);
             if (deleted) {
                 String saveName = save.map(GameSave::getSaveName).orElse("Unknown");
-                System.out.println(String.format("[%s] Save deleted: '%s' (ID: %d)",
-                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-                        saveName, saveId));
+                logger.info("Save deleted: '{}' (ID: {})", saveName, saveId);
             } else {
-                System.err.println(String.format("[%s] Save not found: %d",
-                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")), saveId));
+                logger.error("Save not found: {}", saveId);
             }
         } catch (Exception e) {
-            System.err.println("Failed to delete save: " + e.getMessage());
+            logger.error("Failed to delete save: {}", e.getMessage());
             throw new RuntimeException("Failed to delete save: " + e.getMessage(), e);
         }
     }
@@ -247,9 +238,9 @@ public class GameSaveManagerImpl implements GameSaveManager {
             for (GameSave save : saves) {
                 repository.deleteById(save.getId());
             }
-            System.out.println("All saves deleted for user: " + userId);
+            logger.info("All saves deleted for user: {}", userId);
         } catch (Exception e) {
-            System.err.println("Failed to delete all saves: " + e.getMessage());
+            logger.error("Failed to delete all saves: {}", e.getMessage());
             throw new RuntimeException("Failed to delete all saves: " + e.getMessage(), e);
         }
     }
@@ -299,10 +290,10 @@ public class GameSaveManagerImpl implements GameSaveManager {
                 // Saves are ordered by timestamp DESC, so last is oldest
                 GameSave oldest = saves.get(saves.size() - 1);
                 repository.deleteById(oldest.getId());
-                System.out.println("Auto-deleted oldest save: " + oldest.getSaveName());
+                logger.info("Auto-deleted oldest save: {}", oldest.getSaveName());
             }
         } catch (Exception e) {
-            System.err.println("Failed to delete oldest save: " + e.getMessage());
+            logger.error("Failed to delete oldest save: {}", e.getMessage());
         }
     }
 }

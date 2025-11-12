@@ -50,7 +50,7 @@ public class CommandLineArgs {
     }
     
     public static void printUsage() {
-        System.out.println("Usage: java -jar arkanoid.jar [options]");
+        System.out.println("Usage: java -jar <arkanoid-jar-path> [options]");
         System.out.println("Options:");
         System.out.println("  --log-level=LEVEL       Set log level (TRACE|DEBUG|INFO|WARN|ERROR)");
         System.out.println("  --log-to-console=BOOL   Enable/disable console logging");

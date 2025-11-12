@@ -1,8 +1,10 @@
 package com.arkanoid.systems.logging;
 
 import ch.qos.logback.classic.Level;
+import org.slf4j.Logger;
 
 public class LoggingConfig {
+    private static final Logger logger = GameLogger.getLogger(LoggingConfig.class);
     private Level logLevel = Level.INFO;
     private boolean consoleEnabled = true;
     private boolean fileEnabled = true;
@@ -61,7 +63,7 @@ public class LoggingConfig {
             try {
                 this.logLevel = Level.toLevel(envLogLevel, Level.INFO);
             } catch (Exception e) {
-                System.err.println("Invalid LOG_LEVEL: " + envLogLevel);
+                logger.warn("Invalid LOG_LEVEL: {}", envLogLevel);
             }
         }
         

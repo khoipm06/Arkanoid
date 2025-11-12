@@ -1,6 +1,7 @@
 package com.arkanoid.systems.threading;
 
 import com.arkanoid.systems.logging.GameLogger;
+import org.slf4j.Logger;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Provides named thread pools with graceful shutdown.
  */
 public class ThreadManager {
+    private static final Logger logger = GameLogger.getLogger(ThreadManager.class);
     private static ThreadManager instance;
     
     private final ExecutorService gameLoopExecutor;
@@ -42,7 +44,7 @@ public class ThreadManager {
             return t;
         });
 
-        GameLogger.info("ThreadManager initialized with 3 thread pools");
+        logger.info("ThreadManager initialized with 3 thread pools");
     }
 
     /**
@@ -60,13 +62,13 @@ public class ThreadManager {
      * Use for game state modifications that must be single-threaded.
      */
     public Future<?> executeOnGameLoop(Runnable task, String purpose) {
-        GameLogger.debug("Submitting task to GameLoop: {}", purpose);
+        logger.debug("Submitting task to GameLoop: {}", purpose);
         return gameLoopExecutor.submit(() -> {
             ThreadContext.register(purpose);
             try {
                 task.run();
             } catch (Exception e) {
-                GameLogger.error("Error in GameLoop task: {}", purpose, e);
+                logger.error("Error in GameLoop task: {}", purpose, e);
                 throw e;
             } finally {
                 ThreadContext.unregister();
@@ -78,14 +80,14 @@ public class ThreadManager {
      * Schedules a recurring task with fixed delay.
      */
     public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, long initialDelay, long delay, TimeUnit unit, String purpose) {
-        GameLogger.debug("Scheduling recurring task: {} (initial: {}ms, delay: {}ms)", purpose, 
+        logger.debug("Scheduling recurring task: {} (initial: {}ms, delay: {}ms)", purpose, 
             unit.toMillis(initialDelay), unit.toMillis(delay));
         return scheduledExecutor.scheduleWithFixedDelay(() -> {
             ThreadContext.register(purpose);
             try {
                 task.run();
             } catch (Exception e) {
-                GameLogger.error("Error in scheduled task: {}", purpose, e);
+                logger.error("Error in scheduled task: {}", purpose, e);
             } finally {
                 ThreadContext.unregister();
             }
@@ -96,13 +98,13 @@ public class ThreadManager {
      * Schedules a one-time delayed task.
      */
     public ScheduledFuture<?> schedule(Runnable task, long delay, TimeUnit unit, String purpose) {
-        GameLogger.debug("Scheduling one-time task: {} (delay: {}ms)", purpose, unit.toMillis(delay));
+        logger.debug("Scheduling one-time task: {} (delay: {}ms)", purpose, unit.toMillis(delay));
         return scheduledExecutor.schedule(() -> {
             ThreadContext.register(purpose);
             try {
                 task.run();
             } catch (Exception e) {
-                GameLogger.error("Error in scheduled task: {}", purpose, e);
+                logger.error("Error in scheduled task: {}", purpose, e);
             } finally {
                 ThreadContext.unregister();
             }
@@ -114,13 +116,13 @@ public class ThreadManager {
      * Use for I/O operations, database queries, or heavy computations.
      */
     public Future<?> executeBackground(Runnable task, String purpose) {
-        GameLogger.debug("Submitting background task: {}", purpose);
+        logger.debug("Submitting background task: {}", purpose);
         return backgroundExecutor.submit(() -> {
             ThreadContext.register(purpose);
             try {
                 task.run();
             } catch (Exception e) {
-                GameLogger.error("Error in background task: {}", purpose, e);
+                logger.error("Error in background task: {}", purpose, e);
                 throw e;
             } finally {
                 ThreadContext.unregister();
@@ -132,13 +134,13 @@ public class ThreadManager {
      * Executes a callable task on a background thread with result.
      */
     public <T> Future<T> executeBackground(Callable<T> task, String purpose) {
-        GameLogger.debug("Submitting background callable: {}", purpose);
+        logger.debug("Submitting background callable: {}", purpose);
         return backgroundExecutor.submit(() -> {
             ThreadContext.register(purpose);
             try {
                 return task.call();
             } catch (Exception e) {
-                GameLogger.error("Error in background callable: {}", purpose, e);
+                logger.error("Error in background callable: {}", purpose, e);
                 throw e;
             } finally {
                 ThreadContext.unregister();
@@ -151,7 +153,7 @@ public class ThreadManager {
      * Waits for tasks to complete within timeout.
      */
     public void shutdown() {
-        GameLogger.info("ThreadManager shutting down...");
+        logger.info("ThreadManager shutting down...");
         
         gameLoopExecutor.shutdown();
         scheduledExecutor.shutdown();
@@ -159,20 +161,20 @@ public class ThreadManager {
 
         try {
             if (!gameLoopExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
-                GameLogger.warn("GameLoop executor did not terminate in time, forcing shutdown");
+                logger.warn("GameLoop executor did not terminate in time, forcing shutdown");
                 gameLoopExecutor.shutdownNow();
             }
             if (!scheduledExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
-                GameLogger.warn("Scheduled executor did not terminate in time, forcing shutdown");
+                logger.warn("Scheduled executor did not terminate in time, forcing shutdown");
                 scheduledExecutor.shutdownNow();
             }
             if (!backgroundExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
-                GameLogger.warn("Background executor did not terminate in time, forcing shutdown");
+                logger.warn("Background executor did not terminate in time, forcing shutdown");
                 backgroundExecutor.shutdownNow();
             }
-            GameLogger.info("ThreadManager shutdown complete");
+            logger.info("ThreadManager shutdown complete");
         } catch (InterruptedException e) {
-            GameLogger.error("ThreadManager shutdown interrupted", e);
+            logger.error("ThreadManager shutdown interrupted", e);
             Thread.currentThread().interrupt();
             gameLoopExecutor.shutdownNow();
             scheduledExecutor.shutdownNow();

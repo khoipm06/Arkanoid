@@ -2,6 +2,7 @@ package com.arkanoid.ui.view;
 
 import com.arkanoid.database.PlayerProfileManager;
 import com.arkanoid.systems.GameManager;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.GameScene;
 import javafx.animation.*;
@@ -11,8 +12,10 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.image.ImageView;
+import org.slf4j.Logger;
 
 public class GameOver {
+    private static final Logger logger = GameLogger.getLogger(GameOver.class);
     @FXML
     private Label score;
     @FXML
@@ -31,7 +34,7 @@ public class GameOver {
         this.currentLevel = level;
         this.currentScore = scoreValue;
         score.setText("Score: " + scoreValue);
-        timePlayed.setText("Time :" + timePlyed);
+        timePlayed.setText("Time:" + timePlyed);
 
         // Save high score to database if user is logged in
         saveHighScore(scoreValue);
@@ -56,7 +59,6 @@ public class GameOver {
         bounce.setAutoReverse(true);
         bounce.setCycleCount(2);
 
-        // Chạy hiệu ứng nối tiếp nhau
         SequentialTransition sequence = new SequentialTransition(fall, bounce);
         sequence.play();
     }
@@ -64,13 +66,10 @@ public class GameOver {
     private void saveHighScore(int scoreValue) {
         SessionManager.User user = SessionManager.getCurrentUser();
         if (user != null) {
-            // Update high score if current score is higher
             PlayerProfileManager.updateHighScore(user.getId(), scoreValue);
-            // Increment games played
             PlayerProfileManager.incrementGamesPlayed(user.getId());
-            // Add to total score
             PlayerProfileManager.addToTotalScore(user.getId(), scoreValue);
-            System.out.println("💾 Saved game stats for user: " + user.getUsername());
+            logger.info("Saved game stats for user: {}", user.getUsername());
         }
     }
 

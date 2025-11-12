@@ -1,12 +1,15 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import org.slf4j.Logger;
 
 public class SettingView {
+    private static final Logger logger = GameLogger.getLogger(SettingView.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
     @FXML
@@ -34,7 +37,7 @@ public class SettingView {
     @FXML
     private void onOKClick() {
         savedVolume = (int) volumeSlider.getValue();
-        System.out.println("Volume saved: " + savedVolume + "%");
+        logger.debug("Volume saved: {}%", savedVolume);
 
         soundManager.playSound("Accept.wav");
         SceneManager.switchTo("mainMenuView");
@@ -42,8 +45,8 @@ public class SettingView {
 
     @FXML
     private void onCancelClick() {
-        volumeSlider.setValue(savedVolume); // quay lại giá trị cũ
-        System.out.println("Volume reverted to: " + savedVolume + "%");
+        volumeSlider.setValue(savedVolume);
+        logger.debug("Volume reverted to: {}%", savedVolume);
 
         soundManager.playSound("Accept.wav");
 

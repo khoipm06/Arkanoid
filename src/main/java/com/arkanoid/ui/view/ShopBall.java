@@ -1,8 +1,10 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.core.entities.Ball;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.PlayerProfile;
 import com.arkanoid.systems.sound.SoundManager;
+import org.slf4j.Logger;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShopBall {
+    private static final Logger logger = GameLogger.getLogger(ShopBall.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
     @FXML
@@ -92,19 +95,19 @@ public class ShopBall {
         for (SkinItem item : skinItems) {
             if (item.name.equals(skinName)) {
                 if (user.hasSkin(skinName)) {
-                    System.out.println("⚠️ Đã sở hữu skin: " + skinName);
+                    logger.warn("Already own skin: {}", skinName);
                     return;
                 }
 
                 if (user.spendMoney(item.price)) {
                     // Add to inventory database
                     user.addOwnedSkin(skinName);
-                    System.out.println("✅ Mua thành công skin: " + skinName + " | Giá: " + item.price);
-                    System.out.println("💰 Số dư còn lại: " + user.getMoney() + " coins");
+                    logger.info("Purchase successful skin: {} | Price: {}", skinName, item.price);
+                    logger.info("Remaining balance: {} coins", user.getMoney());
                     lblMoney.setText("Balance: " + user.getMoney() + "$");
                     ((ShopView) SceneManager.getController("shopView")).refreshMoney();
                 } else {
-                    System.out.println("❌ Không đủ tiền để mua skin: " + skinName + " | Cần: " + item.price + " | Có: " + user.getMoney());
+                    logger.warn("Insufficient funds to buy skin: {} | Need: {} | Have: {}", skinName, item.price, user.getMoney());
                 }
                 break;
             }
@@ -118,12 +121,12 @@ public class ShopBall {
             user.setEquippedSkin(skinName);
             SessionManager.setEquippedSkin(skinName);
             Ball.setCurrentSkin(skinName);
-            System.out.println("Đã trang bị skin: " + skinName);
+            logger.info("Equipped skin: {}", skinName);
             if (ballInGame != null) {
                 ballInGame.equipSkin(skinName);
             }
         } else {
-            System.out.println("Chưa sở hữu skin: " + skinName);
+            logger.warn("Not owned skin: {}", skinName);
         }
         updateShopUI();
     }
@@ -133,7 +136,7 @@ public class ShopBall {
         if (user == null)
             return;
 
-        lblMoney.setText("Tiền của bạn: " + user.getMoney() + "$");
+        lblMoney.setText("Your money: " + user.getMoney() + "$");
 
         for (SkinItem item : skinItems) {
             boolean owned = user.hasSkin(item.name);
@@ -199,10 +202,10 @@ public class ShopBall {
         }
 
         private void updateUI() {
-            // Ví dụ: hiển thị tiền của người chơi trong shop
+            // Display player's money in shop
             if (currentUser != null) {
-                System.out.println("Người chơi: " + currentUser.getUsername());
-                System.out.println("Số tiền hiện tại: " + currentUser.getMoney());
+                logger.debug("Player: {}", currentUser.getUsername());
+                logger.debug("Current money: {}", currentUser.getMoney());
 
             }
         }

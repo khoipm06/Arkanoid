@@ -1,6 +1,7 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.GameApplication;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.components.ToastNotification;
 import javafx.animation.FadeTransition;
@@ -20,8 +21,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import org.slf4j.Logger;
 
 public class MainMenuView {
+    private static final Logger logger = GameLogger.getLogger(MainMenuView.class);
     private final SoundManager soundManager = SoundManager.getInstance();
 
     @FXML
@@ -49,8 +52,7 @@ public class MainMenuView {
             welcome.setImage(logo);
             applyIntroEffect();
         } catch (Exception e) {
-            System.err.println("Cannot load intro image");
-            e.printStackTrace();
+            logger.error("Cannot load intro image", e);
         }
     }
 
@@ -71,7 +73,7 @@ public class MainMenuView {
 
     @FXML
     public void onSettingClick(MouseEvent event) {
-        System.out.println("setting");
+        logger.debug("Settings button clicked");
 
         soundManager.playSound("Accept.wav");
 
@@ -89,7 +91,7 @@ public class MainMenuView {
 
     @FXML
     public void onShopClick(MouseEvent event) {
-        System.out.println("Shop");
+        logger.debug("Shop button clicked");
 
         soundManager.playSound("Accept.wav");
 
@@ -102,7 +104,7 @@ public class MainMenuView {
     }
 
     public void onProfileClick(MouseEvent event) {
-        System.out.println("Profile");
+        logger.debug("Profile button clicked");
 
         soundManager.playSound("Accept.wav");
 

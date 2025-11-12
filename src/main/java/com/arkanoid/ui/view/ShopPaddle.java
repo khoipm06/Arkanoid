@@ -1,7 +1,9 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.core.entities.Paddle;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
+import org.slf4j.Logger;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShopPaddle {
+    private static final Logger logger = GameLogger.getLogger(ShopPaddle.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
     @FXML
@@ -86,19 +89,19 @@ public class ShopPaddle {
         for (SkinItem item : skinItems) {
             if (item.name.equals(skinName)) {
                 if (user.hasPaddleSkin(skinName)) {
-                    System.out.println("⚠️ Đã sở hữu paddle skin: " + skinName);
+                    logger.warn("Already own paddle skin: {}", skinName);
                     return;
                 }
                 
                 if (user.spendMoney(item.price)) {
                     // Add to inventory database
                     user.addOwnedPaddleSkin(skinName);
-                    System.out.println("✅ Mua thành công paddle skin: " + skinName + " | Giá: " + item.price);
-                    System.out.println("💰 Số dư còn lại: " + user.getMoney() + " coins");
+                    logger.info("Purchase successful paddle skin: {} | Price: {}", skinName, item.price);
+                    logger.info("Remaining balance: {} coins", user.getMoney());
                     lblMoney.setText("Balance: " + user.getMoney() + "$");
                     ((ShopView) SceneManager.getController("shopView")).refreshMoney();
                 } else {
-                    System.out.println("❌ Không đủ tiền để mua paddle skin: " + skinName + " | Cần: " + item.price + " | Có: " + user.getMoney());
+                    logger.warn("Insufficient funds to buy paddle skin: {} | Need: {} | Have: {}", skinName, item.price, user.getMoney());
                 }
                 break;
             }
@@ -112,12 +115,12 @@ public class ShopPaddle {
             user.setEquippedPaddleSkin(skinName);
             SessionManager.setEquippedPaddleSkin(skinName);
             Paddle.setCurrentSkin(skinName);
-            System.out.println("Đã trang bị skin: " + skinName);
+            logger.info("Equipped skin: {}", skinName);
             if (paddleInGame != null) {
                 paddleInGame.equipSkin(skinName);
             }
         } else {
-            System.out.println("Chưa sở hữu skin: " + skinName);
+            logger.warn("Not owned skin: {}", skinName);
         }
         updateShopUI();
     }

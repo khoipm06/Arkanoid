@@ -1,12 +1,15 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.database.UserManager;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
+import org.slf4j.Logger;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 
 public class SignIn {
+    private static final Logger logger = GameLogger.getLogger(SignIn.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
     @FXML
@@ -29,7 +32,7 @@ public class SignIn {
         String password = passwordField.getText();
 
         if (username.isEmpty() || password.isEmpty()) {
-            System.out.println("⚠️ Vui lòng nhập đầy đủ thông tin!");
+            logger.warn("Please enter all required information!");
             return;
         }
 
@@ -37,15 +40,15 @@ public class SignIn {
         UserManager.User user = UserManager.login(username, password);
 
         if (user == null) {
-            System.out.println("❌ Đăng nhập không thành công - sai tên hoặc mật khẩu");
+            logger.warn("Login failed - incorrect username or password");
             userNameField.clear();
             passwordField.clear();
             return;
         }
 
         // Log in through SessionManager (stores user ID for database queries)
-        System.out.println("✅ Đăng nhập thành công!");
-        System.out.println("👋 Hello " + username + " (ID: " + user.getId() + ")");
+        logger.info("Login successful!");
+        logger.info("Hello {} (ID: {})", username, user.getId());
         SessionManager.login(new SessionManager.User(user.getId(), user.getUsername()));
 
         SceneManager.switchTo("mainMenuView");

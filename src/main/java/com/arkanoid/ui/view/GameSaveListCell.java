@@ -1,6 +1,7 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.database.entity.GameSave;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.save.impl.ThumbnailCaptureImpl;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import org.slf4j.Logger;
 
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
@@ -22,6 +24,7 @@ import java.util.Map;
  * Includes LRU caching for thumbnail images.
  */
 public class GameSaveListCell extends ListCell<GameSave> {
+    private static final Logger logger = GameLogger.getLogger(GameSaveListCell.class);
     private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm");
     private static final int THUMBNAIL_WIDTH = 100;
     private static final int THUMBNAIL_HEIGHT = 75;
@@ -58,7 +61,7 @@ public class GameSaveListCell extends ListCell<GameSave> {
         try {
             defaultThumbnail = new Image(getClass().getResourceAsStream("/images/default_thumbnail.png"));
         } catch (Exception e) {
-            System.err.println("Could not load default thumbnail: " + e.getMessage());
+            logger.warn("Could not load default thumbnail: {}", e.getMessage());
             defaultThumbnail = null;
         }
 
@@ -132,7 +135,7 @@ public class GameSaveListCell extends ListCell<GameSave> {
                     return;
                 }
             } catch (Exception e) {
-                System.err.println("Failed to load thumbnail for save " + saveId + ": " + e.getMessage());
+                logger.error("Failed to load thumbnail for save {}: {}", saveId, e.getMessage());
             }
         }
 

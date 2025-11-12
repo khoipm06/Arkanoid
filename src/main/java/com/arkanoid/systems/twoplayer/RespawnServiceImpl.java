@@ -2,14 +2,17 @@ package com.arkanoid.systems.twoplayer;
 
 import com.arkanoid.core.entities.Ball;
 import com.arkanoid.core.entities.Paddle;
+import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.Orientation;
 import com.arkanoid.systems.player.Player;
+import org.slf4j.Logger;
 
 /**
  * Implementation of RespawnService for two-player mode.
  * Handles immediate ball respawn with auto-launch behavior.
  */
 public class RespawnServiceImpl implements RespawnService {
+    private static final Logger logger = GameLogger.getLogger(RespawnServiceImpl.class);
 
     private final Player player1;
     private final Player player2;
@@ -54,7 +57,7 @@ public class RespawnServiceImpl implements RespawnService {
         // Ensure ball is not attached to paddle
         ball.setAttachedToPaddle(false);
 
-        System.out.println("Player " + playerNumber + " ball respawned and auto-launched (" + orientation + ")");
+        logger.debug("Player {} ball respawned and auto-launched ({})", playerNumber, orientation);
     }
 
     @Override

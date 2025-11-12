@@ -4,8 +4,10 @@ import com.arkanoid.systems.logging.GameLogger;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import org.slf4j.Logger;
 
 public abstract class BaseBrick extends GameObject implements Brick {
+    private static final Logger logger = GameLogger.getLogger(BaseBrick.class);
     protected int hitPoints;
     protected int maxHitPoints;
     protected Color color;
@@ -41,7 +43,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
     public void hit() {
         hitPoints--;
         if (hitPoints <= 0) {
-            GameLogger.debug("Brick destroyed at ({}, {}) row={} col={}", x, y, row, col);
+            logger.debug("Brick destroyed at ({}, {}) row={} col={}", x, y, row, col);
             destroyed = true;
             active = false;
         }
@@ -49,7 +51,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
 
     @Override
     public void destroy() {
-        GameLogger.debug("Brick.destroy() called at ({}, {}) row={} col={}", x, y, row, col);
+        logger.debug("Brick.destroy() called at ({}, {}) row={} col={}", x, y, row, col);
         destroyed = true;
         active = false;
     }
@@ -82,7 +84,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
     public PowerUp dropPowerUp() {
         if (Math.random() < powerUpChance) {
             PowerUp powerUp = createRandomPowerUp();
-            GameLogger.debug("PowerUp dropped: {} at ({}, {})", powerUp.getClass().getSimpleName(), getCenterX(), getCenterY());
+            logger.debug("PowerUp dropped: {} at ({}, {})", powerUp.getClass().getSimpleName(), getCenterX(), getCenterY());
             return powerUp;
         }
         return null;
@@ -90,7 +92,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
 
     @Override
     public void instantDestroy() {
-        GameLogger.debug("Brick instantly destroyed at ({}, {}) row={} col={}", x, y, row, col);
+        logger.debug("Brick instantly destroyed at ({}, {}) row={} col={}", x, y, row, col);
         this.destroyed = true;
         this.active = false;
         this.hitPoints = 0;
