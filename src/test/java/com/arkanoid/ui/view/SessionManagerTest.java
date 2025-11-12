@@ -73,7 +73,7 @@ class SessionManagerTest {
     void testLoginAndGetCurrentUser() {
         SessionManager.User user = new SessionManager.User(5, "activePlayer");
 
-        SessionManager.login(user);
+        SessionManager.login(user.getId(), user.getUsername(), "dummyHash");
 
         assertTrue(SessionManager.isLoggedIn());
         assertNotNull(SessionManager.getCurrentUser());
@@ -84,7 +84,7 @@ class SessionManagerTest {
     @Test
     void testLogout() {
         SessionManager.User user = new SessionManager.User(10, "temporaryUser");
-        SessionManager.login(user);
+        SessionManager.login(user.getId(), user.getUsername(), "dummyHash");
 
         assertTrue(SessionManager.isLoggedIn());
 
@@ -189,7 +189,7 @@ class SessionManagerTest {
     @Test
     void testSessionPersistenceAcrossOperations() {
         SessionManager.User user = new SessionManager.User(37, "persistentUser"); // Use existing user from DB
-        SessionManager.login(user);
+        SessionManager.login(user.getId(), user.getUsername(), "dummyHash");
 
         int initialMoney = SessionManager.getCurrentUser().getMoney();
         String initialSkin = SessionManager.getCurrentUser().getEquippedSkin();
@@ -215,10 +215,10 @@ class SessionManagerTest {
         SessionManager.User user1 = new SessionManager.User(1, "firstUser");
         SessionManager.User user2 = new SessionManager.User(2, "secondUser");
 
-        SessionManager.login(user1);
+        SessionManager.login(user1.getId(), user1.getUsername(), "dummyHash");
         assertEquals(1, SessionManager.getCurrentUser().getId());
 
-        SessionManager.login(user2);
+        SessionManager.login(user2.getId(), user2.getUsername(), "dummyHash");
         assertEquals(2, SessionManager.getCurrentUser().getId());
         assertEquals("secondUser", SessionManager.getCurrentUser().getUsername());
     }
@@ -228,7 +228,7 @@ class SessionManagerTest {
         // Simulate real usage: user logs in with database ID
         int databaseUserId = 123;
         SessionManager.User user = new SessionManager.User(databaseUserId, "realPlayer");
-        SessionManager.login(user);
+        SessionManager.login(user.getId(), user.getUsername(), "dummyHash");
 
         // Game save system should be able to retrieve user ID
         int retrievedId = SessionManager.getCurrentUser().getId();
@@ -239,7 +239,7 @@ class SessionManagerTest {
     void testGuestUserScenario() {
         // Guest user with ID 0
         SessionManager.User guest = new SessionManager.User(0, "guest");
-        SessionManager.login(guest);
+        SessionManager.login(guest.getId(), guest.getUsername(), "dummyHash");
 
         assertTrue(SessionManager.isLoggedIn());
         assertEquals(0, guest.getId());

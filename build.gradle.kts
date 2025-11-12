@@ -45,6 +45,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.13.2")
     implementation("org.xerial:sqlite-jdbc:3.51.0.0")
     implementation("ch.qos.logback:logback-classic:1.5.21")
+    implementation("org.lz4:lz4-java:1.8.0")
     
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")

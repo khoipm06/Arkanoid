@@ -1,4 +1,4 @@
-package com.arkanoid.database.service;
+package com.arkanoid.utils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -8,9 +8,8 @@ import java.util.Base64;
 
 /**
  * Service for password hashing and verification using SHA-256 with salt.
- * For production use, consider using BCrypt or Argon2 instead.
  */
-public class PasswordService {
+public class PasswordHasher {
     private static final String ALGORITHM = "SHA-256";
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final int SALT_LENGTH = 16;
@@ -31,11 +30,11 @@ public class PasswordService {
      * Verify a password against a stored hash
      * 
      * @param password   plain text password to verify
-     * @param storedHash stored hash (format: salt:hash)
+     * @param hashedPassword stored hash (format: salt:hash)
      * @return true if password matches
      */
-    public boolean verifyPassword(String password, String storedHash) {
-        String[] parts = storedHash.split(":");
+    public boolean verifyPassword(String password, String hashedPassword) {
+        String[] parts = hashedPassword.split(":");
         if (parts.length != 2) {
             return false;
         }

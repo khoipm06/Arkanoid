@@ -1,144 +1,92 @@
 package com.arkanoid.database;
 
-import java.sql.*;
-import java.time.LocalDateTime;
+import com.arkanoid.database.exception.EntityNotFoundException;
+import com.arkanoid.database.entity.User;
+import com.arkanoid.database.entity.PlayerProfile;
+import com.arkanoid.database.repository.PlayerProfileRepository;
+import com.arkanoid.database.repository.UserRepository;
+import com.arkanoid.utils.PasswordHasher;
 
+import java.util.Optional;
+
+/**
+ * Legacy UserManager that now delegates to AuthenticationService. Kept for
+ * backward compatibility with existing UI controllers.
+ */
 public class UserManager {
-    private static final DatabaseManager databaseManager = DatabaseManager.getInstance();
+    private static final PasswordHasher passwordHasher = RepositoryFactory.getInstance().getPasswordHasher();
+    private static final PlayerProfileRepository profileRepository = RepositoryFactory.getInstance().getPlayerProfileRepository();
+    private static final UserRepository userRepository = RepositoryFactory.getInstance().getUserRepository();
 
-    public static class User {
-        private int id;
-        private String username;
-        private LocalDateTime createdAt;
-        private LocalDateTime lastLogin;
-
-        public User(int id, String username, LocalDateTime createdAt, LocalDateTime lastLogin) {
-            this.id = id;
-            this.username = username;
-            this.createdAt = createdAt;
-            this.lastLogin = lastLogin;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public LocalDateTime getCreatedAt() {
-            return createdAt;
-        }
-
-        public LocalDateTime getLastLogin() {
-            return lastLogin;
-        }
-    }
-
+    /**
+     * Register a new user.
+     * 
+     * @param username the username
+     * @param password the plain text password (will be hashed)
+     * @return User object if successful, null if username already exists
+     */
     public static User register(String username, String password) {
-        String sql = "INSERT INTO users (username, password, created_at) VALUES (?, ?, ?)";
-        String createProfileSql = "INSERT INTO player_profiles (user_id) VALUES (?)";
-
-        if (usernameExists(username)) {
-            return null; // User already exists
-        }
-
-        Connection conn = null;
         try {
-            conn = databaseManager.getConnection();
-            try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                pstmt.setString(1, username);
-                pstmt.setString(2, password);
-                pstmt.setString(3, LocalDateTime.now().toString());
+            String passwordHash = passwordHasher.hashPassword(password);
+            User user = userRepository.create(username, passwordHash);
 
-                int affectedRows = pstmt.executeUpdate();
+            // Create default profile for new user
+            profileRepository.create(user.getId());
 
-                if (affectedRows > 0) {
-                    try (ResultSet rs = pstmt.getGeneratedKeys()) {
-                        if (rs.next()) {
-                            int userId = rs.getInt(1);
-
-                            // Create default profile
-                            try (PreparedStatement profileStmt = conn.prepareStatement(createProfileSql)) {
-                                profileStmt.setInt(1, userId);
-                                profileStmt.executeUpdate();
-                            }
-
-                            return new User(userId, username, LocalDateTime.now(), null);
-                        }
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (conn != null) {
-                databaseManager.releaseConnection(conn);
-            }
+            return user;
+        } catch (Exception e) {
+            // Username already exists or other error
+            return null;
         }
-        return null;
     }
 
+    /**
+     * Login a user.
+     * 
+     * @param username the username
+     * @param password the plain text password
+     * @return User object if successful, null if credentials are invalid
+     */
     public static User login(String username, String password) {
-        String sql = "SELECT id, username, created_at, last_login FROM users WHERE username = ? AND password = ?";
-        String updateLoginSql = "UPDATE users SET last_login = ? WHERE id = ?";
-
-        Connection conn = null;
         try {
-            conn = databaseManager.getConnection();
-            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, username);
-                pstmt.setString(2, password);
+            Optional<User> userOpt = userRepository.findByUsername(username);
 
-                try (ResultSet rs = pstmt.executeQuery()) {
-                    if (rs.next()) {
-                        int id = rs.getInt("id");
-                        LocalDateTime createdAt = LocalDateTime.parse(rs.getString("created_at"));
-                        String lastLoginStr = rs.getString("last_login");
-                        LocalDateTime lastLogin = lastLoginStr != null ? LocalDateTime.parse(lastLoginStr) : null;
-
-                        // Update login time
-                        try (PreparedStatement updateStmt = conn.prepareStatement(updateLoginSql)) {
-                            updateStmt.setString(1, LocalDateTime.now().toString());
-                            updateStmt.setInt(2, id);
-                            updateStmt.executeUpdate();
-                        }
-
-                        return new User(id, username, createdAt, lastLogin);
-                    }
-                }
+            if (userOpt.isEmpty()) {
+                throw new EntityNotFoundException("User not found: " + username);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (conn != null) {
-                databaseManager.releaseConnection(conn);
+
+            User user = userOpt.get();
+            if (!passwordHasher.verifyPassword(password, user.getPasswordHash())) {
+                throw new EntityNotFoundException("Invalid credentials");
             }
+
+            userRepository.updateLastLogin(user.getId());
+            return user;
+        } catch (Exception e) {
+            // Invalid credentials or user not found
+            return null;
         }
-        return null;
     }
 
+    /**
+     * Check if a username already exists.
+     * 
+     * @param username the username to check
+     * @return true if exists, false otherwise
+     */
     public static boolean usernameExists(String username) {
-        String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
-        Connection conn = null;
-        try {
-            conn = databaseManager.getConnection();
-            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, username);
-                try (ResultSet rs = pstmt.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getInt(1) > 0;
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (conn != null) {
-                databaseManager.releaseConnection(conn);
-            }
-        }
-        return false;
+        return userRepository.findByUsername(username).isPresent();
+    }
+
+    /**
+     * Get user profile
+     * 
+     * @param userId the user ID
+     * @return the player profile
+     * @throws EntityNotFoundException if profile not found
+     */
+    public PlayerProfile getProfile(int userId) {
+        return profileRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Profile not found for user: " + userId));
     }
 }

@@ -3,9 +3,9 @@ package com.arkanoid.ui.view;
 import com.arkanoid.core.entities.Ball;
 import com.arkanoid.core.entities.Brick;
 import com.arkanoid.core.entities.Paddle;
+import com.arkanoid.systems.input.TwoPlayerInputHandler;
 import com.arkanoid.systems.level.LevelManager;
 import com.arkanoid.systems.logging.GameLogger;
-import com.arkanoid.systems.player.Orientation;
 import com.arkanoid.systems.player.Player;
 import com.arkanoid.systems.twoplayer.*;
 import javafx.animation.AnimationTimer;
@@ -43,6 +43,7 @@ public class TwoPlayerGameScreen {
     private Player player1;
     private Player player2;
     private TwoPlayerMatchManager matchManager;
+    private TwoPlayerInputHandler inputHandler;
     private TwoPlayerStatsPanel statsPanel;
     private List<Brick> bricks;
     private LevelManager levelManager;
@@ -132,6 +133,11 @@ public class TwoPlayerGameScreen {
         matchManager = new TwoPlayerMatchManagerImpl(player1, player2, collisionService, respawnService, powerUpService,
                 bricks);
 
+        // Initialize input handler with UI callbacks
+        inputHandler = new TwoPlayerInputHandler(player1, player2, matchManager);
+        inputHandler.setOnPauseCallback(this::showPauseMenu);
+        inputHandler.setOnResumeCallback(this::hidePauseMenu);
+
         matchManager.startMatch();
         logger.info("Two-player game initialized: {} bricks, P1 at ({}, {}), P2 at ({}, {})",
             bricks.size(), paddle1.getX(), paddle1.getY(), paddle2.getX(), paddle2.getY());
@@ -140,41 +146,9 @@ public class TwoPlayerGameScreen {
     private void setupInput(Scene scene) {
         scene.setOnKeyPressed(e -> {
             activeKeys.add(e.getCode());
-
-            // Spacebar: launch balls if attached
-            if (e.getCode() == KeyCode.SPACE) {
-                if (player1.getBall() != null && player1.getBall().isAttachedToPaddle()) {
-                    launchBall(player1);
-                }
-                if (player2.getBall() != null && player2.getBall().isAttachedToPaddle()) {
-                    launchBall(player2);
-                }
-            }
-
-            // Pause/Resume
-            if (e.getCode() == KeyCode.ESCAPE || e.getCode() == KeyCode.P) {
-                if (matchManager.getState() == TwoPlayerMatchManager.MatchState.PLAYING) {
-                    pauseGame();
-                } else if (matchManager.getState() == TwoPlayerMatchManager.MatchState.PAUSED) {
-                    resumeGame();
-                }
-            }
+            inputHandler.handleKeyPress(e.getCode());
         });
-
         scene.setOnKeyReleased(e -> activeKeys.remove(e.getCode()));
-    }
-
-    private void launchBall(Player player) {
-        Ball ball = player.getBall();
-        Orientation orientation = player.getOrientation();
-
-        ball.setAttachedToPaddle(false);
-        int direction = orientation.getDirectionMultiplier();
-        ball.setVelocityX(0);
-        ball.setVelocityY(-direction * BALL_SPEED);
-
-        logger.info("Player {} launched ball from ({}, {}) with velocity ({}, {})",
-            player.getPlayerNumber(), ball.getX(), ball.getY(), ball.getVelocityX(), ball.getVelocityY());
     }
 
     private void startGameLoop() {
@@ -205,23 +179,8 @@ public class TwoPlayerGameScreen {
             return;
         }
 
-        // Handle Player 1 input (A/D keys)
-        Paddle paddle1 = player1.getPaddle();
-        if (activeKeys.contains(KeyCode.A)) {
-            paddle1.moveLeft(deltaTime);
-        }
-        if (activeKeys.contains(KeyCode.D)) {
-            paddle1.moveRight(deltaTime);
-        }
-
-        // Handle Player 2 input (Arrow keys)
-        Paddle paddle2 = player2.getPaddle();
-        if (activeKeys.contains(KeyCode.LEFT)) {
-            paddle2.moveLeft(deltaTime);
-        }
-        if (activeKeys.contains(KeyCode.RIGHT)) {
-            paddle2.moveRight(deltaTime);
-        }
+        // Handle input through InputHandler
+        inputHandler.handleContinuousInput(activeKeys, deltaTime);
 
         // Check ball-brick collisions and update bricks
         checkBrickCollisions();
@@ -231,7 +190,7 @@ public class TwoPlayerGameScreen {
             brick.update(deltaTime);
         }
 
-        // Update match (handles collision, respawn, win conditions)
+        // Update match
         matchManager.update(deltaTime);
     }
 
@@ -258,7 +217,7 @@ public class TwoPlayerGameScreen {
                 }
             }
 
-            // Check Player 2 ball collision (only if not already hit this frame)
+            // Check Player 2 ball collision
             if (!hitThisFrame && ball2 != null && !ball2.isAttachedToPaddle() && brick.intersects(ball2)) {
                 com.arkanoid.systems.sound.SoundManager.getInstance().playSound("brickBounce.wav");
                 handleBallBrickCollision(ball2, brick);
@@ -337,8 +296,6 @@ public class TwoPlayerGameScreen {
         if (statsPanel != null) {
             statsPanel.update();
         }
-
-        // Note: Pause menu is handled by JavaFX overlay, not canvas rendering
     }
 
     // private void renderHUD() {
@@ -352,11 +309,6 @@ public class TwoPlayerGameScreen {
     //     gc.fillText("P2 Score: " + player2.getState().getScore(), 10, 20);
     //     gc.fillText("P2 Lives: " + player2.getState().getLives(), 10, 40);
     // }
-
-    private void pauseGame() {
-        matchManager.pause();
-        showPauseMenu();
-    }
 
     private void resumeGame() {
         matchManager.resume();

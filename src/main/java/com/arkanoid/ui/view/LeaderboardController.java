@@ -1,6 +1,7 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.database.PlayerProfileManager;
+import com.arkanoid.database.PlayerProfileManager.LeaderboardEntry;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,7 +23,7 @@ public class LeaderboardController {
     private static final SoundManager soundManager = SoundManager.getInstance();
 
     @FXML
-    private ListView<PlayerProfileManager.LeaderboardEntry> leaderboardList;
+    private ListView<LeaderboardEntry> leaderboardList;
 
     @FXML
     public void initialize() {
@@ -36,8 +37,8 @@ public class LeaderboardController {
      */
     public void refreshData() {
         // Query all users from database, sorted by high_score DESC
-        List<PlayerProfileManager.LeaderboardEntry> leaderboardData = PlayerProfileManager.getLeaderboardData();
-        ObservableList<PlayerProfileManager.LeaderboardEntry> items = FXCollections
+        List<LeaderboardEntry> leaderboardData = PlayerProfileManager.getLeaderboardData();
+        ObservableList<LeaderboardEntry> items = FXCollections
                 .observableArrayList(leaderboardData);
         leaderboardList.setItems(items);
     }
@@ -48,7 +49,7 @@ public class LeaderboardController {
     private void setupCellFactory() {
         leaderboardList.setCellFactory(param -> new ListCell<>() {
             @Override
-            protected void updateItem(PlayerProfileManager.LeaderboardEntry item, boolean empty) {
+            protected void updateItem(LeaderboardEntry item, boolean empty) {
                 super.updateItem(item, empty);
 
                 if (empty || item == null) {

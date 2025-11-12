@@ -23,7 +23,6 @@ public abstract class PowerUp extends MovableObject {
         this.age = 0;
         this.collected = false;
         this.image = null;
-        // Removed TRACE logging to reduce verbosity
     }
 
     @Override
@@ -31,7 +30,6 @@ public abstract class PowerUp extends MovableObject {
         move(deltaTime);
         age += deltaTime;
         if (age >= lifetime) {
-            // Removed TRACE logging to reduce verbosity
             active = false;
         }
     }

@@ -2,35 +2,32 @@ package com.arkanoid.database;
 
 import com.arkanoid.database.repository.*;
 import com.arkanoid.database.repository.impl.*;
-import com.arkanoid.database.service.AuthenticationService;
-import com.arkanoid.database.service.PasswordService;
+import com.arkanoid.utils.PasswordHasher;
 
 /**
- * Factory for creating database repository and service instances.
- * Implements a simple Dependency Injection container.
+ * Factory for creating database repository and service instances. Implements a
+ * simple Dependency Injection container.
  */
 public class RepositoryFactory {
     private static RepositoryFactory instance;
 
-    private final DatabaseManager dbManager;
+    private final DatabaseManager databaseManager;
     private final UserRepository userRepository;
     private final PlayerProfileRepository profileRepository;
     private final GameSaveRepository gameSaveRepository;
-    private final PasswordService passwordService;
-    private final AuthenticationService authService;
+    private final PasswordHasher passwordHasher;
 
     private RepositoryFactory() {
-        this.dbManager = DatabaseManager.getInstance();
-        this.dbManager.initialize();
+        this.databaseManager = DatabaseManager.getInstance();
+        this.databaseManager.initialize();
 
         // Initialize repositories
-        this.userRepository = new UserRepositoryImpl(dbManager);
-        this.profileRepository = new PlayerProfileRepositoryImpl(dbManager);
-        this.gameSaveRepository = new GameSaveRepositoryImpl(dbManager);
+        this.userRepository = new UserRepositoryImpl(databaseManager);
+        this.profileRepository = new PlayerProfileRepositoryImpl(databaseManager);
+        this.gameSaveRepository = new GameSaveRepositoryImpl(databaseManager);
 
         // Initialize services
-        this.passwordService = new PasswordService();
-        this.authService = new AuthenticationService(userRepository, profileRepository, passwordService);
+        this.passwordHasher = new PasswordHasher();
     }
 
     public static synchronized RepositoryFactory getInstance() {
@@ -41,7 +38,7 @@ public class RepositoryFactory {
     }
 
     public DatabaseManager getDatabaseManager() {
-        return dbManager;
+        return databaseManager;
     }
 
     public UserRepository getUserRepository() {
@@ -56,18 +53,14 @@ public class RepositoryFactory {
         return gameSaveRepository;
     }
 
-    public PasswordService getPasswordService() {
-        return passwordService;
-    }
-
-    public AuthenticationService getAuthenticationService() {
-        return authService;
+    public PasswordHasher getPasswordHasher() {
+        return passwordHasher;
     }
 
     /**
      * Close all database connections
      */
     public void shutdown() {
-        dbManager.close();
+        databaseManager.close();
     }
 }

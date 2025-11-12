@@ -3,7 +3,7 @@ package com.arkanoid.database.entity;
 import java.time.LocalDateTime;
 
 /**
- * Entity representing a saved game state
+ * Entity representing a saved game state with LZ4-compressed game state
  */
 public class GameSave {
     private final int id;
@@ -13,12 +13,12 @@ public class GameSave {
     private final int score;
     private final int lives;
     private final int elapsedTimeSeconds;
-    private final String gameStateJson;
+    private final byte[] compressedGameState; // LZ4-compressed JSON
     private final byte[] thumbnailData;
     private final LocalDateTime createdAt;
 
     public GameSave(int id, int userId, String saveName, int levelNumber, int score, int lives,
-            int elapsedTimeSeconds, String gameStateJson, byte[] thumbnailData, LocalDateTime createdAt) {
+            int elapsedTimeSeconds, byte[] compressedGameState, byte[] thumbnailData, LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;
         this.saveName = saveName;
@@ -26,7 +26,7 @@ public class GameSave {
         this.score = score;
         this.lives = lives;
         this.elapsedTimeSeconds = elapsedTimeSeconds;
-        this.gameStateJson = gameStateJson;
+        this.compressedGameState = compressedGameState;
         this.thumbnailData = thumbnailData;
         this.createdAt = createdAt;
     }
@@ -59,8 +59,8 @@ public class GameSave {
         return elapsedTimeSeconds;
     }
 
-    public String getGameStateJson() {
-        return gameStateJson;
+    public byte[] getCompressedGameState() {
+        return compressedGameState;
     }
 
     public byte[] getThumbnailData() {

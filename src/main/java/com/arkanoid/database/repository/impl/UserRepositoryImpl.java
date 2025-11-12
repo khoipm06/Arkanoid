@@ -14,10 +14,10 @@ import java.util.Optional;
  * SQLite implementation of UserRepository
  */
 public class UserRepositoryImpl implements UserRepository {
-    private final DatabaseManager dbManager;
+    private final DatabaseManager databaseManager;
 
-    public UserRepositoryImpl(DatabaseManager dbManager) {
-        this.dbManager = dbManager;
+    public UserRepositoryImpl(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class UserRepositoryImpl implements UserRepository {
 
         String sql = "INSERT INTO users (username, password, created_at) VALUES (?, ?, ?)";
 
-        return dbManager.executeInTransaction(conn -> {
+        return databaseManager.executeInTransaction(conn -> {
             try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 LocalDateTime now = LocalDateTime.now();
                 pstmt.setString(1, username);
@@ -58,7 +58,7 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<User> findById(int id) {
         String sql = "SELECT * FROM users WHERE id = ?";
 
-        return dbManager.executeQuery(conn -> {
+        return databaseManager.executeQuery(conn -> {
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setInt(1, id);
 
@@ -78,7 +78,7 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<User> findByUsername(String username) {
         String sql = "SELECT * FROM users WHERE username = ?";
 
-        return dbManager.executeQuery(conn -> {
+        return databaseManager.executeQuery(conn -> {
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, username);
 
@@ -98,7 +98,7 @@ public class UserRepositoryImpl implements UserRepository {
     public boolean existsByUsername(String username) {
         String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
 
-        return dbManager.executeQuery(conn -> {
+        return databaseManager.executeQuery(conn -> {
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, username);
 
@@ -115,7 +115,7 @@ public class UserRepositoryImpl implements UserRepository {
     public void updateLastLogin(int userId) {
         String sql = "UPDATE users SET last_login = ? WHERE id = ?";
 
-        dbManager.executeUpdate(conn -> {
+        databaseManager.executeUpdate(conn -> {
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, LocalDateTime.now().toString());
                 pstmt.setInt(2, userId);

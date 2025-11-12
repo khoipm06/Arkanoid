@@ -122,7 +122,7 @@ public class DatabaseManager implements AutoCloseable {
                         score INTEGER NOT NULL,
                         lives INTEGER NOT NULL,
                         elapsed_time_seconds INTEGER NOT NULL,
-                        game_state_json TEXT NOT NULL,
+                        game_state_json BLOB NOT NULL,
                         thumbnail_data BLOB,
                         created_at TEXT NOT NULL,
                         FOREIGN KEY (user_id) REFERENCES users(id)

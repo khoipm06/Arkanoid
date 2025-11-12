@@ -1,5 +1,6 @@
 package com.arkanoid.database;
 
+import com.arkanoid.database.entity.User;
 import org.junit.jupiter.api.*;
 
 import java.sql.PreparedStatement;
@@ -11,12 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerProfileManagerTest {
 
-    private static final DatabaseManager dbManager = DatabaseManager.getInstance();
+    private static final DatabaseManager databaseManager = DatabaseManager.getInstance();
 
     @BeforeEach
     void setUp() throws SQLException {
-        dbManager.initialize();
-        try (Statement stmt = dbManager.getConnection().createStatement()) {
+        databaseManager.initialize();
+        try (Statement stmt = databaseManager.getConnection().createStatement()) {
             stmt.execute("DELETE FROM users");
             stmt.execute("DELETE FROM player_profiles");
         }
@@ -24,7 +25,7 @@ class PlayerProfileManagerTest {
 
     @Test
     void testUpdateHighScore() {
-        UserManager.User user = UserManager.register("scoreuser", "pw");
+        User user = UserManager.register("scoreuser", "pw");
         assertNotNull(user);
         int userId = user.getId();
 
@@ -41,9 +42,9 @@ class PlayerProfileManagerTest {
     @Test
     void testGetLeaderboardData() {
         // Create some users with scores
-        UserManager.User user1 = UserManager.register("player1", "pw");
-        UserManager.User user2 = UserManager.register("player2", "pw");
-        UserManager.User user3 = UserManager.register("player3", "pw");
+        User user1 = UserManager.register("player1", "pw");
+        User user2 = UserManager.register("player2", "pw");
+        User user3 = UserManager.register("player3", "pw");
 
         assertNotNull(user1);
         assertNotNull(user2);
@@ -73,7 +74,7 @@ class PlayerProfileManagerTest {
     // Helper to directly update high score for testing purposes
     private void updateHighScoreInDb(int userId, int score) {
         String sql = "UPDATE player_profiles SET high_score = ? WHERE user_id = ?";
-        try (PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(sql)) {
             pstmt.setInt(1, score);
             pstmt.setInt(2, userId);
             pstmt.executeUpdate();

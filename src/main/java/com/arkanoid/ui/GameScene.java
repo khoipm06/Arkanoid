@@ -2,6 +2,7 @@ package com.arkanoid.ui;
 
 import com.arkanoid.core.entities.*;
 import com.arkanoid.systems.GameManager;
+import com.arkanoid.systems.input.InputHandler;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.PlayerState;
 import org.slf4j.Logger;
@@ -42,6 +43,7 @@ public class GameScene {
     private final Canvas canvas;
     private final GraphicsContext gc;
     private final GameManager gameManager;
+    private final InputHandler inputHandler;
     private final Set<KeyCode> pressedKeys;
     private final VBox pauseOverlay;
     private final StackPane root;
@@ -53,9 +55,9 @@ public class GameScene {
     private Text livesLabel;
     private Text levelLabel;
     private Text timeLabel;
-    private long startTime;
+    private String timeStr;
 
-    public GameScene(Stage stage, double width, double height, int levelNumber) {
+    private GameScene(Stage stage, double width, double height, int levelNumber) {
         this.stage = stage;
         this.pressedKeys = new HashSet<>();
 
@@ -65,6 +67,7 @@ public class GameScene {
         canvas = new Canvas(gameAreaWidth, gameAreaHeight);
         gc = canvas.getGraphicsContext2D();
         this.gameManager = GameManager.getInstance(canvas.getWidth(), canvas.getHeight(), levelNumber);
+        this.inputHandler = new InputHandler(gameManager);
 
         if (gameManager.getPlayer() != null) {
             String equippedSkin = SessionManager.getCurrentUser().getEquippedPaddleSkin();
@@ -86,15 +89,15 @@ public class GameScene {
 
         VBox infoPanel = createInfoPanel();
 
-        // Đặt vào BorderPane
+        // Put into BorderPane
         mainLayout.setCenter(canvas);
         mainLayout.setRight(infoPanel);
 
-        // Pause overlay (đè lên toàn bộ)
+        // Pause overlay
         pauseOverlay = createPauseOverlay();
         pauseOverlay.setVisible(false);
 
-        // Root là StackPane để overlay đè lên
+        // Overlay over the root StackPane
         root = new StackPane(mainLayout, pauseOverlay);
         double infoWidth = 350;
         this.scene = new Scene(root, canvas.getWidth() + infoWidth, height);
@@ -103,6 +106,10 @@ public class GameScene {
         stage.setResizable(false);
         stage.setScene(scene);
 
+    }
+
+    public static GameScene getInstance(Stage stage, double width, double height, int levelNumber) {
+        return new GameScene(stage, width, height, levelNumber);
     }
 
     public void hidePauseOverlay() {
@@ -137,9 +144,9 @@ public class GameScene {
                     saveLoadRoot,
                     this);
             stage.setScene(saveLoadScene);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            logger.error("Failed to open Save/Load scene: {}", ex.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Failed to open Save/Load scene: {}", e.getMessage());
         }
     }
 
@@ -156,7 +163,7 @@ public class GameScene {
                         "-fx-background-radius: 15; " +
                         "-fx-border-radius: 15;");
 
-        // Tiêu đề game
+        // Game Title
         Text title = new Text("ARKANOID");
         title.setFont(Font.font("Arial Black", 32));
         title.setFill(Color.CYAN);
@@ -181,7 +188,7 @@ public class GameScene {
 
         info.getChildren().addAll(title, scoreBox, livesBox, levelBox, timeBox);
 
-        // Hiệu ứng shadow mạnh để panel nổi bật
+        // Shadow effect to make panel stand out
         DropShadow shadow = new DropShadow();
         shadow.setColor(Color.rgb(0, 255, 255, 0.6)); // cyan mờ
         shadow.setRadius(15);
@@ -235,7 +242,7 @@ public class GameScene {
         Button newGameBtn = new Button("New Game");
         stylePauseButton(newGameBtn);
         newGameBtn.setOnAction(e -> {
-            GameScene newScene = new GameScene(stage, stage.getWidth(), stage.getHeight(),
+            GameScene newScene = GameScene.getInstance(stage, stage.getWidth(), stage.getHeight(),
                     gameManager.getLevelNumber());
             newScene.start();
             stage.setScene(newScene.getScene());
@@ -280,13 +287,10 @@ public class GameScene {
     private void setupInputHandlers() {
         scene.setOnKeyPressed(event -> {
             KeyCode key = event.getCode();
-
-            if (key == KeyCode.ESCAPE) {
-                gameManager.togglePause();
+            if (inputHandler.handleKeyPress(key)) {
                 pauseOverlay.setVisible(gameManager.getCurrentState() == GameManager.GameState.PAUSED);
                 return;
             }
-
             // F5 - Quick save
             if (key == KeyCode.F5) {
                 if (gameManager.getCurrentState() == GameManager.GameState.PAUSED) {
@@ -306,16 +310,7 @@ public class GameScene {
                 }
                 return;
             }
-
-            if (key == KeyCode.SPACE) {
-                for (Ball ball : gameManager.getBalls()) {
-                    if (ball.isAttachedToPaddle()) {
-                        ball.launch();
-                    }
-                }
-                return;
-            }
-
+            // Add movement keys to continuous input set
             pressedKeys.add(key);
         });
 
@@ -327,30 +322,18 @@ public class GameScene {
     public void start() {
         gameManager.startGame();
         lastUpdate = System.nanoTime();
-        startTime = System.nanoTime();
 
         gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
                 lastUpdate = now;
-
-                handleInput(deltaTime);
+                inputHandler.handleContinuousInput(pressedKeys, deltaTime);
                 update(deltaTime);
                 render();
             }
         };
-
         gameLoop.start();
-    }
-
-    private void handleInput(double deltaTime) {
-        if (gameManager.getCurrentState() != GameManager.GameState.PLAYING)
-            return;
-
-        for (KeyCode key : pressedKeys) {
-            gameManager.getPlayerManager().handleInput(key, true, deltaTime);
-        }
     }
 
     private void update(double deltaTime) {
@@ -362,10 +345,10 @@ public class GameScene {
                 livesLabel.setText(String.valueOf(state.getLives()));
             });
         }
-        long elapsed = (System.nanoTime() - startTime) / 1_000_000_000;
-        int minutes = (int) (elapsed / 60);
-        int seconds = (int) (elapsed % 60);
-        String timeStr = String.format("%02d:%02d", minutes, seconds);
+        int elapsed = (int) gameManager.getElapsedTimeSeconds();
+        int minutes = elapsed / 60;
+        int seconds = elapsed % 60;
+        timeStr = String.format("%02d:%02d", minutes, seconds);
         Platform.runLater(() -> timeLabel.setText(timeStr));
         if (gameManager.getCurrentState() == GameManager.GameState.GAME_OVER) {
             gameLoop.stop();

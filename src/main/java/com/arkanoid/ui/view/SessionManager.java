@@ -3,8 +3,10 @@ package com.arkanoid.ui.view;
 import com.arkanoid.database.InventoryManager;
 import com.arkanoid.database.PlayerProfileManager;
 import com.arkanoid.database.UserSessionStorage;
+import com.arkanoid.database.RepositoryFactory;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.PlayerProfile;
+import com.arkanoid.utils.PasswordHasher;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -179,13 +181,13 @@ public class SessionManager {
     /**
      * Log in a user (stores user ID for database queries)
      */
-    public static void login(User user) {
-        currentUserId = user.getId();
-        currentUsername = user.getUsername();
+    public static void login(int userId, String userName, String passwordHash) {
+        currentUserId = userId;
+        currentUsername = userName;
 
-        // Save session to disk for persistent login
-        UserSessionStorage.saveSession(user.getId(), user.getUsername());
-        
+        // Save session
+        UserSessionStorage.saveSession(userId, userName, passwordHash);
+
         // Load and apply user's saved volume preferences
         // and refresh SettingView UI if it's currently open
         try {
@@ -198,6 +200,17 @@ public class SessionManager {
             // SettingView not loaded yet, ignore
             logger.debug("SettingView not available for refresh");
         }
+    }
+
+    public static void login(int userId, String userName, String password, boolean isUsingPassword) {
+        if (!isUsingPassword) {
+            // Assume password is already hashed
+            login(userId, userName, password);
+            return;
+        }
+        PasswordHasher passwordHasher = RepositoryFactory.getInstance().getPasswordHasher();
+        String hashedPassword = passwordHasher.hashPassword(password);
+        login(userId, userName, hashedPassword);
     }
 
     /**

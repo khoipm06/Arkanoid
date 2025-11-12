@@ -14,10 +14,10 @@ import java.util.Optional;
  * SQLite implementation of PlayerProfileRepository
  */
 public class PlayerProfileRepositoryImpl implements PlayerProfileRepository {
-    private final DatabaseManager dbManager;
+    private final DatabaseManager databaseManager;
 
-    public PlayerProfileRepositoryImpl(DatabaseManager dbManager) {
-        this.dbManager = dbManager;
+    public PlayerProfileRepositoryImpl(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class PlayerProfileRepositoryImpl implements PlayerProfileRepository {
                 +
                 "VALUES (?, 0, 0, 'default', 0, 0)";
 
-        dbManager.executeUpdate(conn -> {
+        databaseManager.executeUpdate(conn -> {
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setInt(1, userId);
                 pstmt.executeUpdate();
@@ -42,7 +42,7 @@ public class PlayerProfileRepositoryImpl implements PlayerProfileRepository {
     public Optional<PlayerProfile> findByUserId(int userId) {
         String sql = "SELECT * FROM player_profiles WHERE user_id = ?";
 
-        return dbManager.executeQuery(conn -> {
+        return databaseManager.executeQuery(conn -> {
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setInt(1, userId);
 
@@ -63,7 +63,7 @@ public class PlayerProfileRepositoryImpl implements PlayerProfileRepository {
         String sql = "UPDATE player_profiles SET money = ?, high_score = ?, current_skin = ?, " +
                 "games_played = ?, total_score = ? WHERE user_id = ?";
 
-        dbManager.executeUpdate(conn -> {
+        databaseManager.executeUpdate(conn -> {
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setInt(1, profile.getMoney());
                 pstmt.setInt(2, profile.getHighScore());
@@ -88,7 +88,7 @@ public class PlayerProfileRepositoryImpl implements PlayerProfileRepository {
                 LIMIT ?
                 """;
 
-        return dbManager.executeQuery(conn -> {
+        return databaseManager.executeQuery(conn -> {
             List<PlayerProfile> leaderboard = new ArrayList<>();
 
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {

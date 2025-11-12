@@ -34,10 +34,10 @@ public class GameManager {
     private final List<TrailEffect> trailEffects; // New field for trail effects
     private double trailSpawnTimer = 0.0; // Timer for spawning trail effects
     private static final double TRAIL_SPAWN_INTERVAL = 0.02; // Spawn a trail effect every 0.02 seconds
-
     private final List<Bullet> bullets;
     private double gunFireCooldown = 0.0;
     private final List<FloatingText> floatingTexts;
+    private double elapsedTimeSeconds = 0.0;
 
     private GameManager(double gameWidth, double gameHeight, int levelNumber) {
         this.gameWidth = gameWidth;
@@ -67,6 +67,7 @@ public class GameManager {
 
     public void startGame() {
         currentState = GameManager.GameState.PLAYING;
+        elapsedTimeSeconds = 0.0;
 
         double ballRadius = 8;
         double ballSpeed = 300;
@@ -90,6 +91,7 @@ public class GameManager {
             return;
 
         try {
+            elapsedTimeSeconds += deltaTime;
             playerManager.update(deltaTime);
             Paddle paddle = player.getPaddle();
 
@@ -385,6 +387,14 @@ public class GameManager {
         return particles;
     }
 
+    public double getElapsedTimeSeconds() {
+        return elapsedTimeSeconds;
+    }
+
+    public void setElapsedTimeSeconds(double elapsedTimeSeconds) {
+        this.elapsedTimeSeconds = elapsedTimeSeconds;
+    }
+
     private void applyPowerUpEffect(PowerUp powerUp, Paddle paddle) {
         logger.debug("Applying power-up effect: {}", powerUp.getClass().getSimpleName());
         GameLogger.logCollectionState(logger, "bricks", bricks);
@@ -500,12 +510,9 @@ public class GameManager {
             powerUpStates.add(new PowerUpState(powerUp.getClass().getSimpleName(),
                     powerUp.getX(), powerUp.getY(), powerUp.getVelocityY(), powerUp.isActive()));
         }
-
-        // Get elapsed time - for now we'll use 0, can be enhanced later with a timer
-        int elapsedTimeSeconds = 0;
-
+        int elapsedSeconds = (int) elapsedTimeSeconds;
         return new com.arkanoid.systems.save.GameState(levelNumber, player.getState().getScore(),
-                player.getState().getLives(), elapsedTimeSeconds, paddleState, ballStates, brickStates, powerUpStates);
+                player.getState().getLives(), elapsedSeconds, paddleState, ballStates, brickStates, powerUpStates);
     }
 
     /**
@@ -527,6 +534,9 @@ public class GameManager {
         player.getState().addScore(-currentScore); // Reset to 0
         player.getState().addScore(gameState.getScore()); // Add saved score
         player.getState().setLives(gameState.getLives());
+        
+        // Restore elapsed time
+        this.elapsedTimeSeconds = gameState.getElapsedTimeSeconds();
 
         // Restore paddle
         Paddle paddle = player.getPaddle();
@@ -604,9 +614,32 @@ public class GameManager {
     }
 
     private PowerUp createPowerUpFromState(PowerUpState powerUpState) {
-        // For now, return null - power-ups can be restored based on type
-        // This would need to be enhanced based on actual PowerUp class hierarchy
-        return null;
+        String type = powerUpState.type();
+        double x = powerUpState.x();
+        double y = powerUpState.y();
+
+        PowerUp powerUp = switch (type) {
+            case "ExplosiveBallPowerUp" -> new ExplosiveBallPowerUp(x, y);
+            case "MultiBallPowerUp" -> new MultiBallPowerUp(x, y);
+            case "ExpandPaddlePowerUp" -> new ExpandPaddlePowerUp(x, y);
+            case "GunPaddlePowerUp" -> new GunPaddlePowerUp(x, y);
+            case "RowClearPowerUp" -> new RowClearPowerUp(x, y);
+            default -> {
+                logger.warn("Unknown power-up type: {}, skipping", type);
+                yield null;
+            }
+        };
+
+        if (powerUp != null) {
+            // Restore velocity
+            powerUp.setVelocityY(powerUpState.velocityY());
+            // Restore active state
+            if (!powerUpState.active()) {
+                powerUp.setActive(false);
+            }
+        }
+
+        return powerUp;
     }
 
     public enum GameState {

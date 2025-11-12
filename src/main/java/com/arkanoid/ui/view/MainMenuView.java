@@ -222,16 +222,12 @@ public class MainMenuView {
     }
 
     public void closeModePopup() {
-
         soundManager.playSound("Accept.wav");
-
         root.getChildren().remove(modePopup);
     }
 
     public void onLeaderBoardClick(MouseEvent event) {
-
         soundManager.playSound("Accept.wav");
-
         SceneManager.switchTo("leaderboard");
     }
 }

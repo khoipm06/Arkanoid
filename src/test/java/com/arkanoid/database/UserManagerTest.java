@@ -1,5 +1,7 @@
 package com.arkanoid.database;
 
+import com.arkanoid.database.entity.User;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.sql.SQLException;
@@ -27,17 +29,17 @@ class UserManagerTest {
         String password = "password123";
 
         // Test successful registration
-        UserManager.User registeredUser = UserManager.register(username, password);
+        User registeredUser = UserManager.register(username, password);
         assertNotNull(registeredUser, "Registration should be successful");
         assertEquals(username, registeredUser.getUsername());
 
         // Test successful login
-        UserManager.User loggedInUser = UserManager.login(username, password);
+        User loggedInUser = UserManager.login(username, password);
         assertNotNull(loggedInUser, "Login with correct credentials should succeed");
         assertEquals(username, loggedInUser.getUsername());
 
-        // Test login with wrong password
-        UserManager.User failedLoginUser = UserManager.login(username, "wrongpassword");
+        // Test login with the wrong password
+        User failedLoginUser = UserManager.login(username, "wrongpassword");
         assertNull(failedLoginUser, "Login with incorrect password should fail");
     }
 
@@ -47,11 +49,11 @@ class UserManagerTest {
         String password = "password123";
 
         // First registration should succeed
-        UserManager.User registeredUser = UserManager.register(username, password);
+        User registeredUser = UserManager.register(username, password);
         assertNotNull(registeredUser, "First registration should be successful");
 
         // Second registration with the same username should fail
-        UserManager.User duplicateUser = UserManager.register(username, "anotherpassword");
+        User duplicateUser = UserManager.register(username, "anotherpassword");
         assertNull(duplicateUser, "Registering a duplicate username should fail");
     }
 

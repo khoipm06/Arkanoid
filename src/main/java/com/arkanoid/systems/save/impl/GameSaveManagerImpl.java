@@ -6,6 +6,7 @@ import com.arkanoid.database.repository.GameSaveRepository;
 import com.arkanoid.systems.GameManager;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.save.*;
+import com.arkanoid.utils.CompressionUtil;
 import org.slf4j.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -68,6 +69,17 @@ public class GameSaveManagerImpl implements GameSaveManager {
 
             // Serialize to JSON
             String stateJson = serializer.toJson(gameState);
+            int originalSize = stateJson.length();
+            
+            // Compress game state using LZ4
+            long compressStart = System.currentTimeMillis();
+            byte[] compressedGameState = CompressionUtil.compress(stateJson);
+            long compressDuration = System.currentTimeMillis() - compressStart;
+            
+            logger.debug("Game state compressed: {} -> {} bytes ({} compression ratio) - {}ms",
+                    originalSize, compressedGameState.length, 
+                    String.format("%.1f%%", (1 - (double)compressedGameState.length / originalSize) * 100),
+                    compressDuration);
 
             // Capture thumbnail (if canvas provided)
             byte[] thumbnailPng = null;
@@ -90,7 +102,7 @@ public class GameSaveManagerImpl implements GameSaveManager {
                 deleteOldestSave(userId);
             }
 
-            // Save to database using repository API
+            // Save to database using repository API with compressed data
             long startTime = System.currentTimeMillis();
             GameSave savedGame = repository.create(
                     userId,
@@ -99,12 +111,13 @@ public class GameSaveManagerImpl implements GameSaveManager {
                     gameState.getScore(),
                     gameState.getLives(),
                     gameState.getElapsedTimeSeconds(),
-                    stateJson,
+                    compressedGameState,
                     thumbnailPng);
             long duration = System.currentTimeMillis() - startTime;
 
-            logger.info("Game saved successfully: '{}' (Level {}, Score {}) - {}ms",
-                    saveName, gameState.getLevelNumber(), gameState.getScore(), duration);
+            logger.info("Game saved successfully: '{}' (Level {}, Score {}) - Compressed {}KB -> {}KB - {}ms",
+                    saveName, gameState.getLevelNumber(), gameState.getScore(), 
+                    originalSize / 1024, compressedGameState.length / 1024, duration);
             return savedGame;
 
         } catch (Exception e) {
@@ -150,7 +163,15 @@ public class GameSaveManagerImpl implements GameSaveManager {
             }
 
             GameSave gameSave = saveOpt.get();
-            String stateJson = gameSave.getGameStateJson();
+            byte[] compressedGameState = gameSave.getCompressedGameState();
+            
+            // Decompress game state using LZ4
+            long decompressStart = System.currentTimeMillis();
+            String stateJson = com.arkanoid.utils.CompressionUtil.decompress(compressedGameState);
+            long decompressDuration = System.currentTimeMillis() - decompressStart;
+            
+            logger.debug("Game state decompressed: {} -> {} bytes - {}ms",
+                    compressedGameState.length, stateJson.length(), decompressDuration);
 
             // Validate JSON
             if (!serializer.isValidJson(stateJson)) {
@@ -170,9 +191,10 @@ public class GameSaveManagerImpl implements GameSaveManager {
             gameManager.restoreGameState(gameState);
             long duration = System.currentTimeMillis() - startTime;
 
-            logger.info("Game loaded successfully: '{}' (Level {}, Score {}, {} balls, {} bricks) - {}ms",
+            logger.info("Game loaded successfully: '{}' (Level {}, Score {}, {} balls, {} bricks) - {}KB compressed - {}ms",
                     gameSave.getSaveName(), gameState.getLevelNumber(), gameState.getScore(),
-                    gameState.getBallStates().size(), gameState.getBrickStates().size(), duration);
+                    gameState.getBallStates().size(), gameState.getBrickStates().size(),
+                    compressedGameState.length / 1024, duration);
             return gameSave;
 
         } catch (Exception e) {

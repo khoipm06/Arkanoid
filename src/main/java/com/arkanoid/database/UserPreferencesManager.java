@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 public class UserPreferencesManager {
     private static final Logger logger = GameLogger.getLogger(UserPreferencesManager.class);
-    private static final DatabaseManager dbManager = DatabaseManager.getInstance();
+    private static final DatabaseManager databaseManager = DatabaseManager.getInstance();
 
     /**
      * Get user preferences. Creates default preferences if none exist.
@@ -21,7 +21,7 @@ public class UserPreferencesManager {
     public static Optional<UserPreferences> getPreferences(int userId) {
         String sql = "SELECT * FROM user_preferences WHERE user_id = ?";
 
-        try (Connection conn = dbManager.getConnection();
+        try (Connection conn = databaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, userId);
@@ -53,7 +53,7 @@ public class UserPreferencesManager {
         String sql = "INSERT INTO user_preferences (user_id, music_volume) VALUES (?, ?) " +
                      "ON CONFLICT(user_id) DO UPDATE SET music_volume = excluded.music_volume";
 
-        try (Connection conn = dbManager.getConnection();
+        try (Connection conn = databaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, prefs.getUserId());
@@ -73,7 +73,7 @@ public class UserPreferencesManager {
     public static void updateMusicVolume(int userId, int volume) {
         String sql = "UPDATE user_preferences SET music_volume = ? WHERE user_id = ?";
 
-        try (Connection conn = dbManager.getConnection();
+        try (Connection conn = databaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, Math.max(0, Math.min(100, volume)));

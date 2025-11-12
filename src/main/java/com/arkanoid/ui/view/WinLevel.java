@@ -89,7 +89,7 @@ public class WinLevel {
             soundManager.playBackground("background.mp3", true);
 
             Stage stage = (Stage) nextLevel.getScene().getWindow();
-            GameScene nextScene = new GameScene(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT, next);
+            GameScene nextScene = GameScene.getInstance(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT, next);
 
             stage.setScene(nextScene.getScene());
             stage.show();
@@ -107,7 +107,7 @@ public class WinLevel {
         soundManager.playBackground("background.mp3", true);
 
         Stage stage = (Stage) preLevel.getScene().getWindow();
-        GameScene prevScene = new GameScene(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT, prev);
+        GameScene prevScene = GameScene.getInstance(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT, prev);
 
         stage.setScene(prevScene.getScene());
         stage.show();
@@ -128,10 +128,9 @@ public class WinLevel {
 
         Stage stage = (Stage) replay.getScene().getWindow();
 
-        GameScene newScene = new GameScene(stage, stage.getWidth(), stage.getHeight(), currentLevel);
+        GameScene newScene = GameScene.getInstance(stage, stage.getWidth(), stage.getHeight(), currentLevel);
         stage.setScene(newScene.getScene());
         stage.show();
         newScene.start();
-
     }
 }

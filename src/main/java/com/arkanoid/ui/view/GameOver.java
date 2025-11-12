@@ -87,7 +87,7 @@ public class GameOver {
             stage = (Stage) score.getScene().getWindow();
         }
 
-        GameScene newScene = new GameScene(stage, stage.getWidth(), stage.getHeight(), currentLevel);
+        GameScene newScene = GameScene.getInstance(stage, stage.getWidth(), stage.getHeight(), currentLevel);
         stage.setScene(newScene.getScene());
         stage.show();
         newScene.start();

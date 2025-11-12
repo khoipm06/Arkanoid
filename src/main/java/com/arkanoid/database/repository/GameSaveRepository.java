@@ -17,12 +17,12 @@ public interface GameSaveRepository {
      * @param score              the current score
      * @param lives              remaining lives
      * @param elapsedTimeSeconds game time elapsed
-     * @param gameStateJson      serialized game state
-     * @param thumbnailData      PNG thumbnail image data
+     * @param compressedGameState LZ4-compressed game state JSON
+     * @param thumbnailData       PNG thumbnail image data
      * @return the created game save
      */
     GameSave create(int userId, String saveName, int levelNumber, int score, int lives,
-            int elapsedTimeSeconds, String gameStateJson, byte[] thumbnailData);
+            int elapsedTimeSeconds, byte[] compressedGameState, byte[] thumbnailData);
 
     /**
      * Find a game save by ID

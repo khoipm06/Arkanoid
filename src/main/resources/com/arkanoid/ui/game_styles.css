@@ -55,7 +55,6 @@
 }
 
 #quitButton {
-  /* Kích thước (dựa trên FXML của bạn) */
   -fx-pref-width: 180px;
   -fx-pref-height: 70px;
 
@@ -96,7 +95,6 @@
 #profileButton,
 #settingButton,
 #leaderBoardButton {
-  /* Kích thước (dựa trên FXML của bạn) */
   -fx-pref-width: 50px;
   -fx-pref-height: 50px;
 
@@ -119,7 +117,6 @@
 }
 
 #settingButton {
-  /* Kích thước (dựa trên FXML của bạn) */
   -fx-pref-width: 50px;
   -fx-pref-height: 50px;
 
@@ -141,7 +138,6 @@
   -fx-font-weight: bold;
 }
 #leaderBoardButton {
-  /* Kích thước (dựa trên FXML của bạn) */
   -fx-pref-width: 50px;
   -fx-pref-height: 50px;
 
@@ -166,7 +162,6 @@
 #profile:hover,
 #setting:hover,
 #leaderBoard:hover {
-  /* Làm sáng màu khi di chuột */
   -fx-background-color: linear-gradient(
     to bottom,
     #4682b4,

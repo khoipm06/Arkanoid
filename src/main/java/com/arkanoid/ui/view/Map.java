@@ -97,7 +97,7 @@ public class Map {
             stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
         }
         int selectedLevel = currentMapIndex + 1;
-        GameScene gameScene = new GameScene(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT,
+        GameScene gameScene = GameScene.getInstance(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT,
                 selectedLevel);
 
         stage.setScene(gameScene.getScene());

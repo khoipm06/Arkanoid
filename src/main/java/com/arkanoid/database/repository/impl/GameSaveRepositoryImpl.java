@@ -15,22 +15,22 @@ import java.util.Optional;
  * SQLite implementation of GameSaveRepository
  */
 public class GameSaveRepositoryImpl implements GameSaveRepository {
-    private final DatabaseManager dbManager;
+    private final DatabaseManager databaseManager;
 
-    public GameSaveRepositoryImpl(DatabaseManager dbManager) {
-        this.dbManager = dbManager;
+    public GameSaveRepositoryImpl(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
     }
 
     @Override
     public GameSave create(int userId, String saveName, int levelNumber, int score, int lives,
-            int elapsedTimeSeconds, String gameStateJson, byte[] thumbnailData) {
+            int elapsedTimeSeconds, byte[] compressedGameState, byte[] thumbnailData) {
         String sql = """
                 INSERT INTO game_saves (user_id, save_name, level_number, score, lives,
                                       elapsed_time_seconds, game_state_json, thumbnail_data, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
-        return dbManager.executeInTransaction(conn -> {
+        return databaseManager.executeInTransaction(conn -> {
             try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 LocalDateTime now = LocalDateTime.now();
                 pstmt.setInt(1, userId);
@@ -39,7 +39,7 @@ public class GameSaveRepositoryImpl implements GameSaveRepository {
                 pstmt.setInt(4, score);
                 pstmt.setInt(5, lives);
                 pstmt.setInt(6, elapsedTimeSeconds);
-                pstmt.setString(7, gameStateJson);
+                pstmt.setBytes(7, compressedGameState);
                 pstmt.setBytes(8, thumbnailData);
                 pstmt.setString(9, now.toString());
 
@@ -52,7 +52,7 @@ public class GameSaveRepositoryImpl implements GameSaveRepository {
                     if (rs.next()) {
                         int saveId = rs.getInt(1);
                         return new GameSave(saveId, userId, saveName, levelNumber, score, lives,
-                                elapsedTimeSeconds, gameStateJson, thumbnailData, now);
+                                elapsedTimeSeconds, compressedGameState, thumbnailData, now);
                     } else {
                         throw new DatabaseException("Creating game save failed, no ID obtained");
                     }
@@ -67,7 +67,7 @@ public class GameSaveRepositoryImpl implements GameSaveRepository {
     public Optional<GameSave> findById(int id) {
         String sql = "SELECT * FROM game_saves WHERE id = ?";
 
-        return dbManager.executeQuery(conn -> {
+        return databaseManager.executeQuery(conn -> {
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setInt(1, id);
 
@@ -87,7 +87,7 @@ public class GameSaveRepositoryImpl implements GameSaveRepository {
     public List<GameSave> findByUserId(int userId) {
         String sql = "SELECT * FROM game_saves WHERE user_id = ? ORDER BY created_at DESC";
 
-        return dbManager.executeQuery(conn -> {
+        return databaseManager.executeQuery(conn -> {
             List<GameSave> saves = new ArrayList<>();
 
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -110,7 +110,7 @@ public class GameSaveRepositoryImpl implements GameSaveRepository {
     public boolean deleteById(int id) {
         String sql = "DELETE FROM game_saves WHERE id = ?";
 
-        return dbManager.executeInTransaction(conn -> {
+        return databaseManager.executeInTransaction(conn -> {
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setInt(1, id);
                 int affectedRows = pstmt.executeUpdate();
@@ -125,7 +125,7 @@ public class GameSaveRepositoryImpl implements GameSaveRepository {
     public int countByUserId(int userId) {
         String sql = "SELECT COUNT(*) FROM game_saves WHERE user_id = ?";
 
-        return dbManager.executeQuery(conn -> {
+        return databaseManager.executeQuery(conn -> {
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setInt(1, userId);
 
@@ -146,11 +146,11 @@ public class GameSaveRepositoryImpl implements GameSaveRepository {
         int score = rs.getInt("score");
         int lives = rs.getInt("lives");
         int elapsedTimeSeconds = rs.getInt("elapsed_time_seconds");
-        String gameStateJson = rs.getString("game_state_json");
+        byte[] compressedGameState = rs.getBytes("game_state_json");
         byte[] thumbnailData = rs.getBytes("thumbnail_data");
         LocalDateTime createdAt = LocalDateTime.parse(rs.getString("created_at"));
 
         return new GameSave(id, userId, saveName, levelNumber, score, lives,
-                elapsedTimeSeconds, gameStateJson, thumbnailData, createdAt);
+                elapsedTimeSeconds, compressedGameState, thumbnailData, createdAt);
     }
 }
