@@ -14,7 +14,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -31,11 +34,11 @@ public class GameScene {
     private final Canvas canvas;
     private final GraphicsContext gc;
     private final GameManager gameManager;
-    private AnimationTimer gameLoop;
     private final Set<KeyCode> pressedKeys;
-    private long lastUpdate;
     private final VBox pauseOverlay;
     private final StackPane root;
+    private AnimationTimer gameLoop;
+    private long lastUpdate;
     private Image backgroundImage;
 
     private Text scoreLabel;
@@ -50,7 +53,7 @@ public class GameScene {
         this.stage = stage;
         this.pressedKeys = new HashSet<>();
 
-        double gameAreaWidth = 700;  // cố định để dễ kiểm soát
+        double gameAreaWidth = 700;
         double gameAreaHeight = height;
 
         canvas = new Canvas(gameAreaWidth, gameAreaHeight);
@@ -73,24 +76,9 @@ public class GameScene {
             System.err.println("Lỗi khi tải ảnh nền: " + e.getMessage());
         }
 
-//            root = new StackPane();
-//
-//            canvas = new Canvas(width, height);
-//            gc = canvas.getGraphicsContext2D();
-//
-//            pauseOverlay = createPauseOverlay();
-//            pauseOverlay.setVisible(false);
-//
-//            root.getChildren().addAll(canvas, pauseOverlay);
-//                this.scene = new Scene(root, width, height);
-//                setupInputHandlers();
-//                stage.setScene(scene);
+
         BorderPane mainLayout = new BorderPane();
 
-        // 1. Canvas chơi game (trái)
-
-
-        // 2. Panel thông tin (phải)
         VBox infoPanel = createInfoPanel();
 
         // Đặt vào BorderPane
@@ -119,17 +107,25 @@ public class GameScene {
     }
 
     private VBox createInfoPanel() {
-        VBox info = new VBox(25);
+        VBox info = new VBox(20);
         info.setAlignment(Pos.TOP_CENTER);
-        info.setStyle("-fx-background-color: #1a1a1a; -fx-padding: 30; -fx-border-color: #444; -fx-border-width: 0 0 0 2;");
         info.setPrefWidth(350);
 
-        // Tiêu đề
+        info.setStyle(
+                "-fx-background-color: linear-gradient(to bottom, #1a1a2e, #162447); " + // xanh tím gradient
+                        "-fx-padding: 30; " +
+                        "-fx-border-color: #00ffff; " + // viền cyan nổi bật
+                        "-fx-border-width: 2; " +
+                        "-fx-background-radius: 15; " +
+                        "-fx-border-radius: 15;"
+        );
+
+        // Tiêu đề game
         Text title = new Text("ARKANOID");
-        title.setFont(Font.font("Arial Black", 28));
+        title.setFont(Font.font("Arial Black", 32));
         title.setFill(Color.CYAN);
-        title.setStroke(Color.DARKCYAN);
-        title.setStrokeWidth(1);
+        title.setStroke(Color.DARKBLUE);
+        title.setStrokeWidth(2);
 
         // Score
         HBox scoreBox = createInfoRow("SCORE", "0", Color.LIMEGREEN);
@@ -143,11 +139,17 @@ public class GameScene {
         HBox levelBox = createInfoRow("LEVEL", String.valueOf(gameManager.getLevelNumber()), Color.GOLD);
         levelLabel = (Text) levelBox.getChildren().get(1);
 
-        // ⏱️ TIME
+        // TIME
         HBox timeBox = createInfoRow("TIME", "00:00", Color.LIGHTBLUE);
         timeLabel = (Text) timeBox.getChildren().get(1);
 
         info.getChildren().addAll(title, scoreBox, livesBox, levelBox, timeBox);
+
+        // Hiệu ứng shadow mạnh để panel nổi bật
+        javafx.scene.effect.DropShadow shadow = new javafx.scene.effect.DropShadow();
+        shadow.setColor(Color.rgb(0, 255, 255, 0.6)); // cyan mờ
+        shadow.setRadius(15);
+        info.setEffect(shadow);
 
         return info;
     }
@@ -175,7 +177,6 @@ public class GameScene {
                 + "-fx-background-radius: 20;");
         overlay.setPrefSize(canvas.getWidth() * 0.8, canvas.getHeight() * 0.6);
 
-        // Chữ PAUSED đẹp
         Text pausedText = new Text("PAUSED");
         pausedText.setFont(Font.font("Arial Black", 60));
         pausedText.setFill(Color.WHITE);
@@ -364,26 +365,7 @@ public class GameScene {
             gameManager.getPlayer().getPaddle().render(gc);
         }
 
-//            renderUI();
     }
-
-//        private void renderUI() {
-//            if (gameManager.getPlayer() == null) return;
-//
-//            gc.setFill(Color.WHITE);
-//            gc.setFont(Font.font("Arial", 20));
-//
-//            String scoreText = "Score: " + gameManager.getPlayer().getState().getScore();
-//            gc.fillText(scoreText, 10, 25);
-//
-//            String livesText = "Lives: " + gameManager.getPlayer().getState().getLives();
-//            gc.fillText(livesText, canvas.getWidth() - 100, 25);
-//        }
-
-//        private void showGameOver() {
-//        }
-//
-//        private void showLevelComplete() {}
 
 
     public Scene getScene() {

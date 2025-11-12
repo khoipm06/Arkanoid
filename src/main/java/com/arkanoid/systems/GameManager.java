@@ -4,37 +4,29 @@ import com.arkanoid.core.entities.*;
 import com.arkanoid.core.physics.CollisionDetector;
 import com.arkanoid.systems.level.LevelManager;
 import com.arkanoid.systems.player.Player;
-import com.arkanoid.systems.sound.SoundManager;
-import javafx.scene.input.KeyCode;
 
-import javax.sound.sampled.Line;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 public class GameManager {
-    public enum GameState {
-        MENU, PLAYING, PAUSED, GAME_OVER, LEVEL_COMPLETE
-    }
-
-    private GameState currentState;
-    private LevelManager levelManager;
-    private PlayerManager playerManager;
-    private List<Ball> balls;
-    private List<Brick> bricks;
-    private List<PowerUp> powerUps;
-    private Player player;
-    private double gameWidth;
-    private double gameHeight;
-    private int levelNumber;
-    private List<Explosion> explosions;
-    private List<LineEffect> lineEffects;
-
-    private List<Bullet> bullets;
-    private double gunFireCooldown = 0.0; // thời gian đếm ngược tới lần bắn tiếp theo (giây)
     private static final double GUN_FIRE_INTERVAL = 0.2; // 0.2s ~ 5 viên/s
+    private GameState currentState;
+    private final LevelManager levelManager;
+    private final PlayerManager playerManager;
+    private final List<Ball> balls;
+    private List<Brick> bricks;
+    private final List<PowerUp> powerUps;
+    private final Player player;
+    private final double gameWidth;
+    private final double gameHeight;
+    private final int levelNumber;
+    private final List<Explosion> explosions;
+    private final List<LineEffect> lineEffects;
 
+    private final List<Bullet> bullets;
+    private double gunFireCooldown = 0.0; // thời gian đếm ngược tới lần bắn tiếp theo (giây)
     public GameManager(double gameWidth, double gameHeight, int levelNumber) {
         this.gameWidth = gameWidth;
         this.gameHeight = gameHeight;
@@ -102,14 +94,14 @@ public class GameManager {
         while (powerUpIterator.hasNext()) {
             PowerUp powerUp = powerUpIterator.next();
             powerUp.update(deltaTime);
-            
+
             if (powerUp.checkPaddleCollision(player.getPaddle())) {
                 player.getState().addScore(50);
                 applyPowerUpEffect(powerUp, paddle);   // 🔥 kích hoạt hiệu ứng power-up
                 powerUpIterator.remove();              // ❌ xoá luôn khỏi list sau khi ăn
                 continue;
             }
-            
+
             if (!powerUp.isActive() || powerUp.getY() > gameHeight) {
                 powerUpIterator.remove();
             }
@@ -212,10 +204,11 @@ public class GameManager {
         return lineEffects;
     }
 
-    public void addExplosion(double x, double y, double radius, double duration) {
-        explosions.add(new Explosion(x, y, radius, duration));
+    public void addExplosion(double x, double y, double frameWidth, double frameHeight, double duration) {
+        explosions.add(new Explosion(x, y, 64, 64, 1));
     }
-    private void onBrickDestroyed(Brick brick) {
+
+    public void onBrickDestroyed(Brick brick) {
         if (brick.isDestroyed()) {
             player.getState().addScore(100);
             PowerUp powerUp = brick.dropPowerUp();
@@ -259,62 +252,91 @@ public class GameManager {
         }
     }
 
-    public GameState getCurrentState() { return currentState; }
-    public void setCurrentState(GameState state) { this.currentState = state; }
-    public List<Ball> getBalls() { return balls; }
-    public List<Brick> getBricks() { return bricks; }
-    public List<PowerUp> getPowerUps() { return powerUps; }
-    public List<Bullet> getBullets() {return bullets; }
-    public Player getPlayer() { return player; }
-    public PlayerManager getPlayerManager() { return playerManager; }
+    public GameState getCurrentState() {
+        return currentState;
+    }
+
+    public void setCurrentState(GameState state) {
+        this.currentState = state;
+    }
+
+    public List<Ball> getBalls() {
+        return balls;
+    }
+
+    public List<Brick> getBricks() {
+        return bricks;
+    }
+
+    public List<PowerUp> getPowerUps() {
+        return powerUps;
+    }
+
+    public List<Bullet> getBullets() {
+        return bullets;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public PlayerManager getPlayerManager() {
+        return playerManager;
+    }
+
     public int getLevelNumber() {
         return levelNumber;
     }
+
     public int getScore() {
         return player.getState().getScore();
     }
-    public List<Explosion> getExplosions() { return explosions; }
 
-//    public int getHighestScore() {
-//        return playerManager.getHighestScore();
-//    }
-private void applyPowerUpEffect(PowerUp powerUp, Paddle paddle) {
-    if (powerUp instanceof ExplosiveBallPowerUp) {
-        for (Ball ball : balls) {
-            ball.setExplosive(true);
-            ball.setHasExploded(false);
-        }
+    public List<Explosion> getExplosions() {
+        return explosions;
     }
-    // Other power-up effects will be added here
-    else if (powerUp instanceof RowClearPowerUp) {
-        Random random = new Random();
-        boolean clearRow = random.nextBoolean(); // true for row, false for column
 
-        int maxRow = bricks.stream().mapToInt(Brick::getRow).max().orElse(0);
-        int maxCol = bricks.stream().mapToInt(Brick::getCol).max().orElse(0);
-
-        if (clearRow) {
-            int rowToClear = random.nextInt(maxRow + 1);
-            double y = bricks.stream().filter(b -> b.getRow() == rowToClear).findFirst().map(Brick::getY).orElse(0.0);
-            lineEffects.add(new LineEffect(0, y, gameWidth, y, 0.5));
-            for (Brick brick : bricks) {
-                if (!brick.isDestroyed() && brick.getRow() == rowToClear) {
-                    brick.destroy();
-                    onBrickDestroyed(brick);
-                }
-            }
-        } else {
-            int colToClear = random.nextInt(maxCol + 1);
-            double x = bricks.stream().filter(b -> b.getCol() == colToClear).findFirst().map(Brick::getX).orElse(0.0);
-            lineEffects.add(new LineEffect(x, 0, x, gameHeight, 0.5));
-            for (Brick brick : bricks) {
-                if (!brick.isDestroyed() && brick.getCol() == colToClear) {
-                    brick.destroy();
-                    onBrickDestroyed(brick);
-                }
+    private void applyPowerUpEffect(PowerUp powerUp, Paddle paddle) {
+        if (powerUp instanceof ExplosiveBallPowerUp) {
+            for (Ball ball : balls) {
+                ball.setExplosive(true);
+                ball.setHasExploded(false);
             }
         }
+        // Other power-up effects will be added here
+        else if (powerUp instanceof RowClearPowerUp) {
+            Random random = new Random();
+            boolean clearRow = random.nextBoolean(); // true for row, false for column
+
+            int maxRow = bricks.stream().mapToInt(Brick::getRow).max().orElse(0);
+            int maxCol = bricks.stream().mapToInt(Brick::getCol).max().orElse(0);
+
+            if (clearRow) {
+                int rowToClear = random.nextInt(maxRow + 1);
+                double y = bricks.stream().filter(b -> b.getRow() == rowToClear).findFirst().map(Brick::getY).orElse(0.0);
+                lineEffects.add(new LineEffect(0, y, gameWidth, y, 0.5));
+                for (Brick brick : bricks) {
+                    if (!brick.isDestroyed() && brick.getRow() == rowToClear) {
+                        brick.destroy();
+                        onBrickDestroyed(brick);
+                    }
+                }
+            } else {
+                int colToClear = random.nextInt(maxCol + 1);
+                double x = bricks.stream().filter(b -> b.getCol() == colToClear).findFirst().map(Brick::getX).orElse(0.0);
+                lineEffects.add(new LineEffect(x, 0, x, gameHeight, 0.5));
+                for (Brick brick : bricks) {
+                    if (!brick.isDestroyed() && brick.getCol() == colToClear) {
+                        brick.destroy();
+                        onBrickDestroyed(brick);
+                    }
+                }
+            }
+        }
     }
-}
+
+    public enum GameState {
+        MENU, PLAYING, PAUSED, GAME_OVER, LEVEL_COMPLETE
+    }
 }
 

@@ -5,28 +5,27 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane fx:id="authPane" prefHeight="484.0" prefWidth="745.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.ProfileScreen">
+<AnchorPane fx:id="authPane" prefHeight="484.0" prefWidth="745.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.ProfileScreen">
    <children>
-      <AnchorPane layoutX="51.0" layoutY="32.0" prefHeight="418.0" prefWidth="641.0">
+      <AnchorPane fx:id="root" prefHeight="485.0" prefWidth="745.0" stylesheets="@../ProfileScreen.css">
          <children>
-            <Label layoutX="126.0" layoutY="104.0" prefHeight="32.0" prefWidth="67.0" text="username">
+            <Label fx:id="usernameLabel" layoutX="125.0" layoutY="176.0" prefHeight="32.0" prefWidth="266.0" text="username">
                <font>
-                  <Font size="14.0" />
+                  <Font size="20.0" />
                </font>
             </Label>
-            <Label layoutX="122.0" layoutY="177.0" prefHeight="32.0" prefWidth="75.0" text="High score">
+            <Label fx:id="balance" layoutX="125.0" layoutY="275.0" prefHeight="32.0" prefWidth="277.0" text="balance">
                <font>
-                  <Font size="13.0" />
+                  <Font size="20.0" />
                </font>
             </Label>
-            <Label layoutX="126.0" layoutY="251.0" prefHeight="32.0" prefWidth="67.0" text="balance">
+            <Button fx:id="back" layoutX="25.0" layoutY="23.0" mnemonicParsing="false" onMouseClicked="#onBackClick" prefHeight="38.0" prefWidth="41.0" />
+            <Button fx:id="logOut" layoutX="582.0" layoutY="398.0" mnemonicParsing="false" onMouseClicked="#onLogOutClick" prefHeight="46.0" prefWidth="118.0" />
+            <Label fx:id="thongtin" layoutX="228.0" layoutY="70.0" prefHeight="46.0" prefWidth="326.0" text="Thông tin người chơi">
                <font>
-                  <Font size="15.0" />
+                  <Font size="30.0" />
                </font>
             </Label>
-            <Button layoutX="25.0" layoutY="23.0" mnemonicParsing="false" onMouseClicked="#onBackClick" text="back" />
-            <Button layoutX="514.0" layoutY="346.0" mnemonicParsing="false" onMouseClicked="#onLogOutClick" text="Log out" />
          </children>
       </AnchorPane>
    </children>

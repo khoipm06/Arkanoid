@@ -6,20 +6,20 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="root" prefHeight="590.0" prefWidth="855.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.GameOver">
+<AnchorPane fx:id="root" prefHeight="590.0" prefWidth="855.0" stylesheets="@../GameOver.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arkanoid.ui.view.GameOver">
    <children>
       <Label fx:id="score" layoutX="253.0" layoutY="206.0" prefHeight="30.0" prefWidth="305.0" text="Score :">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
-      <Label fx:id="highestScore" layoutX="253.0" layoutY="264.0" prefHeight="30.0" prefWidth="142.0" text="Highest Score :">
+      <Label fx:id="highestScore" layoutX="253.0" layoutY="264.0" prefHeight="30.0" prefWidth="189.0" text="Highest Score :">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Button fx:id="backHome" layoutX="344.0" layoutY="457.0" mnemonicParsing="false" onMouseClicked="#onBackHomeClick" prefHeight="48.0" prefWidth="83.0" text="home" />
-      <Button fx:id="newGame" layoutX="344.0" layoutY="348.0" mnemonicParsing="false" onMouseClicked="#onNewGameClick" prefHeight="54.0" prefWidth="83.0" text="new game" />
+      <Button fx:id="backHome" layoutX="344.0" layoutY="457.0" mnemonicParsing="false" onMouseClicked="#onBackHomeClick" prefHeight="48.0" prefWidth="142.0" />
+      <Button fx:id="newGame" layoutX="344.0" layoutY="334.0" mnemonicParsing="false" onMouseClicked="#onNewGameClick" prefHeight="54.0" prefWidth="142.0" />
       <ImageView fx:id="youLostImage" fitHeight="126.0" fitWidth="366.0" layoutX="223.0" layoutY="64.0" pickOnBounds="true" preserveRatio="true" />
    </children>
 </AnchorPane>

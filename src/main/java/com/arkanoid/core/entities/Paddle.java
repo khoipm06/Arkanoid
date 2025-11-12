@@ -1,8 +1,8 @@
 package com.arkanoid.core.entities;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -10,36 +10,36 @@ import java.util.Map;
 
 
 public class Paddle extends MovableObject {
-    private double minX;
-    private double maxX;
-    private Color color;
-    private final double originalWidth;
-    private Image paddleImage;
-    private Image defaultPaddleImage;
     private static final Map<String, Image> paddleSkins = new HashMap<>();
-    private String originalSkin = "paddle_Default";
     private static String currentSkin = "paddle_Default";
-
-    private boolean gunMode = false;
-    private long gunExpiryNano = -1;
-    private Image gunImage;
 
     static {
         loadSkins();
     }
 
+    private final double originalWidth;
+    private double minX;
+    private double maxX;
+    private Color color;
+    private Image paddleImage;
+    private Image defaultPaddleImage;
+    private final String originalSkin = "paddle_Default";
+    private boolean gunMode = false;
+    private long gunExpiryNano = -1;
+    private Image gunImage;
+
     public Paddle(double x, double y, double width, double height) {
-        super(x, y, height, width , 0);
+        super(x, y, height, width, 0);
         this.originalWidth = width;
     }
+
     public Paddle(double x, double y, double width, double height, double speed, double minX, double maxX) {
         super(x, y, width, height, speed);
         this.minX = minX;
         this.maxX = maxX;
-//        this.color = Color.BLUE;
         this.originalWidth = width;
         this.paddleImage = getSkin(currentSkin);
-        this.defaultPaddleImage= this.paddleImage;
+        this.defaultPaddleImage = this.paddleImage;
         try (InputStream stream = Paddle.class.getResourceAsStream("/images/gun.png")) {
             if (stream != null) gunImage = new Image(stream);
             else System.err.println("Không tìm thấy ảnh gun.png");
@@ -47,6 +47,37 @@ public class Paddle extends MovableObject {
             System.err.println("Lỗi load gun.png: " + e.getMessage());
         }
 
+    }
+
+    private static void loadSkins() {
+        String[] skinNames = {"paddle_Default", "paddle_Wood", "paddle_Metal", "paddle_Neon"};
+        for (String name : skinNames) {
+            try (InputStream stream = Paddle.class.getResourceAsStream("/images/" + name + ".png")) {
+                if (stream != null) {
+                    paddleSkins.put(name, new Image(stream));
+                } else {
+                    System.err.println("Không tìm thấy ảnh paddle_" + name + ".png");
+                }
+            } catch (Exception e) {
+                System.err.println("Lỗi load skin " + name + ": " + e.getMessage());
+            }
+        }
+    }
+
+    public static Image getSkin(String skinName) {
+        return paddleSkins.getOrDefault(skinName, paddleSkins.get("paddle_Default"));
+    }
+
+    public static String getCurrentSkin() {
+        return currentSkin;
+    }
+
+    public static void setCurrentSkin(String skinName) {
+        if (paddleSkins.containsKey(skinName)) {
+            currentSkin = skinName;
+        } else {
+            System.err.println("Không tồn tại skin: " + skinName);
+        }
     }
 
     public void moveLeft(double deltaTime) {
@@ -87,6 +118,7 @@ public class Paddle extends MovableObject {
     public void setPaddleImage(Image image) {
         this.paddleImage = image;
     }
+
     @Override
     public void render(GraphicsContext gc) {
         if (paddleImage != null) {
@@ -98,7 +130,7 @@ public class Paddle extends MovableObject {
             gc.strokeRect(x, y, width, height);
         }
         if (isGunMode() && gunImage != null) {
-            double gunW = 12, gunH = 24; // kích thước gun
+            double gunW = 12, gunH = 24;
             gc.drawImage(gunImage, getLeftGunX(), getGunY(), gunW, gunH);
             gc.drawImage(gunImage, getRightGunX(), getGunY(), gunW, gunH);
         }
@@ -115,44 +147,15 @@ public class Paddle extends MovableObject {
     }
 
     public void resetSize() {
-        double centerX = getCenterX(); // Giữ nguyên vị trí giữa
+        double centerX = getCenterX();
         width = originalWidth;
         x = centerX - width / 2;
         constrainToBounds();
-    }
-    private static void loadSkins() {
-        String[] skinNames = {"paddle_Default", "paddle_Wood", "paddle_Metal", "paddle_Neon"};
-        for (String name : skinNames) {
-            try (InputStream stream = Paddle.class.getResourceAsStream("/images/" + name + ".png")) {
-                if (stream != null) {
-                    paddleSkins.put(name, new Image(stream));
-                } else {
-                    System.err.println("Không tìm thấy ảnh paddle_" + name + ".png");
-                }
-            } catch (Exception e) {
-                System.err.println("Lỗi load skin " + name + ": " + e.getMessage());
-            }
-        }
-    }
-    public static Image getSkin(String skinName) {
-        return paddleSkins.getOrDefault(skinName, paddleSkins.get("paddle_Default"));
     }
 
     public void equipSkin(String skinName) {
         Image skin = getSkin(skinName);
         this.paddleImage = skin;
-    }
-
-    public static void setCurrentSkin(String skinName) {
-        if (paddleSkins.containsKey(skinName)) {
-            currentSkin = skinName;
-        } else {
-            System.err.println("Không tồn tại skin: " + skinName);
-        }
-    }
-
-    public static String getCurrentSkin() {
-        return currentSkin;
     }
 
     public boolean isGunMode() {
@@ -166,12 +169,12 @@ public class Paddle extends MovableObject {
         }
     }
 
-    public void setGunExpiry(long expiryNano) {
-        this.gunExpiryNano = expiryNano;
-    }
-
     public long getGunExpiry() {
         return gunExpiryNano;
+    }
+
+    public void setGunExpiry(long expiryNano) {
+        this.gunExpiryNano = expiryNano;
     }
 
     public double getLeftGunX() {

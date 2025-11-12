@@ -18,7 +18,7 @@ public class EntityFactory {
             case "unbreakable" -> new UnbreakableBrick(x, y, width, height, row, col, "/images/unbreakable.png");
             case "moving" -> {
                 double minX = data.has("minX") ? data.get("minX").getAsDouble() : 0;
-                double maxX = data.has("maxX") ? data.get("maxX").getAsDouble() : 800;
+                double maxX = data.has("maxX") ? data.get("maxX").getAsDouble() : 700;
                 yield new MovingBrick(x, y, width, height, minX, maxX, row, col, "/images/bluebrick.png");
             }
             default -> new NormalBrick(x, y, width, height,row, col, "/images/while.png");

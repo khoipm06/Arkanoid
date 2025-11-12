@@ -35,11 +35,11 @@ public class LevelManager {
                 JsonObject brickData = element.getAsJsonObject();
                 double x = brickData.get("x").getAsDouble();
                 double y = brickData.get("y").getAsDouble();
-                double brickWidth = brickData.get("width").getAsDouble(); // Assuming brickWidth is available in data or fixed
-                double brickHeight = brickData.get("height").getAsDouble(); // Assuming brickHeight is available in data or fixed
-                double startX = 50; // Based on createDefaultLevel
-                double startY = 50; // Based on createDefaultLevel
-                double gap = 5; // Based on createDefaultLevel
+                double brickWidth = brickData.get("width").getAsDouble();
+                double brickHeight = brickData.get("height").getAsDouble();
+                double startX = 50;
+                double startY = 50;
+                double gap = 5;
 
                 int row = (int) ((y - startY) / (brickHeight + gap));
                 int col = (int) ((x - startX) / (brickWidth + gap));

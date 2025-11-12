@@ -5,7 +5,7 @@ public class PlayerState {
     private int lives;
     private int level;
     private double skillEnergy;
-    private double maxSkillEnergy;
+    private final double maxSkillEnergy;
 
     public PlayerState() {
         this.score = 0;

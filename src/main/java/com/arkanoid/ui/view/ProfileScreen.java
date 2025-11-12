@@ -14,15 +14,21 @@ public class ProfileScreen {
     private Label usernameLabel;
 
     @FXML
-    private Label highScoreLabel;
+    private Label balance;
+
+    @FXML
+    private Label thongtin;
+
 
     @FXML
     public void initialize() {
         SessionManager.User user = SessionManager.getCurrentUser();
         if (user != null) {
-            // Giả sử bạn đã thêm fx:id="usernameLabel" cho Label hiển thị username
-            // usernameLabel.setText(user.getUsername());
-            // highScoreLabel.setText(String.valueOf(user.getHighScore()));
+            usernameLabel.setText("Username :   " + user.getUsername());
+            balance.setText(String.valueOf("Balance :   " + user.getMoney())); // giả sử User có thuộc tính balance
+        } else {
+            usernameLabel.setText("Username : Guest");
+            balance.setText("Balance : 0");
         }
     }
 

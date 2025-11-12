@@ -1,35 +1,18 @@
 package com.arkanoid.ui.view;
 
-import com.arkanoid.database.UserManager;
 import com.arkanoid.core.entities.Paddle;
-import com.arkanoid.systems.player.PlayerProfile;
-import com.arkanoid.ui.view.SessionManager;
+import com.arkanoid.database.UserManager;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ShopPaddle {
-
-    private static class SkinItem {
-        String name;
-        int price;
-        Button buyButton;
-        Button equipButton;
-        ImageView imageView;
-
-        SkinItem(String name, int price, Button buyButton, Button equipButton, ImageView imageView) {
-            this.name = name;
-            this.price = price;
-            this.buyButton = buyButton;
-            this.equipButton = equipButton;
-            this.imageView = imageView;
-        }
-    }
 
     @FXML
     private Button backHome;
@@ -41,8 +24,7 @@ public class ShopPaddle {
     private ImageView image1, image2, image3;
     @FXML
     private Label lblMoney;
-
-    private List<SkinItem> skinItems = new ArrayList<>();
+    private final List<SkinItem> skinItems = new ArrayList<>();
     private Paddle paddleInGame;
 
     @FXML
@@ -127,13 +109,13 @@ public class ShopPaddle {
         if (user.hasPaddleSkin(skinName)) {
             user.setEquippedPaddleSkin(skinName);
             SessionManager.setEquippedPaddleSkin(skinName);
-            Paddle.setCurrentSkin(skinName); // cập nhật static
+            Paddle.setCurrentSkin(skinName);
             System.out.println("Đã trang bị skin: " + skinName);
             if (paddleInGame != null) {
-                paddleInGame.equipSkin(skinName); // cập nhật paddle đang chơi
+                paddleInGame.equipSkin(skinName);
             }
-        }  else {
-        System.out.println("Chưa sở hữu skin: " + skinName);
+        } else {
+            System.out.println("Chưa sở hữu skin: " + skinName);
         }
         updateShopUI();
     }
@@ -152,7 +134,6 @@ public class ShopPaddle {
             item.buyButton.getStyleClass().removeAll("buy-button", "owned-button");
             item.equipButton.getStyleClass().removeAll("equip-button", "equipped-button");
 
-            // BUY BUTTON
             if (!owned) {
                 item.buyButton.getStyleClass().add("buy-button");   // chưa mua
                 item.buyButton.setDisable(!canAfford);
@@ -160,7 +141,6 @@ public class ShopPaddle {
                 item.buyButton.getStyleClass().add("owned-button"); // đã mua
             }
 
-            // EQUIP BUTTON
             if (owned) {
                 item.equipButton.setVisible(true);
                 if (equipped) {
@@ -180,6 +160,22 @@ public class ShopPaddle {
         SessionManager.User user = SessionManager.getCurrentUser();
         if (user != null) {
             lblMoney.setText("Số dư: " + user.getMoney() + "$");
+        }
+    }
+
+    private static class SkinItem {
+        String name;
+        int price;
+        Button buyButton;
+        Button equipButton;
+        ImageView imageView;
+
+        SkinItem(String name, int price, Button buyButton, Button equipButton, ImageView imageView) {
+            this.name = name;
+            this.price = price;
+            this.buyButton = buyButton;
+            this.equipButton = equipButton;
+            this.imageView = imageView;
         }
     }
 }

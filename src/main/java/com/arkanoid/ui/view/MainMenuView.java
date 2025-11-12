@@ -1,30 +1,23 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.systems.sound.SoundManager;
-import javafx.animation.*;
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.io.InputStream;
 
 public class MainMenuView {
     @FXML
@@ -41,20 +34,22 @@ public class MainMenuView {
     private Button profile;
     @FXML
     private Button leaderBoard;
+    @FXML
+    private AnchorPane root;
+    private Parent modePopup;
 
     @FXML
     public void initialize() {
         try {
             Image logo = new Image(getClass().getResourceAsStream("/images/arkanoid.png"));
             welcome.setImage(logo);
-
             applyIntroEffect();
-//            applyGlowEffect(welcome);// fade + scale vẫn dùng được
         } catch (Exception e) {
             System.err.println("Không thể tải ảnh logo");
             e.printStackTrace();
         }
     }
+
     @FXML
     private void applyIntroEffect() {
         FadeTransition fade = new FadeTransition(Duration.seconds(2), welcome);
@@ -70,42 +65,6 @@ public class MainMenuView {
         new ParallelTransition(fade, scale).play();
     }
 
-//    private void applyShineEffect(Label label) {
-//        Stop[] stops = new Stop[] {
-//                new Stop(0, Color.CYAN),
-//                new Stop(0.5, Color.WHITE),
-//                new Stop(1, Color.CYAN)
-//        };
-//
-//        AnimationTimer timer = new AnimationTimer() {
-//            double progress = -0.5;
-//
-//            @Override
-//            public void handle(long now) {
-//                progress += 0.01;
-//                if (progress > 1.5) progress = -0.5;
-//
-//                LinearGradient dynamic = new LinearGradient(
-//                        progress, 0, progress + 0.3, 0, true, CycleMethod.NO_CYCLE, stops
-//                );
-//                label.setTextFill(dynamic);
-//            }
-//        };
-//        timer.start();
-//    }
-    private void applyGlowEffect(ImageView img) {
-        Glow glow = new Glow(0.3);
-        img.setEffect(glow);
-
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.ZERO, new KeyValue(glow.levelProperty(), 0.2)),
-                new KeyFrame(Duration.seconds(1.5), new KeyValue(glow.levelProperty(), 1.0))
-        );
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.setAutoReverse(true);
-        timeline.play();
-    }
-
     @FXML
     public void onSettingClick(MouseEvent event) {
         System.out.println("setting");
@@ -114,12 +73,15 @@ public class MainMenuView {
 
         SceneManager.switchTo("settingView");
     }
+
     @FXML
     public void onQuitClick(MouseEvent event) {
 
         SoundManager.playSound("Accept.wav");
         Platform.exit(); // thoát toàn bộ ứng dụng
-        System.exit(0);    }
+        System.exit(0);
+    }
+
     @FXML
     public void onShopClick(MouseEvent event) {
         System.out.println("Shop");
@@ -138,55 +100,12 @@ public class MainMenuView {
     }
 
     @FXML
-    private AnchorPane root;
-
-    private Parent modePopup;
-
-    @FXML
     public void onStartGameClick(MouseEvent event) {
-//        try {
-//            if (modePopup == null) {
-//                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com.arkanoid.ui.view/ModeSelectView.fxml"));
-//                modePopup = loader.load();
-//
-//                SoundManager.playSound("Accept.wav");
-//
-//                ModeSelectView popupController = loader.getController();
-//                popupController.setMainController(this);
-//                popupController.setStage((Stage) root.getScene().getWindow());
-//
-//                double rootWidth = root.getPrefWidth();
-//                double rootHeight = root.getPrefHeight();
-//
-//                // Lấy kích thước của Pop-up (sau khi tải, nó là AnchorPane)
-//                AnchorPane popupPane = (AnchorPane)modePopup;
-//                double popupWidth = popupPane.getPrefWidth();
-//                double popupHeight = popupPane.getPrefHeight();
-//
-//                // Tính toán vị trí X và Y để căn giữa
-//                double centerX = (rootWidth - popupWidth) / 2 + 50;
-//                double centerY = (rootHeight - popupHeight) / 2 - 30;
-//
-//                // Thiết lập vị trí
-//                modePopup.setLayoutX(centerX);
-//                modePopup.setLayoutY(centerY);
-//            }
-//
-//            if (!root.getChildren().contains(modePopup)) {
-//                root.getChildren().add(modePopup);
-//            }
-//
-//            if (!root.getChildren().contains(modePopup)) {
-//                root.getChildren().add(modePopup);
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
         SoundManager.playSound("Accept.wav");
         VBox modePopup = createModeSelectPopup();
         root.getChildren().add(modePopup);
     }
+
     private VBox createModeSelectPopup() {
         VBox overlay = new VBox(30);
         overlay.setAlignment(Pos.CENTER);
@@ -240,6 +159,7 @@ public class MainMenuView {
 
         return overlay;
     }
+
     private void styleModeSelectButton(Button button) {
         String normalStyle = "-fx-background-color: linear-gradient(to bottom right, #1e3c72, #2a5298);"
                 + "-fx-text-fill: white;"
