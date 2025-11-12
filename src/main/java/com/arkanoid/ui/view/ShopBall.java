@@ -175,10 +175,10 @@ public class ShopBall {
         }
     }
 
-    private void setButtonState(Button btn, String cssClass) {
-        btn.getStyleClass().removeAll("buy-button", "owned-button", "equip-button", "equipped-button");
-        btn.getStyleClass().add(cssClass);
-    }
+    // private void setButtonState(Button btn, String cssClass) {
+    //     btn.getStyleClass().removeAll("buy-button", "owned-button", "equip-button", "equipped-button");
+    //     btn.getStyleClass().add(cssClass);
+    // }
 
     private static class SkinItem {
         String name;
@@ -196,18 +196,18 @@ public class ShopBall {
             this.imageView = imageView;
         }
 
-        public void setUser(SessionManager.User user) {
-            this.currentUser = user;
-            updateUI();
-        }
+        // public void setUser(SessionManager.User user) {
+        //     this.currentUser = user;
+        //     updateUI();
+        // }
+        //
+        // private void updateUI() {
+        //     // Display player's money in shop
+        //     if (currentUser != null) {
+        //         logger.debug("Player: {}", currentUser.getUsername());
+        //         logger.debug("Current money: {}", currentUser.getMoney());
 
-        private void updateUI() {
-            // Display player's money in shop
-            if (currentUser != null) {
-                logger.debug("Player: {}", currentUser.getUsername());
-                logger.debug("Current money: {}", currentUser.getMoney());
-
-            }
-        }
+        //     }
+        // }
     }
 }

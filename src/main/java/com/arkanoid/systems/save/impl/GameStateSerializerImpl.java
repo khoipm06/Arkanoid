@@ -71,7 +71,7 @@ public class GameStateSerializerImpl implements GameStateSerializer {
 
         try {
             // Parse and check version
-            JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
+            // JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
 
             // Deserialize
             GameState gameState = gson.fromJson(json, GameState.class);

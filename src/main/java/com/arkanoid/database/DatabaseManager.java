@@ -113,18 +113,6 @@ public class DatabaseManager implements AutoCloseable {
                     )
                 """;
 
-        String createGameHistoryTable = """
-                    CREATE TABLE IF NOT EXISTS game_history (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        user_id INTEGER NOT NULL,
-                        score INTEGER NOT NULL,
-                        level_reached INTEGER NOT NULL,
-                        duration_seconds INTEGER NOT NULL,
-                        played_at TEXT NOT NULL,
-                        FOREIGN KEY (user_id) REFERENCES users(id)
-                    )
-                """;
-
         String createGameSavesTable = """
                     CREATE TABLE IF NOT EXISTS game_saves (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -153,7 +141,6 @@ public class DatabaseManager implements AutoCloseable {
             stmt.execute(createUsersTable);
             stmt.execute(createPlayerProfilesTable);
             stmt.execute(createInventoryTable);
-            stmt.execute(createGameHistoryTable);
             stmt.execute(createGameSavesTable);
             stmt.execute(createUserPreferencesTable);
         }

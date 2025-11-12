@@ -7,13 +7,14 @@ import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.view.SceneManager;
 import com.arkanoid.ui.view.SessionManager;
 import com.arkanoid.utils.CommandLineArgs;
-
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 
 public class GameApplication extends Application {
     private static final Logger logger = GameLogger.getLogger(GameApplication.class);
@@ -25,15 +26,24 @@ public class GameApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         logger.info("JavaFX Application starting...");
-        
+
         // Set up uncaught exception handler
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             logger.error("Uncaught exception in thread {}: {}", thread.getName(), throwable.getMessage(), throwable);
         });
-        
+
         logger.info("Initializing database...");
         databaseManager.initialize();
-        
+
+        // Restore saved user session if exists
+        logger.info("Checking for saved user session...");
+        boolean restoredSession = SessionManager.restoreSession();
+        if (restoredSession) {
+            logger.info("User session restored successfully");
+        } else {
+            logger.info("No saved session found");
+        }
+
         logger.info("Loading scenes...");
         SceneManager.setStage(primaryStage);
         SceneManager.loadScene("mainMenuView", "MainMenuView.fxml");
@@ -53,9 +63,9 @@ public class GameApplication extends Application {
         logger.info("Switching to main menu...");
         SceneManager.switchTo("mainMenuView");
 
-        try {
-            primaryStage.getIcons()
-                    .add(new Image(getClass().getResourceAsStream("/icons/arkanoid.png")));
+        try (InputStream iconStream = (InputStream) Objects.requireNonNull(
+                             getClass().getResourceAsStream("/icons/arkanoid.png"))) {
+            primaryStage.getIcons().add(new Image(iconStream));
         } catch (Exception e) {
             logger.error("Error loading application icon", e);
         }
@@ -65,7 +75,7 @@ public class GameApplication extends Application {
 
         logger.info("Starting background music...");
         soundManager.playBackground("background.mp3", true);
-        
+
         logger.info("Application started successfully");
     }
 

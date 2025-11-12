@@ -8,48 +8,48 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="rootSignUp" prefHeight="587.0" prefWidth="744.0" stylesheets="@../signUp.css"
+<AnchorPane fx:id="rootSignUp" prefHeight="525.0" prefWidth="720.0" stylesheets="@../signUp.css"
    xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
    fx:controller="com.arkanoid.ui.view.SignUpView">
    <children>
-      <Label fx:id="labelSignUp" layoutX="239.0" layoutY="79.0" prefHeight="43.0" prefWidth="266.0"
+      <Label fx:id="labelSignUp" layoutX="215.0" layoutY="96.0" prefHeight="27.0" prefWidth="290.0"
          text="Sign up a new account">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
-      <Label fx:id="user" layoutX="139.0" layoutY="157.0" prefHeight="31.0" prefWidth="74.0"
+      <Label fx:id="user" layoutX="172.0" layoutY="158.0" prefHeight="26.0" prefWidth="80.0"
          text="Username">
          <font>
-            <Font size="13.0" />
+            <Font size="14.0" />
          </font>
       </Label>
-      <Label fx:id="password" layoutX="139.0" layoutY="230.0" prefHeight="31.0" prefWidth="74.0"
+      <Label fx:id="password" layoutX="172.0" layoutY="217.0" prefHeight="33.0" prefWidth="68.0"
          text="Password">
          <font>
-            <Font size="13.0" />
+            <Font size="14.0" />
          </font>
       </Label>
-      <Label fx:id="confirm" layoutX="136.0" layoutY="303.0" prefHeight="31.0" prefWidth="129.0"
+      <Label fx:id="confirm" layoutX="172.0" layoutY="276.0" prefHeight="33.0" prefWidth="129.0"
          text="Confirm password">
          <font>
-            <Font size="13.0" />
+            <Font size="14.0" />
          </font>
       </Label>
-      <Label fx:id="question" layoutX="136.0" layoutY="371.0" prefHeight="18.0" prefWidth="206.0"
+      <Label fx:id="question" layoutX="172.0" layoutY="334.0" prefHeight="26.0" prefWidth="185.0"
          text="Already have an account?">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <TextField fx:id="userNameField" layoutX="372.0" layoutY="160.0" />
-      <PasswordField fx:id="passwordField" layoutX="373.0" layoutY="233.0" />
-      <PasswordField fx:id="confirmPasswordField" layoutX="372.0" layoutY="306.0" />
-      <Hyperlink fx:id="linkSignIn" layoutX="373.0" layoutY="364.0"
-         onMouseClicked="#onSignInLinkClick" prefHeight="31.0" prefWidth="58.0" text="Sign in" />
-      <Button fx:id="SignUpButton" layoutX="481.0" layoutY="468.0" mnemonicParsing="false"
-         onMouseClicked="#onSignUpClick" prefHeight="50.0" prefWidth="98.0" text="Sign up" />
-      <Button fx:id="cancelButton" layoutX="615.0" layoutY="468.0" mnemonicParsing="false"
-         onMouseClicked="#onCancelClick" prefHeight="50.0" prefWidth="98.0" text="Cancel" />
+      <TextField fx:id="userNameField" layoutX="332.0" layoutY="158.0" />
+      <PasswordField fx:id="passwordField" layoutX="333.0" layoutY="221.0" />
+      <PasswordField fx:id="confirmPasswordField" layoutX="333.0" layoutY="280.0" />
+      <Hyperlink fx:id="linkSignIn" layoutX="370.0" layoutY="330.0"
+         onMouseClicked="#onSignInLinkClick" prefHeight="34.0" prefWidth="74.0" text="Sign in" />
+      <Button fx:id="SignUpButton" layoutX="481.0" layoutY="420.0" mnemonicParsing="false"
+         onMouseClicked="#onSignUpClick" prefHeight="46.0" prefWidth="94.0" text="Sign up" />
+      <Button fx:id="cancelButton" layoutX="613.0" layoutY="420.0" mnemonicParsing="false"
+         onMouseClicked="#onCancelClick" prefHeight="46.0" prefWidth="86.0" text="Cancel" />
    </children>
 </AnchorPane>

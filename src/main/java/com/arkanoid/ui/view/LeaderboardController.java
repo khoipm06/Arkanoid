@@ -75,9 +75,6 @@ public class LeaderboardController {
 
                     hBox.getChildren().addAll(rank, username, score);
                     setGraphic(hBox);
-
-                    Tooltip tooltip = new Tooltip("Reached Level: " + item.levelReached);
-                    setTooltip(tooltip);
                 }
             }
         });

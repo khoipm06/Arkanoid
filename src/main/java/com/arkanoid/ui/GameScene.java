@@ -282,7 +282,7 @@ public class GameScene {
             KeyCode key = event.getCode();
 
             if (key == KeyCode.ESCAPE) {
-                gameManager.pause();
+                gameManager.togglePause();
                 pauseOverlay.setVisible(gameManager.getCurrentState() == GameManager.GameState.PAUSED);
                 return;
             }
@@ -370,7 +370,6 @@ public class GameScene {
         if (gameManager.getCurrentState() == GameManager.GameState.GAME_OVER) {
             gameLoop.stop();
             Platform.runLater(() -> {
-
                 SceneManager.showGameOver(
                         gameManager.getLevelNumber(),
                         gameManager.getScore(),
@@ -461,19 +460,5 @@ public class GameScene {
                 (int) canvas.getHeight());
         canvas.snapshot(null, snapshot);
         return snapshot;
-    }
-
-    public void renderOnce() {
-        render();
-        updateUI();
-    }
-
-    private void updateUI() {
-        if (gameManager.getPlayer() != null) {
-            PlayerState state = gameManager.getPlayer().getState();
-            scoreLabel.setText(String.valueOf(state.getScore()));
-            livesLabel.setText(String.valueOf(state.getLives()));
-        }
-        levelLabel.setText(String.valueOf(gameManager.getLevelNumber()));
     }
 }

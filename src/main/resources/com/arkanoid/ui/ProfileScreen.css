@@ -1,6 +1,11 @@
 /* Background */
 #root {
-  -fx-background-color: linear-gradient(to bottom right, #12043b, #3b0a45, #000010);
+  -fx-background-color: linear-gradient(
+    to bottom right,
+    #12043b,
+    #3b0a45,
+    #000010
+  );
 }
 
 /* Title */
@@ -98,7 +103,7 @@
 .logout-button {
   -fx-background-color: transparent;
   -fx-background-image: url("../../../images/logout.png");
-  -fx-background-size: 40px 40px;
+  -fx-background-size: 100% 100%;
   -fx-background-repeat: no-repeat;
   -fx-background-position: center;
   -fx-cursor: hand;

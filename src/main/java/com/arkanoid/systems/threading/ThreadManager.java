@@ -7,23 +7,24 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Centralized manager for thread pools and concurrent execution.
- * Provides named thread pools with graceful shutdown.
+ * Centralized manager for thread pools and concurrent execution. Provides named
+ * thread pools with graceful shutdown.
  */
 public class ThreadManager {
     private static final Logger logger = GameLogger.getLogger(ThreadManager.class);
     private static ThreadManager instance;
-    
+
     private final ExecutorService gameLoopExecutor;
     private final ScheduledExecutorService scheduledExecutor;
     private final ExecutorService backgroundExecutor;
-    
+
     private final AtomicInteger gameThreadCounter = new AtomicInteger(0);
     private final AtomicInteger scheduledThreadCounter = new AtomicInteger(0);
     private final AtomicInteger backgroundThreadCounter = new AtomicInteger(0);
 
     private ThreadManager() {
-        // Single thread for game loop (JavaFX already manages this, but keeping for extensibility)
+        // Single thread for game loop (JavaFX already manages this, but keeping for
+        // extensibility)
         this.gameLoopExecutor = Executors.newSingleThreadExecutor(r -> {
             Thread t = new Thread(r, "GameLoop-" + gameThreadCounter.incrementAndGet());
             t.setDaemon(false);
@@ -58,8 +59,8 @@ public class ThreadManager {
     }
 
     /**
-     * Executes a task on the game loop thread.
-     * Use for game state modifications that must be single-threaded.
+     * Executes a task on the game loop thread. Use for game state modifications
+     * that must be single-threaded.
      */
     public Future<?> executeOnGameLoop(Runnable task, String purpose) {
         logger.debug("Submitting task to GameLoop: {}", purpose);
@@ -79,9 +80,10 @@ public class ThreadManager {
     /**
      * Schedules a recurring task with fixed delay.
      */
-    public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, long initialDelay, long delay, TimeUnit unit, String purpose) {
-        logger.debug("Scheduling recurring task: {} (initial: {}ms, delay: {}ms)", purpose, 
-            unit.toMillis(initialDelay), unit.toMillis(delay));
+    public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, long initialDelay, long delay, TimeUnit unit,
+            String purpose) {
+        logger.debug("Scheduling recurring task: {} (initial: {}ms, delay: {}ms)", purpose, unit.toMillis(initialDelay),
+                unit.toMillis(delay));
         return scheduledExecutor.scheduleWithFixedDelay(() -> {
             ThreadContext.register(purpose);
             try {
@@ -112,8 +114,8 @@ public class ThreadManager {
     }
 
     /**
-     * Executes a task on a background thread.
-     * Use for I/O operations, database queries, or heavy computations.
+     * Executes a task on a background thread. Use for I/O operations, database
+     * queries, or heavy computations.
      */
     public Future<?> executeBackground(Runnable task, String purpose) {
         logger.debug("Submitting background task: {}", purpose);
@@ -149,12 +151,12 @@ public class ThreadManager {
     }
 
     /**
-     * Gracefully shuts down all thread pools.
-     * Waits for tasks to complete within timeout.
+     * Gracefully shuts down all thread pools. Waits for tasks to complete within
+     * timeout.
      */
     public void shutdown() {
         logger.info("ThreadManager shutting down...");
-        
+
         gameLoopExecutor.shutdown();
         scheduledExecutor.shutdown();
         backgroundExecutor.shutdown();
@@ -186,8 +188,6 @@ public class ThreadManager {
      * Checks if all executors are terminated.
      */
     public boolean isTerminated() {
-        return gameLoopExecutor.isTerminated() 
-            && scheduledExecutor.isTerminated() 
-            && backgroundExecutor.isTerminated();
+        return gameLoopExecutor.isTerminated() && scheduledExecutor.isTerminated() && backgroundExecutor.isTerminated();
     }
 }

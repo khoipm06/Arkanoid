@@ -18,7 +18,6 @@ class UserManagerTest {
         try (Statement stmt = databaseManager.getConnection().createStatement()) {
             stmt.execute("DELETE FROM users");
             stmt.execute("DELETE FROM player_profiles");
-            stmt.execute("DELETE FROM game_history");
         }
     }
 

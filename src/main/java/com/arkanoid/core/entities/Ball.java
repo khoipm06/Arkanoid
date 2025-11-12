@@ -136,7 +136,8 @@ public class Ball extends MovableObject {
             logger.debug("Paddle collision: topIsDeadSide={}, velocityY={}, isBottom={}, isTop={}", 
                 topIsDeadSide, velocityY, isBottomPaddleHit, isTopPaddleHit);
             soundManager.playSound("paddleBounce.wav");
-            paddle.triggerHitFlash(0.2);
+            double hitY = isBottomPaddleHit ? paddle.getY() : paddle.getY() + paddle.getHeight();
+            paddle.triggerHitFlash(0.4, getCenterX(), hitY);
 
             // Position ball at correct side of paddle
             if (isBottomPaddleHit) {

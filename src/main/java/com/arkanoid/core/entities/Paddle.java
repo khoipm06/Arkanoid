@@ -27,15 +27,16 @@ public class Paddle extends MovableObject {
     private double maxX;
     private Color color;
     private Image paddleImage;
-    private Image defaultPaddleImage;
     private final String originalSkin = "paddle_Default";
     private boolean gunMode = false;
     private long gunExpiryNano = -1;
     private Image gunImage;
+    private double collisionX;
+    private double collisionY;
     private double hitFlashTime = 0.0; // New field for hit flash effect
 
     public Paddle(double x, double y, double width, double height) {
-        super(x, y, height, width, 0);
+        super(x, y, width, height, 0);
         this.originalWidth = width;
     }
 
@@ -45,7 +46,6 @@ public class Paddle extends MovableObject {
         this.maxX = maxX;
         this.originalWidth = width;
         this.paddleImage = getSkin(currentSkin);
-        this.defaultPaddleImage = this.paddleImage;
         try (InputStream stream = Paddle.class.getResourceAsStream("/images/gun.png")) {
             if (stream != null)
                 gunImage = new Image(stream);
@@ -148,12 +148,8 @@ public class Paddle extends MovableObject {
         }
 
         if (hitFlashTime > 0) {
-            double progress = hitFlashTime / 0.3;
+            double progress = hitFlashTime / 0.4;
             double intensity = Math.pow(progress, 0.7);
-
-            double collisionX = x + width / 2;
-            double collisionY = y;
-
             double maxRadius = width;
             double currentRadius = maxRadius * (1 - progress);
 
@@ -163,9 +159,13 @@ public class Paddle extends MovableObject {
                     currentRadius,
                     false,
                     CycleMethod.NO_CYCLE,
+                    // new Stop(0, Color.color(1, 1, 1, intensity)),
+                    // new Stop(0.4, Color.color(0.5, 0.8, 1.0, intensity * 0.4)),
+                    // new Stop(1, Color.color(0.3, 0.6, 0.9, 0)));
                     new Stop(0, Color.color(1, 1, 1, intensity)),
-                    new Stop(0.4, Color.color(0.5, 0.8, 1.0, intensity * 0.4)),
-                    new Stop(1, Color.color(0.3, 0.6, 0.9, 0)));
+                    new Stop(0.4, Color.color(0.2, 0.9, 1.0, intensity * 0.6)),
+                    new Stop(1, Color.color(0.0, 0.5, 1.0, 0)));
+
 
             gc.setFill(gradient);
             // Only fill the immediate area around the collision
@@ -228,7 +228,9 @@ public class Paddle extends MovableObject {
         return y - 10; // above the paddle
     }
 
-    public void triggerHitFlash(double duration) {
+    public void triggerHitFlash(double duration, double collisionX, double collisionY) {
         this.hitFlashTime = duration;
+        this.collisionX = collisionX;
+        this.collisionY = collisionY;
     }
 }

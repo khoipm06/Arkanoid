@@ -129,8 +129,8 @@ public class GameManager {
                 player.getState().addScore(50);
                 floatingTexts.add(new FloatingText("+50", powerUp.getCenterX(), powerUp.getCenterY(), 1.0, 50,
                         Color.YELLOW)); // Floating text for power-up
-                applyPowerUpEffect(powerUp, paddle); // 🔥 kích hoạt hiệu ứng power-up
-                powerUpIterator.remove(); // ❌ xoá luôn khỏi list sau khi ăn
+                applyPowerUpEffect(powerUp, paddle);
+                powerUpIterator.remove(); // Remove after collecting
                 continue;
             }
 
@@ -230,7 +230,6 @@ public class GameManager {
             }
         }
 
-        // Check win condition after all brick updates
         if (bricks.isEmpty()) {
             currentState = GameManager.GameState.LEVEL_COMPLETE;
         }
@@ -414,7 +413,7 @@ public class GameManager {
                             .orElse(0.0);
                     lineEffects.add(new LineEffect(0, y, gameWidth, y, 0.5));
                     
-                    // FIX: Use iterator instead of for-each to safely modify collection during iteration
+                    // Use iterator instead of for-each to safely modify collection during iteration
                     Iterator<Brick> brickIterator = bricks.iterator();
                     int clearedCount = 0;
                     while (brickIterator.hasNext()) {
@@ -434,7 +433,6 @@ public class GameManager {
                             .orElse(0.0);
                     lineEffects.add(new LineEffect(x, 0, x, gameHeight, 0.5));
                     
-                    // FIX: Use iterator instead of for-each to safely modify collection during iteration
                     Iterator<Brick> brickIterator = bricks.iterator();
                     int clearedCount = 0;
                     while (brickIterator.hasNext()) {
@@ -481,7 +479,7 @@ public class GameManager {
         List<BrickState> brickStates = new ArrayList<>();
         for (Brick brick : bricks) {
             if (!brick.isDestroyed()) {
-                // We can't access protected hitPoints, so we estimate from hit() behavior
+                // Can't access protected hitPoints, so estimate from hit() behavior
                 int hitPoints = 1; // Default assumption for save/load
                 String texturePath = null;
                 if (brick instanceof BaseBrick) {

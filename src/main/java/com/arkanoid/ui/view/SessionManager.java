@@ -2,15 +2,12 @@ package com.arkanoid.ui.view;
 
 import com.arkanoid.database.InventoryManager;
 import com.arkanoid.database.PlayerProfileManager;
-import com.arkanoid.database.UserPreferencesManager;
-import com.arkanoid.database.entity.UserPreferences;
+import com.arkanoid.database.UserSessionStorage;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.PlayerProfile;
-import com.arkanoid.systems.sound.SoundManager;
 import org.slf4j.Logger;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -147,7 +144,7 @@ public class SessionManager {
          */
         public void setEquippedPaddleSkin(String skin) {
             // Remove old equipped marker
-            List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(id);
+            // List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(id);
             InventoryManager.addItem(id, "paddle:equipped:" + skin, 1);
         }
 
@@ -185,6 +182,10 @@ public class SessionManager {
     public static void login(User user) {
         currentUserId = user.getId();
         currentUsername = user.getUsername();
+
+        // Save session to disk for persistent login
+        UserSessionStorage.saveSession(user.getId(), user.getUsername());
+        
         // Load and apply user's saved volume preferences
         // and refresh SettingView UI if it's currently open
         try {
@@ -206,6 +207,10 @@ public class SessionManager {
         currentUserId = null;
         currentUsername = null;
         activeProfile = null;
+        
+        // Clear saved session from disk
+        UserSessionStorage.clearSession();
+        logger.info("User logged out and session cleared");
     }
 
     /**
@@ -217,6 +222,25 @@ public class SessionManager {
             return new User(currentUserId, currentUsername);
         }
         return null;
+    }
+
+    public static boolean restoreSession() {
+        UserSessionStorage.SessionData sessionData = UserSessionStorage.loadSession();
+        if (sessionData != null) {
+            // Verify user still exists in database
+            PlayerProfileManager.ProfileData profile = PlayerProfileManager.getProfile(sessionData.getUserId());
+            if (profile != null) {
+                currentUserId = sessionData.getUserId();
+                currentUsername = sessionData.getUsername();
+                logger.info("Restored session for user: {} (ID: {})", currentUsername, currentUserId);
+                return true;
+            } else {
+                // User no longer exists, clear invalid session
+                logger.warn("Saved session user no longer exists, clearing session");
+                UserSessionStorage.clearSession();
+            }
+        }
+        return false;
     }
 
     /**

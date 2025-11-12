@@ -1,7 +1,6 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.database.PlayerProfileManager;
-import com.arkanoid.systems.GameManager;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.GameScene;
@@ -25,9 +24,9 @@ public class GameOver {
 
     private int currentLevel;
     private int currentScore;
-    private GameScene gameScene;
+    // private GameScene gameScene;
     private Stage stage;
-    private GameManager gameManager;
+    // private GameManager gameManager;
     private static final SoundManager soundManager = SoundManager.getInstance();
 
     public void init(int level, int scoreValue, String timePlyed) {

@@ -62,15 +62,15 @@ public class ShopView {
         pause.play();
     }
 
-    private void buyItem() {
-        int itemPrice = 200;
-        if (money.get() >= itemPrice) {
-            money.set(money.get() - itemPrice);
-            lblMessage.setText("Purchase successful!");
-        } else {
-            lblMessage.setText("Insufficient funds!");
-        }
-    }
+    // private void buyItem() {
+    //     int itemPrice = 200;
+    //     if (money.get() >= itemPrice) {
+    //         money.set(money.get() - itemPrice);
+    //         lblMessage.setText("Purchase successful!");
+    //     } else {
+    //         lblMessage.setText("Insufficient funds!");
+    //     }
+    // }
 
     @FXML
     public void onBallShopClick(MouseEvent event) {

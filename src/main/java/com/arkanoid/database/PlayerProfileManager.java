@@ -26,23 +26,19 @@ public class PlayerProfileManager {
     public static class LeaderboardEntry {
         public final String username;
         public final int highScore;
-        public final int levelReached;
 
-        public LeaderboardEntry(String username, int highScore, int levelReached) {
+        public LeaderboardEntry(String username, int highScore) {
             this.username = username;
             this.highScore = highScore;
-            this.levelReached = levelReached;
         }
     }
 
     public static List<LeaderboardEntry> getLeaderboardData() {
         List<LeaderboardEntry> leaderboard = new ArrayList<>();
         String sql = """
-                    SELECT u.username, pp.high_score, IFNULL(MAX(gh.level_reached), 1) as max_level
+                    SELECT u.username, pp.high_score
                     FROM users u
                     JOIN player_profiles pp ON u.id = pp.user_id
-                    LEFT JOIN game_history gh ON u.id = gh.user_id
-                    GROUP BY u.id
                     ORDER BY pp.high_score DESC
                 """;
 
@@ -55,8 +51,7 @@ public class PlayerProfileManager {
                 while (rs.next()) {
                     leaderboard.add(new LeaderboardEntry(
                             rs.getString("username"),
-                            rs.getInt("high_score"),
-                            rs.getInt("max_level")));
+                            rs.getInt("high_score")));
                 }
             }
         } catch (SQLException e) {
