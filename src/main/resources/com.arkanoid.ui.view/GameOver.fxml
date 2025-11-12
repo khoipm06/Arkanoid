@@ -13,9 +13,9 @@
             <Font size="20.0" />
          </font>
       </Label>
-      <Label fx:id="highestScore" layoutX="253.0" layoutY="264.0" prefHeight="30.0" prefWidth="189.0" text="Highest Score :">
+      <Label fx:id="timePlayed" layoutX="253.0" layoutY="264.0" prefHeight="30.0" prefWidth="189.0" text="Time :">
          <font>
-            <Font size="18.0" />
+            <Font size="24.0" />
          </font>
       </Label>
       <Button fx:id="backHome" layoutX="344.0" layoutY="457.0" mnemonicParsing="false" onMouseClicked="#onBackHomeClick" prefHeight="48.0" prefWidth="142.0" />

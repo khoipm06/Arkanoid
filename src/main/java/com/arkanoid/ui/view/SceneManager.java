@@ -36,18 +36,18 @@ public class SceneManager {
     public static Object getController(String name) {
         return controllers.get(name);
     }
-    public static void showGameOver(int level, int score, int highest) {
+    public static void showGameOver(int level, int score, String timePlayed) {
         Object controller = getController("gameOver");
         if (controller instanceof com.arkanoid.ui.view.GameOver gameOverController) {
-            gameOverController.init(level, score, highest);
+            gameOverController.init(level, score, timePlayed);
         }
         SceneManager.switchTo("gameOver");
     }
 
-    public static void showWinLevel(int level, int score, int highest) {
+    public static void showWinLevel(int level, int score, String timePlayed) {
         Object controller = getController("winLevel");
         if (controller instanceof com.arkanoid.ui.view.WinLevel winLevelController) {
-            winLevelController.init(level, score, highest);
+            winLevelController.init(level, score, timePlayed);
         }
         SceneManager.switchTo("winLevel");
     }
