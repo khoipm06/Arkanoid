@@ -56,6 +56,8 @@ public class Player {
                 ball.setY(paddle.getY() + attachYOffset);
             }
             ball.update(deltaTime);
+            // Check collision with own paddle
+            ball.checkPaddleCollision(paddle);
         }
     }
 }

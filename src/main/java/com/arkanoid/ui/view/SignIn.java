@@ -23,26 +23,29 @@ public class SignIn {
 
     @FXML
     public void onSignInClick() {
-
         soundManager.playSound("Accept.wav");
 
         String username = userNameField.getText();
         String password = passwordField.getText();
+
         if (username.isEmpty() || password.isEmpty()) {
-            System.out.println("Vui lòng nhập đầy đủ thông tin!");
+            System.out.println("⚠️ Vui lòng nhập đầy đủ thông tin!");
             return;
         }
 
+        // Query database for user authentication
         UserManager.User user = UserManager.login(username, password);
 
         if (user == null) {
-            System.out.println("Đăng nhập không thành công");
+            System.out.println("❌ Đăng nhập không thành công - sai tên hoặc mật khẩu");
             userNameField.clear();
             passwordField.clear();
             return;
         }
-        System.out.println("Đăng nhập thành công!");
-        System.out.println(" Hello username: " + username);
+
+        // Log in through SessionManager (stores user ID for database queries)
+        System.out.println("✅ Đăng nhập thành công!");
+        System.out.println("👋 Hello " + username + " (ID: " + user.getId() + ")");
         SessionManager.login(new SessionManager.User(user.getId(), user.getUsername()));
 
         SceneManager.switchTo("mainMenuView");

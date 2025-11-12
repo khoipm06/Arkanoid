@@ -1,5 +1,6 @@
 package com.arkanoid.core.entities;
 
+import com.arkanoid.systems.logging.GameLogger;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -40,6 +41,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
     public void hit() {
         hitPoints--;
         if (hitPoints <= 0) {
+            GameLogger.debug("Brick destroyed at ({}, {}) row={} col={}", x, y, row, col);
             destroyed = true;
             active = false;
         }
@@ -47,6 +49,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
 
     @Override
     public void destroy() {
+        GameLogger.debug("Brick.destroy() called at ({}, {}) row={} col={}", x, y, row, col);
         destroyed = true;
         active = false;
     }
@@ -78,13 +81,16 @@ public abstract class BaseBrick extends GameObject implements Brick {
     @Override
     public PowerUp dropPowerUp() {
         if (Math.random() < powerUpChance) {
-            return createRandomPowerUp();
+            PowerUp powerUp = createRandomPowerUp();
+            GameLogger.debug("PowerUp dropped: {} at ({}, {})", powerUp.getClass().getSimpleName(), getCenterX(), getCenterY());
+            return powerUp;
         }
         return null;
     }
 
     @Override
     public void instantDestroy() {
+        GameLogger.debug("Brick instantly destroyed at ({}, {}) row={} col={}", x, y, row, col);
         this.destroyed = true;
         this.active = false;
         this.hitPoints = 0;

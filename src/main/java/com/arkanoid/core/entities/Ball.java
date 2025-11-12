@@ -104,22 +104,53 @@ public class Ball extends MovableObject {
             x = maxX - width;
             reverseX();
         }
-        // Top boundary: reflect only if NOT a Dead Side drain
+        
+        // Top boundary: bounce only if it's NOT player 2's dead side
         if (y <= minY && !topIsDeadSide) {
             y = minY;
+            reverseY();
+        }
+        
+        // Bottom boundary: bounce only if it's NOT player 1's dead side
+        // (topIsDeadSide == true means this is player 2's ball, so bottom should bounce)
+        if (y + height >= maxY && topIsDeadSide) {
+            y = maxY - height;
             reverseY();
         }
     }
 
     public void checkPaddleCollision(Paddle paddle) {
-        if (intersects(paddle) && velocityY > 0) {
+        if (!intersects(paddle)) {
+            return;
+        }
+
+        // Bottom paddle (player 1): ball coming from above (velocityY > 0)
+        // Top paddle (player 2): ball coming from below (velocityY < 0)
+        boolean isBottomPaddleHit = !topIsDeadSide && velocityY > 0;
+        boolean isTopPaddleHit = topIsDeadSide && velocityY < 0;
+
+        if (isBottomPaddleHit || isTopPaddleHit) {
+            com.arkanoid.systems.logging.GameLogger.debug("Paddle collision: topIsDeadSide={}, velocityY={}, isBottom={}, isTop={}", 
+                topIsDeadSide, velocityY, isBottomPaddleHit, isTopPaddleHit);
             soundManager.playSound("paddleBounce.wav");
-            paddle.triggerHitFlash(0.2); // Trigger paddle hit flash
-            y = paddle.getY() - height;
+            paddle.triggerHitFlash(0.2);
+
+            // Position ball at correct side of paddle
+            if (isBottomPaddleHit) {
+                y = paddle.getY() - height; // Above paddle
+            } else {
+                y = paddle.getY() + paddle.getHeight(); // Below paddle
+            }
 
             double hitPosition = (getCenterX() - paddle.getCenterX()) / (paddle.getWidth() / 2);
             velocityX = hitPosition * speed * 0.8;
-            velocityY = -Math.abs(velocityY);
+            
+            // Reverse Y direction based on paddle type
+            if (isBottomPaddleHit) {
+                velocityY = -Math.abs(velocityY); // Bounce up
+            } else {
+                velocityY = Math.abs(velocityY); // Bounce down
+            }
 
             double totalSpeed = Math.sqrt(velocityX * velocityX + velocityY * velocityY);
             if (totalSpeed != speed) {
@@ -150,12 +181,12 @@ public class Ball extends MovableObject {
     }
 
     public boolean isOutOfBounds() {
-        // Bottom Dead Side (for bottom player)
-        if (y > maxY) {
+        // Player 1 (bottom player): loses life if ball goes past bottom (y > maxY)
+        if (!topIsDeadSide && y > maxY) {
             return true;
         }
-        // Top Dead Side (for top player in two-player mode)
-        if (topIsDeadSide && y < minY) {
+        // Player 2 (top player): loses life if ball goes past top (y < minY)
+        if (topIsDeadSide && y + height < minY) {
             return true;
         }
         return false;

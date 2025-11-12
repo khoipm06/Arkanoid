@@ -1,84 +1,112 @@
-/* Nền tổng thể */
+/* Background */
 #root {
-  -fx-background-image: url("../../../images/bg.png");
-  -fx-background-repeat: no-repeat;
-  -fx-background-size: cover; /* phủ toàn màn hình */
-  -fx-background-position: center center;
+  -fx-background-color: linear-gradient(to bottom right, #12043b, #3b0a45, #000010);
 }
 
-/* Bảng thông tin */
-.anchor-pane > .anchor-pane {
-  -fx-background-color: rgba(20, 20, 25, 0.8);
-  -fx-background-radius: 12;
-  -fx-border-radius: 12;
-  -fx-border-color: rgba(255, 255, 255, 0.1);
-  -fx-border-width: 1;
-  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 10, 0, 0, 4);
-}
-
-/* Tiêu đề "Thông tin người chơi" */
+/* Title */
 #thongtin {
-  -fx-text-fill: #00bfff; /* Xanh dương sáng */
+  -fx-text-fill: #00ffff;
   -fx-font-weight: bold;
-  -fx-effect: dropshadow(gaussian, rgba(0, 191, 255, 0.7), 6, 0, 0, 2);
+  -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 0.8), 15, 0.4, 0, 0);
 }
 
-/* Label giá trị username / balance */
-#usernameLabel,
-#balance {
-  -fx-text-fill: #ffffff; /* Trắng */
-  -fx-font-size: 20px;
-  -fx-font-weight: bold;
-  -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.8), 8, 0.5, 0, 0);
+/* Profile Card Container */
+.profile-card {
+  -fx-background-color: rgba(20, 30, 50, 0.85);
+  -fx-background-radius: 15;
+  -fx-border-radius: 15;
+  -fx-border-color: linear-gradient(to bottom right, #00ffff, #0080ff);
+  -fx-border-width: 2;
+  -fx-padding: 25;
+  -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 0.5), 20, 0.4, 0, 0);
 }
 
-/* Nút chung */
-.button {
+/* Info Labels */
+.info-label {
+  -fx-text-fill: #ffffff;
+  -fx-font-weight: bold;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 5, 0, 0, 2);
+}
+
+/* Balance Label - Special highlighting */
+.balance-label {
+  -fx-text-fill: #ffd700;
+  -fx-font-weight: bold;
+  -fx-effect: dropshadow(gaussian, rgba(255, 215, 0, 0.8), 10, 0.5, 0, 0);
+}
+
+/* Section Titles */
+.section-title {
+  -fx-text-fill: #00d4ff;
+  -fx-font-weight: bold;
+  -fx-effect: dropshadow(gaussian, rgba(0, 212, 255, 0.7), 8, 0.4, 0, 0);
+}
+
+/* Stat Labels */
+.stat-label {
+  -fx-text-fill: #e0e0e0;
+  -fx-padding: 3 0 3 10;
+}
+
+/* Divider */
+.divider {
+  -fx-text-fill: rgba(0, 255, 255, 0.3);
+  -fx-font-size: 12px;
+}
+
+/* Inventory Scroll Pane */
+.inventory-scroll {
+  -fx-background-color: rgba(0, 0, 0, 0.3);
+  -fx-border-color: #00ffff;
+  -fx-border-width: 1;
+  -fx-border-radius: 8;
+  -fx-background-radius: 8;
+}
+
+.inventory-scroll .viewport {
   -fx-background-color: transparent;
-  -fx-cursor: hand;
 }
 
-/* Nút Back - dùng ảnh */
+.inventory-scroll .scroll-bar {
+  -fx-background-color: rgba(0, 0, 0, 0.2);
+}
+
+.inventory-label {
+  -fx-text-fill: #c0c0c0;
+  -fx-padding: 10;
+  -fx-line-spacing: 5;
+}
+
+/* Back Button */
 #back {
   -fx-background-color: transparent;
   -fx-background-image: url("../../../images/back.png");
-  -fx-background-size: 100% 100%; /* ảnh lấp đầy button */
+  -fx-background-size: 40px 40px;
   -fx-background-repeat: no-repeat;
-  -fx-background-position: center; /* vẫn căn giữa nếu muốn */
-
-  -fx-text-fill: white;
-  -fx-font-weight: bold;
-
-  -fx-border-color: #00ffff;
-  -fx-border-radius: 10;
-  -fx-border-width: 2;
-  -fx-background-radius: 10;
+  -fx-background-position: center;
   -fx-cursor: hand;
+  -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 0.8), 10, 0.3, 0, 0);
 }
 
-/* Nút Log out - dùng ảnh */
-#logOut {
+#back:hover {
+  -fx-scale-x: 1.1;
+  -fx-scale-y: 1.1;
+  -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 1), 15, 0.5, 0, 0);
+}
+
+/* Logout Button */
+.logout-button {
   -fx-background-color: transparent;
   -fx-background-image: url("../../../images/logout.png");
-  -fx-background-size: 100% 100%; /* ảnh lấp đầy button */
+  -fx-background-size: 40px 40px;
   -fx-background-repeat: no-repeat;
-  -fx-background-position: center; /* vẫn căn giữa nếu muốn */
-
-  -fx-text-fill: white;
-  -fx-font-weight: bold;
-
-  -fx-border-color: #00ffff;
-  -fx-border-radius: 10;
-  -fx-border-width: 2;
-  -fx-background-radius: 10;
+  -fx-background-position: center;
   -fx-cursor: hand;
+  -fx-effect: dropshadow(gaussian, rgba(255, 80, 80, 0.8), 10, 0.3, 0, 0);
 }
 
-/* Hover effect cho nút */
-.img-button:hover,
-.img-logout:hover {
-  -fx-opacity: 0.85;
-  -fx-scale-x: 1.05;
-  -fx-scale-y: 1.05;
-  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 8, 0, 0, 3);
+.logout-button:hover {
+  -fx-scale-x: 1.1;
+  -fx-scale-y: 1.1;
+  -fx-effect: dropshadow(gaussian, rgba(255, 80, 80, 1), 15, 0.5, 0, 0);
 }

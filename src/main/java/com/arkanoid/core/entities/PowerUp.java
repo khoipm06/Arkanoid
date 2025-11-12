@@ -1,5 +1,6 @@
 package com.arkanoid.core.entities;
 
+import com.arkanoid.systems.logging.GameLogger;
 import javafx.animation.PauseTransition;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -20,6 +21,7 @@ public abstract class PowerUp extends MovableObject {
         this.age = 0;
         this.collected = false;
         this.image = null;
+        // Removed TRACE logging to reduce verbosity
     }
 
     @Override
@@ -27,6 +29,7 @@ public abstract class PowerUp extends MovableObject {
         move(deltaTime);
         age += deltaTime;
         if (age >= lifetime) {
+            // Removed TRACE logging to reduce verbosity
             active = false;
         }
     }
@@ -57,12 +60,15 @@ public abstract class PowerUp extends MovableObject {
 
     public boolean checkPaddleCollision(Paddle paddle) {
         if (!collected && intersects(paddle)) {
+            GameLogger.debug("PowerUp collected: {} at ({}, {})", this.getClass().getSimpleName(), x, y);
             setCollected(true);
             applyEffect(paddle);
+            GameLogger.debug("PowerUp effect applied: {}", this.getClass().getSimpleName());
             PauseTransition pause = new PauseTransition(Duration.seconds(2));
 
             // Khi hết 2 giây, tắt hiệu ứng
             pause.setOnFinished(e -> {
+                GameLogger.debug("PowerUp effect removed: {}", this.getClass().getSimpleName());
                 removeEffect(paddle);
                 setCollected(false);
             });

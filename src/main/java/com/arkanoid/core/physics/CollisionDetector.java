@@ -2,8 +2,11 @@ package com.arkanoid.core.physics;
 
 import com.arkanoid.core.entities.Ball;
 import com.arkanoid.core.entities.Brick;
+import com.arkanoid.core.entities.GameObject;
 import com.arkanoid.core.entities.UnbreakableBrick;
 import com.arkanoid.systems.GameManager;
+import com.arkanoid.systems.logging.GameLogger;
+import com.arkanoid.systems.sound.SoundManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +20,9 @@ public class CollisionDetector {
             if (brick.isDestroyed())
                 continue;
 
-            if (ball.intersects((com.arkanoid.core.entities.GameObject) brick)) {
+            if (ball.intersects((GameObject) brick)) {
+                GameLogger.debug("Ball-brick collision detected at ({}, {})", brick.getCenterX(), brick.getCenterY());
+                SoundManager.getInstance().playSound("brickBounce.wav");
                 handleBallBrickCollision(ball, brick);
                 brick.hit();
                 if (callback != null) {
@@ -27,8 +32,8 @@ public class CollisionDetector {
                     double explosionRadius = 80;
                     double explosionX = brick.getCenterX();
                     double explosionY = brick.getCenterY();
+                    GameLogger.debug("Explosive ball triggered at ({}, {}) with radius {}", explosionX, explosionY, explosionRadius);
 
-                    // Thêm vụ nổ vào GameManager (có thể dùng sprite sheet)
                     gameManager.addExplosion(explosionX, explosionY, 64, 64, 1);
 
                     for (Brick otherBrick : bricks) {

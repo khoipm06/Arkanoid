@@ -30,9 +30,28 @@ public class SceneManager {
 
     public static void switchTo(String name) {
         if (mainStage != null && scenes.containsKey(name)) {
+            // Refresh data for scenes that need it
+            refreshSceneIfNeeded(name);
             mainStage.setScene(scenes.get(name));
         } else {
             System.out.println("Scene not found: " + name);
+        }
+    }
+
+    /**
+     * Refresh data for scenes that display dynamic content
+     */
+    private static void refreshSceneIfNeeded(String sceneName) {
+        Object controller = controllers.get(sceneName);
+        if (controller == null) return;
+
+        // Refresh profile screen
+        if ("profileScreen".equals(sceneName) && controller instanceof ProfileScreen profileController) {
+            profileController.refreshProfile();
+        }
+        // Refresh leaderboard
+        else if ("leaderboard".equals(sceneName) && controller instanceof LeaderboardController leaderboardController) {
+            leaderboardController.refreshData();
         }
     }
 
@@ -42,7 +61,7 @@ public class SceneManager {
 
     public static void showGameOver(int level, int score, String timePlayed) {
         Object controller = getController("gameOver");
-        if (controller instanceof com.arkanoid.ui.view.GameOver gameOverController) {
+        if (controller instanceof GameOver gameOverController) {
             gameOverController.init(level, score, timePlayed);
         }
         SceneManager.switchTo("gameOver");
@@ -50,7 +69,7 @@ public class SceneManager {
 
     public static void showWinLevel(int level, int score, String timePlayed) {
         Object controller = getController("winLevel");
-        if (controller instanceof com.arkanoid.ui.view.WinLevel winLevelController) {
+        if (controller instanceof WinLevel winLevelController) {
             winLevelController.init(level, score, timePlayed);
         }
         SceneManager.switchTo("winLevel");

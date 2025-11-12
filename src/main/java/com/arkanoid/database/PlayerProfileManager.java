@@ -46,37 +46,53 @@ public class PlayerProfileManager {
                     ORDER BY pp.high_score DESC
                 """;
 
-        try (Statement stmt = databaseManager.getConnection().createStatement();
-                ResultSet rs = stmt.executeQuery(sql)) {
+        Connection conn = null;
+        try {
+            conn = databaseManager.getConnection();
+            try (Statement stmt = conn.createStatement();
+                    ResultSet rs = stmt.executeQuery(sql)) {
 
-            while (rs.next()) {
-                leaderboard.add(new LeaderboardEntry(
-                        rs.getString("username"),
-                        rs.getInt("high_score"),
-                        rs.getInt("max_level")));
+                while (rs.next()) {
+                    leaderboard.add(new LeaderboardEntry(
+                            rs.getString("username"),
+                            rs.getInt("high_score"),
+                            rs.getInt("max_level")));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                databaseManager.releaseConnection(conn);
+            }
         }
         return leaderboard;
     }
 
     public static ProfileData getProfile(int userId) {
         String sql = "SELECT * FROM player_profiles WHERE user_id = ?";
-        try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(sql)) {
-            pstmt.setInt(1, userId);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return new ProfileData(
-                            rs.getInt("coins"),
-                            rs.getInt("high_score"),
-                            rs.getString("current_skin"),
-                            rs.getInt("games_played"),
-                            rs.getInt("total_score"));
+        Connection conn = null;
+        try {
+            conn = databaseManager.getConnection();
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, userId);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        return new ProfileData(
+                                rs.getInt("coins"),
+                                rs.getInt("high_score"),
+                                rs.getString("current_skin"),
+                                rs.getInt("games_played"),
+                                rs.getInt("total_score"));
+                    }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                databaseManager.releaseConnection(conn);
+            }
         }
         return null;
     }
@@ -88,13 +104,21 @@ public class PlayerProfileManager {
 
     public static void updateHighScore(int userId, int highScore) {
         String sql = "UPDATE player_profiles SET high_score = ? WHERE user_id = ? AND high_score < ?";
-        try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(sql)) {
-            pstmt.setInt(1, highScore);
-            pstmt.setInt(2, userId);
-            pstmt.setInt(3, highScore);
-            pstmt.executeUpdate();
+        Connection conn = null;
+        try {
+            conn = databaseManager.getConnection();
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, highScore);
+                pstmt.setInt(2, userId);
+                pstmt.setInt(3, highScore);
+                pstmt.executeUpdate();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                databaseManager.releaseConnection(conn);
+            }
         }
     }
 
@@ -114,13 +138,21 @@ public class PlayerProfileManager {
     }
 
     private static void executeUpdate(String sql, Object... params) {
-        try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(sql)) {
-            for (int i = 0; i < params.length; i++) {
-                pstmt.setObject(i + 1, params[i]);
+        Connection conn = null;
+        try {
+            conn = databaseManager.getConnection();
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                for (int i = 0; i < params.length; i++) {
+                    pstmt.setObject(i + 1, params[i]);
+                }
+                pstmt.executeUpdate();
             }
-            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                databaseManager.releaseConnection(conn);
+            }
         }
     }
 }

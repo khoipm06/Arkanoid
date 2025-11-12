@@ -78,3 +78,21 @@
   -fx-background-color: #0055aa;
   -fx-border-color: #66ffff;
 }
+
+#backToMainMenuButton {
+  -fx-background-color: transparent;
+  -fx-background-image: url("../../../images/back.png");
+  -fx-background-size: 40px 40px;
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: center;
+  -fx-pref-width: 40px;
+  -fx-pref-height: 40px;
+  -fx-cursor: hand;
+  -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 0.8), 10, 0.3, 0, 0);
+}
+
+#backToMainMenuButton:hover {
+  -fx-scale-x: 1.1;
+  -fx-scale-y: 1.1;
+  -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 1), 15, 0.5, 0, 0);
+}

@@ -23,6 +23,8 @@ public class Map {
     private ImageView mapView;
     @FXML
     private Button playGameButton;
+    @FXML
+    private Button backToMainMenuButton;
 
     private Stage stage;
     private int currentMapIndex = 0;
@@ -98,6 +100,12 @@ public class Map {
         stage.setScene(gameScene.getScene());
         stage.show();
         gameScene.start();
+    }
+
+    @FXML
+    private void onBackToMainMenuClick(MouseEvent event) {
+        soundManager.playSound("Accept.wav");
+        SceneManager.switchTo("mainMenuView");
     }
 
     private void updatePreview() {

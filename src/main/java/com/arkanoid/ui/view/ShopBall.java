@@ -1,7 +1,6 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.core.entities.Ball;
-import com.arkanoid.database.UserManager;
 import com.arkanoid.systems.player.PlayerProfile;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.fxml.FXML;
@@ -31,11 +30,6 @@ public class ShopBall {
 
     @FXML
     public void initialize() {
-        if (SessionManager.getCurrentUser() == null) {
-            UserManager.register("guest", "123");
-            SessionManager.login(new SessionManager.User(0, "guest"));
-        }
-
         skinItems.add(new SkinItem("Fire", 1000, buy1, equip1, imgFire));
         skinItems.add(new SkinItem("Ice", 2000, buy2, equip2, imgIce));
         skinItems.add(new SkinItem("Rainbow", 3000, buy3, equip3, imgRainbow));
@@ -98,17 +92,19 @@ public class ShopBall {
         for (SkinItem item : skinItems) {
             if (item.name.equals(skinName)) {
                 if (user.hasSkin(skinName)) {
-                    System.out.println("Đã sở hữu skin: " + skinName);
+                    System.out.println("⚠️ Đã sở hữu skin: " + skinName);
                     return;
                 }
 
                 if (user.spendMoney(item.price)) {
+                    // Add to inventory database
                     user.addOwnedSkin(skinName);
-                    System.out.println("Mua thành công skin: " + skinName);
-                    lblMoney.setText("Tiền của bạn: " + user.getMoney() + "$");
+                    System.out.println("✅ Mua thành công skin: " + skinName + " | Giá: " + item.price);
+                    System.out.println("💰 Số dư còn lại: " + user.getMoney() + " coins");
+                    lblMoney.setText("Balance: " + user.getMoney() + "$");
                     ((ShopView) SceneManager.getController("shopView")).refreshMoney();
                 } else {
-                    System.out.println("Không đủ tiền để mua skin: " + skinName);
+                    System.out.println("❌ Không đủ tiền để mua skin: " + skinName + " | Cần: " + item.price + " | Có: " + user.getMoney());
                 }
                 break;
             }
@@ -172,7 +168,7 @@ public class ShopBall {
     public void refreshMoney() {
         SessionManager.User user = SessionManager.getCurrentUser();
         if (user != null) {
-            lblMoney.setText("Tiền của bạn: " + user.getMoney() + "$");
+            lblMoney.setText("Balance: " + user.getMoney() + "$");
         }
     }
 

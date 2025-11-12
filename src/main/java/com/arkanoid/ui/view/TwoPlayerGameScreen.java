@@ -18,6 +18,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.HashSet;
@@ -46,7 +48,9 @@ public class TwoPlayerGameScreen {
     private long lastFrameTime;
     private Image backgroundImage;
     private VBox pauseMenu;
-    private BorderPane root;
+    private javafx.scene.layout.StackPane pauseOverlay;
+    private javafx.scene.layout.StackPane root;
+    private BorderPane gameLayout;
 
     private static final double CANVAS_WIDTH = 700;
     private static final double CANVAS_HEIGHT = 600;
@@ -70,15 +74,20 @@ public class TwoPlayerGameScreen {
     }
 
     public void show() {
-        root = new BorderPane();
-        root.setCenter(canvas);
-        root.setStyle("-fx-background-color: black;");
+        // Create game layout with BorderPane
+        gameLayout = new BorderPane();
+        gameLayout.setCenter(canvas);
+        gameLayout.setStyle("-fx-background-color: black;");
 
         initializeGame();
 
         // Add stats panel on right side
         statsPanel = new TwoPlayerStatsPanel(player1, player2);
-        root.setRight(statsPanel);
+        gameLayout.setRight(statsPanel);
+
+        // Create root as StackPane to allow overlays
+        root = new javafx.scene.layout.StackPane();
+        root.getChildren().add(gameLayout);
 
         Scene scene = new Scene(root, CANVAS_WIDTH + 200, CANVAS_HEIGHT);
         setupInput(scene);
@@ -92,7 +101,7 @@ public class TwoPlayerGameScreen {
     private void initializeGame() {
         // Load level bricks
         levelManager = new LevelManager();
-        bricks = levelManager.loadMultiplayerLevel(); // Load special multiplayer level
+        bricks = levelManager.loadLevel(0);
         System.out.println("Loaded " + bricks.size() + " bricks for two-player mode");
 
         // Create Player 1 (bottom)
@@ -121,7 +130,8 @@ public class TwoPlayerGameScreen {
                 bricks);
 
         matchManager.startMatch();
-        System.out.println("Two-player game initialized!");
+        com.arkanoid.systems.logging.GameLogger.info("Two-player game initialized: {} bricks, P1 at ({}, {}), P2 at ({}, {})",
+            bricks.size(), paddle1.getX(), paddle1.getY(), paddle2.getX(), paddle2.getY());
     }
 
     private void setupInput(Scene scene) {
@@ -160,7 +170,8 @@ public class TwoPlayerGameScreen {
         ball.setVelocityX(0);
         ball.setVelocityY(-direction * BALL_SPEED);
 
-        System.out.println("Player " + player.getPlayerNumber() + " launched ball!");
+        com.arkanoid.systems.logging.GameLogger.info("Player {} launched ball from ({}, {}) with velocity ({}, {})",
+            player.getPlayerNumber(), ball.getX(), ball.getY(), ball.getVelocityX(), ball.getVelocityY());
     }
 
     private void startGameLoop() {
@@ -226,24 +237,67 @@ public class TwoPlayerGameScreen {
         Ball ball2 = player2.getBall();
 
         for (Brick brick : bricks) {
-            if (!brick.isDestroyed()) {
-                // Check Player 1 ball collision
-                if (ball1 != null && brick.intersects(ball1)) {
-                    brick.hit();
-                    ball1.reverseY();
-                    if (brick.isDestroyed()) {
-                        matchManager.applyBrickHit(1, 100); // Award points to player 1
-                    }
-                }
+            if (brick.isDestroyed()) {
+                continue;
+            }
 
-                // Check Player 2 ball collision
-                if (ball2 != null && brick.intersects(ball2)) {
-                    brick.hit();
-                    ball2.reverseY();
-                    if (brick.isDestroyed()) {
-                        matchManager.applyBrickHit(2, 100); // Award points to player 2
-                    }
+            boolean hitThisFrame = false;
+            
+            // Check Player 1 ball collision
+            if (ball1 != null && !ball1.isAttachedToPaddle() && brick.intersects(ball1)) {
+                com.arkanoid.systems.sound.SoundManager.getInstance().playSound("brickBounce.wav");
+                handleBallBrickCollision(ball1, brick);
+                brick.hit();
+                hitThisFrame = true;
+                if (brick.isDestroyed()) {
+                    com.arkanoid.systems.logging.GameLogger.debug("Player 1 destroyed brick at ({}, {})", brick.getX(), brick.getY());
+                    matchManager.applyBrickHit(1, 100); // Award points to player 1
                 }
+            }
+
+            // Check Player 2 ball collision (only if not already hit this frame)
+            if (!hitThisFrame && ball2 != null && !ball2.isAttachedToPaddle() && brick.intersects(ball2)) {
+                com.arkanoid.systems.sound.SoundManager.getInstance().playSound("brickBounce.wav");
+                handleBallBrickCollision(ball2, brick);
+                brick.hit();
+                if (brick.isDestroyed()) {
+                    com.arkanoid.systems.logging.GameLogger.debug("Player 2 destroyed brick at ({}, {})", brick.getX(), brick.getY());
+                    matchManager.applyBrickHit(2, 100); // Award points to player 2
+                }
+            }
+        }
+        
+        // Remove destroyed bricks
+        bricks.removeIf(Brick::isDestroyed);
+    }
+
+    private void handleBallBrickCollision(Ball ball, Brick brick) {
+        double ballCenterX = ball.getCenterX();
+        double ballCenterY = ball.getCenterY();
+        double brickCenterX = brick.getX() + brick.getWidth() / 2;
+        double brickCenterY = brick.getY() + brick.getHeight() / 2;
+
+        double deltaX = ballCenterX - brickCenterX;
+        double deltaY = ballCenterY - brickCenterY;
+
+        double overlapX = (brick.getWidth() / 2 + ball.getWidth() / 2) - Math.abs(deltaX);
+        double overlapY = (brick.getHeight() / 2 + ball.getHeight() / 2) - Math.abs(deltaY);
+
+        if (overlapX < overlapY) {
+            // Hit from side
+            ball.reverseX();
+            if (deltaX > 0) {
+                ball.setX(brick.getX() + brick.getWidth());
+            } else {
+                ball.setX(brick.getX() - ball.getWidth());
+            }
+        } else {
+            // Hit from top/bottom
+            ball.reverseY();
+            if (deltaY > 0) {
+                ball.setY(brick.getY() + brick.getHeight());
+            } else {
+                ball.setY(brick.getY() - ball.getHeight());
             }
         }
     }
@@ -281,24 +335,20 @@ public class TwoPlayerGameScreen {
             statsPanel.update();
         }
 
-        // Render scores and lives (basic on-canvas display)
-        renderHUD();
-
         // Note: Pause menu is handled by JavaFX overlay, not canvas rendering
     }
 
-    private void renderHUD() {
-        gc.setFill(Color.WHITE);
-        gc.setFont(javafx.scene.text.Font.font("Arial", 16));
+    // private void renderHUD() {
+    //     gc.setFill(Color.WHITE);
+    //     gc.setFont(Font.font("Arial", 16));
 
-        // Player 1 stats (bottom-left)
-        gc.fillText("P1 Score: " + player1.getState().getScore(), 10, CANVAS_HEIGHT - 10);
-        gc.fillText("P1 Lives: " + player1.getState().getLives(), 10, CANVAS_HEIGHT - 30);
+    //     gc.fillText("P1 Score: " + player1.getState().getScore(), 10, CANVAS_HEIGHT - 10);
+    //     gc.fillText("P1 Lives: " + player1.getState().getLives(), 10, CANVAS_HEIGHT - 30);
 
-        // Player 2 stats (top-left)
-        gc.fillText("P2 Score: " + player2.getState().getScore(), 10, 20);
-        gc.fillText("P2 Lives: " + player2.getState().getLives(), 10, 40);
-    }
+    //     // Player 2 stats (top-left)
+    //     gc.fillText("P2 Score: " + player2.getState().getScore(), 10, 20);
+    //     gc.fillText("P2 Lives: " + player2.getState().getLives(), 10, 40);
+    // }
 
     private void pauseGame() {
         matchManager.pause();
@@ -315,15 +365,26 @@ public class TwoPlayerGameScreen {
             root.getChildren().remove(pauseMenu);
         }
 
+        // Create overlay container
+        javafx.scene.layout.StackPane overlay = new javafx.scene.layout.StackPane();
+        overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
+        
         pauseMenu = new VBox(20);
         pauseMenu.setAlignment(Pos.CENTER);
-        pauseMenu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.85);" + "-fx-padding: 40;" + "-fx-border-radius: 20;"
-                + "-fx-background-radius: 20;" + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 20,0,0,0);");
-        pauseMenu.setPrefSize(400, 350);
+        pauseMenu.setStyle("-fx-background-color: linear-gradient(to bottom, rgba(10, 20, 35, 0.95), rgba(5, 10, 20, 0.95));" 
+                + "-fx-padding: 40;" 
+                + "-fx-border-radius: 20;"
+                + "-fx-background-radius: 20;" 
+                + "-fx-border-color: linear-gradient(to right, #00d4ff, #0080ff, #00d4ff);"
+                + "-fx-border-width: 3;"
+                + "-fx-effect: dropshadow(gaussian, rgba(0, 212, 255, 0.6), 30, 0, 0, 0);");
+        pauseMenu.setMaxSize(450, 400);
+        pauseMenu.setMinSize(450, 400);
+        pauseMenu.setPrefSize(450, 400);
 
         // Title
-        javafx.scene.text.Text title = new javafx.scene.text.Text("GAME PAUSED");
-        title.setFont(javafx.scene.text.Font.font("Arial Black", 36));
+        Text title = new Text("GAME PAUSED");
+        title.setFont(Font.font("Arial Black", 42));
         title.setFill(Color.WHITE);
         title.setStroke(Color.CYAN);
         title.setStrokeWidth(2);
@@ -341,17 +402,16 @@ public class TwoPlayerGameScreen {
         backBtn.setOnAction(e -> backToMenu());
 
         pauseMenu.getChildren().addAll(title, resumeBtn, restartBtn, backBtn);
+        overlay.getChildren().add(pauseMenu);
 
-        // Center the menu
-        pauseMenu.setLayoutX((CANVAS_WIDTH - pauseMenu.getPrefWidth()) / 2);
-        pauseMenu.setLayoutY((CANVAS_HEIGHT - pauseMenu.getPrefHeight()) / 2);
-
-        root.getChildren().add(pauseMenu);
+        pauseOverlay = overlay;
+        root.getChildren().add(pauseOverlay);
     }
 
     private void hidePauseMenu() {
-        if (pauseMenu != null) {
-            root.getChildren().remove(pauseMenu);
+        if (pauseOverlay != null) {
+            root.getChildren().remove(pauseOverlay);
+            pauseOverlay = null;
             pauseMenu = null;
         }
     }
@@ -380,30 +440,30 @@ public class TwoPlayerGameScreen {
     }
 
     private void restartGame() {
-        // Stop current game
         if (gameLoop != null) {
             gameLoop.stop();
         }
         hidePauseMenu();
 
-        // Reinitialize and restart
         initializeGame();
         startGameLoop();
     }
 
     private void backToMenu() {
-        // Stop game loop
         if (gameLoop != null) {
             gameLoop.stop();
         }
         hidePauseMenu();
 
-        // Return to main menu
         SceneManager.switchTo("mainMenuView");
     }
 
     private void showGameOver() {
         TwoPlayerMatchManagerImpl managerImpl = (TwoPlayerMatchManagerImpl) matchManager;
+
+        com.arkanoid.systems.logging.GameLogger.info("Two-player game ended: Winner={}, Reason={}, P1Score={}, P2Score={}",
+            managerImpl.getWinningPlayer(), managerImpl.getEndReason(),
+            player1.getState().getScore(), player2.getState().getScore());
 
         TwoPlayerGameOverScreen gameOverScreen = new TwoPlayerGameOverScreen(stage, managerImpl.getWinningPlayer(),
                 managerImpl.getEndReason(), player1.getState().getScore(), player2.getState().getScore());

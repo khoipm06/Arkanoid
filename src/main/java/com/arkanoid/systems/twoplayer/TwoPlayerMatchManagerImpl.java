@@ -91,11 +91,11 @@ public class TwoPlayerMatchManagerImpl implements TwoPlayerMatchManager {
             }
         }
 
-        // Check Dead Side drains
+        // Check Dead Side drains - each player loses life only if ball passes THEIR dead side
         if (player1.getBall() != null && player1.getBall().isOutOfBounds()) {
             handleLifeLoss(1, LifeLossCause.DEAD_SIDE);
         }
-        if (player2.getBall() != null && isTopDeadSideDrain(player2.getBall())) {
+        if (player2.getBall() != null && player2.getBall().isOutOfBounds()) {
             handleLifeLoss(2, LifeLossCause.DEAD_SIDE);
         }
 
@@ -104,15 +104,6 @@ public class TwoPlayerMatchManagerImpl implements TwoPlayerMatchManager {
 
         // Check win conditions
         checkWinConditions();
-    }
-
-    /**
-     * Checks if top player's ball crossed their Dead Side (minY boundary).
-     */
-    private boolean isTopDeadSideDrain(com.arkanoid.core.entities.Ball ball) {
-        // Top player drains when ball goes above minY (needs bounds info)
-        // For now, check if Y is very small (< 0)
-        return ball.getY() < 0;
     }
 
     @Override

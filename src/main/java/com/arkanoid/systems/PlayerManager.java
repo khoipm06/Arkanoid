@@ -24,7 +24,6 @@ public class PlayerManager {
         rightKeys.put(2, KeyCode.D);
     }
 
-    // Thread-safe singleton getInstance
     public static synchronized PlayerManager getInstance() {
         if (instance == null) {
             instance = new PlayerManager();

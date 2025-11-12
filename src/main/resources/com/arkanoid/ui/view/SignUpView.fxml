@@ -13,7 +13,7 @@
    fx:controller="com.arkanoid.ui.view.SignUpView">
    <children>
       <Label fx:id="labelSignUp" layoutX="239.0" layoutY="80.0" prefHeight="43.0" prefWidth="266.0"
-         text="Đăng kí tài khoản">
+         text="Sign Up">
          <font>
             <Font size="29.0" />
          </font>
@@ -30,14 +30,14 @@
             <Font size="13.0" />
          </font>
       </Label>
-      <Label fx:id="confirm" layoutX="136.0" layoutY="303.0" prefHeight="31.0" prefWidth="112.0"
+      <Label fx:id="confirm" layoutX="136.0" layoutY="303.0" prefHeight="31.0" prefWidth="129.0"
          text="Confirm password">
          <font>
             <Font size="13.0" />
          </font>
       </Label>
       <Label fx:id="question" layoutX="136.0" layoutY="371.0" prefHeight="18.0" prefWidth="206.0"
-         text="If you have account?">
+         text="Don't have an account yet?">
          <font>
             <Font size="14.0" />
          </font>
@@ -45,7 +45,7 @@
       <TextField fx:id="userNameField" layoutX="372.0" layoutY="160.0" />
       <PasswordField fx:id="passwordField" layoutX="373.0" layoutY="233.0" />
       <PasswordField fx:id="confirmPasswordField" layoutX="372.0" layoutY="306.0" />
-      <Hyperlink fx:id="linkSignIn" layoutX="344.0" layoutY="365.0"
+      <Hyperlink fx:id="linkSignIn" layoutX="373.0" layoutY="364.0"
          onMouseClicked="#onSignInLinkClick" prefHeight="31.0" prefWidth="58.0" text="Sign in" />
       <Button fx:id="SignUpButton" layoutX="481.0" layoutY="468.0" mnemonicParsing="false"
          onMouseClicked="#onSignUpClick" prefHeight="50.0" prefWidth="98.0" text="Sign up" />

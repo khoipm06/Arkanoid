@@ -2,7 +2,6 @@ package com.arkanoid.ui.view;
 
 import com.arkanoid.core.entities.Ball;
 import com.arkanoid.core.entities.Paddle;
-import com.arkanoid.database.UserManager;
 import com.arkanoid.systems.player.PlayerProfile;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.animation.PauseTransition;
@@ -32,12 +31,6 @@ public class ShopView {
     @FXML
     public void initialize() {
         currentUser = SessionManager.getCurrentUser();
-        if (currentUser == null) {
-            UserManager.register("guest", "123");
-            SessionManager.login(new SessionManager.User(0, "guest"));
-            currentUser = SessionManager.getCurrentUser();
-        }
-
         updateMoneyLabel();
     }
 
@@ -47,8 +40,11 @@ public class ShopView {
     }
 
     private void updateMoneyLabel() {
-        if (currentUser != null)
-            lblMoney.setText("Số dư: " + currentUser.getMoney() + "$");
+        if (currentUser != null) {
+            lblMoney.setText("Balance: " + currentUser.getMoney() + "$");
+        } else {
+            lblMoney.setText("Balance: 0$");
+        }
     }
 
     private void showMessage(String text) {

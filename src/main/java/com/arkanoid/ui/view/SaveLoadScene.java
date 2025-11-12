@@ -173,11 +173,11 @@ public class SaveLoadScene {
 
         try {
             gameSaveManager.loadGame(selectedSave.getId());
-            if (gameScene != null) {
-                javafx.application.Platform.runLater(() -> {
-                    gameScene.renderOnce();
-                });
-            }
+            // if (gameScene != null) {
+            // javafx.application.Platform.runLater(() -> {
+            // gameScene.renderOnce();
+            // });
+            // }
 
             showSuccess("Game loaded successfully!");
 

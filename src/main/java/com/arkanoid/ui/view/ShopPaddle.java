@@ -1,7 +1,6 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.core.entities.Paddle;
-import com.arkanoid.database.UserManager;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -30,11 +29,6 @@ public class ShopPaddle {
 
     @FXML
     public void initialize() {
-        if (SessionManager.getCurrentUser() == null) {
-            UserManager.register("guest", "123");
-            SessionManager.login(new SessionManager.User(0, "guest"));
-        }
-
         skinItems.add(new SkinItem("paddle_Wood", 1000, buy1, equip1, image1));
         skinItems.add(new SkinItem("paddle_Metal", 2000, buy2, equip2, image2));
         skinItems.add(new SkinItem("paddle_Neon", 3000, buy3, equip3, image3));
@@ -91,14 +85,20 @@ public class ShopPaddle {
         SessionManager.User user = SessionManager.getCurrentUser();
         for (SkinItem item : skinItems) {
             if (item.name.equals(skinName)) {
-                if (user.hasPaddleSkin(skinName))
-                    return; // đã sở hữu
+                if (user.hasPaddleSkin(skinName)) {
+                    System.out.println("⚠️ Đã sở hữu paddle skin: " + skinName);
+                    return;
+                }
+                
                 if (user.spendMoney(item.price)) {
+                    // Add to inventory database
                     user.addOwnedPaddleSkin(skinName);
-                    lblMoney.setText("Số dư: " + user.getMoney() + "$");
+                    System.out.println("✅ Mua thành công paddle skin: " + skinName + " | Giá: " + item.price);
+                    System.out.println("💰 Số dư còn lại: " + user.getMoney() + " coins");
+                    lblMoney.setText("Balance: " + user.getMoney() + "$");
                     ((ShopView) SceneManager.getController("shopView")).refreshMoney();
                 } else {
-                    System.out.println("Không đủ tiền để mua skin: " + skinName);
+                    System.out.println("❌ Không đủ tiền để mua paddle skin: " + skinName + " | Cần: " + item.price + " | Có: " + user.getMoney());
                 }
                 break;
             }
@@ -162,7 +162,7 @@ public class ShopPaddle {
     public void refreshMoney() {
         SessionManager.User user = SessionManager.getCurrentUser();
         if (user != null) {
-            lblMoney.setText("Số dư: " + user.getMoney() + "$");
+            lblMoney.setText("Balance: " + user.getMoney() + "$");
         }
     }
 

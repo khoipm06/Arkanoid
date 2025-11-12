@@ -9,10 +9,10 @@
    xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
    fx:controller="com.arkanoid.ui.view.ShopView">
    <children>
-      <Label fx:id="lblMoney" layoutX="295.0" layoutY="46.0" prefHeight="64.0" prefWidth="274.0"
-         text="Số dư :">
+      <Label fx:id="lblMoney" layoutX="250.0" layoutY="46.0" prefHeight="70.0" prefWidth="400.0"
+         text="Balance:">
          <font>
-            <Font size="31.0" />
+            <Font size="32.0" />
          </font>
       </Label>
       <Button fx:id="ballButton" layoutX="135.0" layoutY="284.0" mnemonicParsing="false"
@@ -22,7 +22,7 @@
       <Button fx:id="backButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false"
          onMouseClicked="#onBackClick" text="back" />
       <Button fx:id="depositButton" layoutX="630.0" layoutY="55.0" mnemonicParsing="false"
-         onMouseClicked="#onDepositClick" prefHeight="50.0" prefWidth="81.0" text="Nạp tiền" />
+         onMouseClicked="#onDepositClick" prefHeight="50.0" prefWidth="81.0" text="Deposit" />
       <Label fx:id="lblMessage" layoutX="278.0" layoutY="193.0" prefHeight="32.0" prefWidth="206.0"
          text="Label" visible="false" />
    </children>

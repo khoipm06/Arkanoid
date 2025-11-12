@@ -14,6 +14,10 @@ import javafx.scene.text.FontWeight;
 
 import java.util.List;
 
+/**
+ * Controller for leaderboard view
+ * Displays all users sorted by high score (descending)
+ */
 public class LeaderboardController {
     private static final SoundManager soundManager = SoundManager.getInstance();
 
@@ -22,11 +26,26 @@ public class LeaderboardController {
 
     @FXML
     public void initialize() {
+        setupCellFactory();
+        refreshData();
+    }
+
+    /**
+     * Refresh leaderboard data from database
+     * Called when scene is shown
+     */
+    public void refreshData() {
+        // Query all users from database, sorted by high_score DESC
         List<PlayerProfileManager.LeaderboardEntry> leaderboardData = PlayerProfileManager.getLeaderboardData();
         ObservableList<PlayerProfileManager.LeaderboardEntry> items = FXCollections
                 .observableArrayList(leaderboardData);
         leaderboardList.setItems(items);
+    }
 
+    /**
+     * Setup custom cell factory for leaderboard entries
+     */
+    private void setupCellFactory() {
         leaderboardList.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(PlayerProfileManager.LeaderboardEntry item, boolean empty) {

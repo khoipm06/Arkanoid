@@ -9,7 +9,7 @@ public class FloatingText extends GameObject {
     private final String text;
     private double life;
     private final double maxLife;
-    private final double speed; // pixels per second upwards
+    private final double speed;
     private final Color color;
     private final Font font;
 
@@ -20,18 +20,18 @@ public class FloatingText extends GameObject {
         this.maxLife = lifeDuration;
         this.speed = speed;
         this.color = color;
-        this.font = Font.font("Arial", FontWeight.BOLD, 16); // Default font
+        this.font = Font.font("Arial", FontWeight.BOLD, 16);
     }
 
     public void update(double deltaTime) {
-        y -= speed * deltaTime; // Move upwards
-        life -= deltaTime;      // Decrease life
+        y -= speed * deltaTime;
+        life -= deltaTime;
     }
 
     @Override
     public void render(GraphicsContext gc) {
         if (life > 0) {
-            double progress = life / maxLife; // 1.0 at start, 0.0 at end
+            double progress = life / maxLife;
             double opacity = progress;
 
             gc.setFont(font);

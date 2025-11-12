@@ -44,7 +44,8 @@ javafx {
 dependencies {
     implementation("com.google.code.gson:gson:2.13.2")
     implementation("org.xerial:sqlite-jdbc:3.51.0.0")
-    implementation("org.slf4j:slf4j-simple:2.0.17")
+    implementation("ch.qos.logback:logback-classic:1.5.21")
+    
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

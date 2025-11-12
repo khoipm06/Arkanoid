@@ -44,32 +44,38 @@ public class UserManager {
             return null; // User already exists
         }
 
-        try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(sql,
-                Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, username);
-            pstmt.setString(2, password);
-            pstmt.setString(3, LocalDateTime.now().toString());
+        Connection conn = null;
+        try {
+            conn = databaseManager.getConnection();
+            try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                pstmt.setString(1, username);
+                pstmt.setString(2, password);
+                pstmt.setString(3, LocalDateTime.now().toString());
 
-            int affectedRows = pstmt.executeUpdate();
+                int affectedRows = pstmt.executeUpdate();
 
-            if (affectedRows > 0) {
-                try (ResultSet rs = pstmt.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        int userId = rs.getInt(1);
+                if (affectedRows > 0) {
+                    try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                        if (rs.next()) {
+                            int userId = rs.getInt(1);
 
-                        // Create default profile
-                        try (PreparedStatement profileStmt = databaseManager.getConnection()
-                                .prepareStatement(createProfileSql)) {
-                            profileStmt.setInt(1, userId);
-                            profileStmt.executeUpdate();
+                            // Create default profile
+                            try (PreparedStatement profileStmt = conn.prepareStatement(createProfileSql)) {
+                                profileStmt.setInt(1, userId);
+                                profileStmt.executeUpdate();
+                            }
+
+                            return new User(userId, username, LocalDateTime.now(), null);
                         }
-
-                        return new User(userId, username, LocalDateTime.now(), null);
                     }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                databaseManager.releaseConnection(conn);
+            }
         }
         return null;
     }
@@ -78,45 +84,60 @@ public class UserManager {
         String sql = "SELECT id, username, created_at, last_login FROM users WHERE username = ? AND password = ?";
         String updateLoginSql = "UPDATE users SET last_login = ? WHERE id = ?";
 
-        try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(sql)) {
-            pstmt.setString(1, username);
-            pstmt.setString(2, password);
+        Connection conn = null;
+        try {
+            conn = databaseManager.getConnection();
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, username);
+                pstmt.setString(2, password);
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    int id = rs.getInt("id");
-                    LocalDateTime createdAt = LocalDateTime.parse(rs.getString("created_at"));
-                    String lastLoginStr = rs.getString("last_login");
-                    LocalDateTime lastLogin = lastLoginStr != null ? LocalDateTime.parse(lastLoginStr) : null;
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        int id = rs.getInt("id");
+                        LocalDateTime createdAt = LocalDateTime.parse(rs.getString("created_at"));
+                        String lastLoginStr = rs.getString("last_login");
+                        LocalDateTime lastLogin = lastLoginStr != null ? LocalDateTime.parse(lastLoginStr) : null;
 
-                    // Update login time
-                    try (PreparedStatement updateStmt = databaseManager.getConnection()
-                            .prepareStatement(updateLoginSql)) {
-                        updateStmt.setString(1, LocalDateTime.now().toString());
-                        updateStmt.setInt(2, id);
-                        updateStmt.executeUpdate();
+                        // Update login time
+                        try (PreparedStatement updateStmt = conn.prepareStatement(updateLoginSql)) {
+                            updateStmt.setString(1, LocalDateTime.now().toString());
+                            updateStmt.setInt(2, id);
+                            updateStmt.executeUpdate();
+                        }
+
+                        return new User(id, username, createdAt, lastLogin);
                     }
-
-                    return new User(id, username, createdAt, lastLogin);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                databaseManager.releaseConnection(conn);
+            }
         }
         return null;
     }
 
     public static boolean usernameExists(String username) {
         String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
-        try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(sql)) {
-            pstmt.setString(1, username);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0;
+        Connection conn = null;
+        try {
+            conn = databaseManager.getConnection();
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, username);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt(1) > 0;
+                    }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                databaseManager.releaseConnection(conn);
+            }
         }
         return false;
     }

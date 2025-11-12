@@ -1,6 +1,7 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.GameApplication;
+import com.arkanoid.database.PlayerProfileManager;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.GameScene;
 import javafx.animation.Interpolator;
@@ -38,6 +39,10 @@ public class WinLevel {
         this.currentScore = scoreValue;
         score.setText("Score: " + scoreValue);
         timePlayed.setText("Time: " + timePlayedS);
+        
+        // Save high score to database if user is logged in
+        saveHighScore(scoreValue);
+        
         if (currentLevel >= maxLevel) {
             nextLevel.setDisable(true);
             nextLevel.setOpacity(0.5);
@@ -57,6 +62,19 @@ public class WinLevel {
         zoom.setToY(1.0);
         zoom.setInterpolator(Interpolator.EASE_OUT);
         zoom.play();
+    }
+
+    private void saveHighScore(int scoreValue) {
+        SessionManager.User user = SessionManager.getCurrentUser();
+        if (user != null) {
+            // Update high score if current score is higher
+            PlayerProfileManager.updateHighScore(user.getId(), scoreValue);
+            // Increment games played
+            PlayerProfileManager.incrementGamesPlayed(user.getId());
+            // Add to total score
+            PlayerProfileManager.addToTotalScore(user.getId(), scoreValue);
+            System.out.println("💾 Saved game stats for user: " + user.getUsername() + " | Score: " + scoreValue);
+        }
     }
 
     @FXML

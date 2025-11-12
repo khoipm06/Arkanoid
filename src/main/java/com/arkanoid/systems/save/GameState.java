@@ -17,13 +17,12 @@ public class GameState {
     private List<BrickState> brickStates;
     private List<PowerUpState> activePowerUps;
 
-    // Default constructor for Gson
     public GameState() {
     }
 
     public GameState(int levelNumber, int score, int lives, int elapsedTimeSeconds,
-            PaddleState paddleState, List<BallState> ballStates,
-            List<BrickState> brickStates, List<PowerUpState> activePowerUps) {
+                     PaddleState paddleState, List<BallState> ballStates,
+                     List<BrickState> brickStates, List<PowerUpState> activePowerUps) {
         this.levelNumber = levelNumber;
         this.score = score;
         this.lives = lives;
@@ -34,7 +33,7 @@ public class GameState {
         this.activePowerUps = activePowerUps;
     }
 
-    // Getters and setters
+
     public int getLevelNumber() {
         return levelNumber;
     }

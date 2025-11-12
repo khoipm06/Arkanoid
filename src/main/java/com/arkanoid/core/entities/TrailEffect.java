@@ -19,14 +19,12 @@ public class TrailEffect extends GameObject {
 
     public void update(double deltaTime) {
         life -= deltaTime;
-        // Optionally, make the trail move slightly or drift
-        // For now, it just fades and shrinks in place
     }
 
     @Override
     public void render(GraphicsContext gc) {
         if (life > 0) {
-            double progress = life / maxLife; // 1.0 at start, 0.0 at end
+            double progress = life / maxLife;
             double currentRadius = initialRadius * progress;
             double currentOpacity = progress;
 

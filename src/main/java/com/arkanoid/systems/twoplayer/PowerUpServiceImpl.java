@@ -1,7 +1,12 @@
 package com.arkanoid.systems.twoplayer;
 
+import com.arkanoid.core.entities.ExpandPaddlePowerUp;
+import com.arkanoid.core.entities.ExplosiveBallPowerUp;
+import com.arkanoid.core.entities.GunPaddlePowerUp;
+import com.arkanoid.core.entities.MultiBallPowerUp;
 import com.arkanoid.core.entities.Paddle;
 import com.arkanoid.core.entities.PowerUp;
+import com.arkanoid.core.entities.RowClearPowerUp;
 import com.arkanoid.systems.player.Orientation;
 import com.arkanoid.systems.player.Player;
 
@@ -64,15 +69,15 @@ public class PowerUpServiceImpl implements PowerUpService {
         double random = Math.random();
 
         if (random < 0.2) {
-            return new com.arkanoid.core.entities.ExpandPaddlePowerUp(x, y);
+            return new ExpandPaddlePowerUp(x, y);
         } else if (random < 0.4) {
-            return new com.arkanoid.core.entities.MultiBallPowerUp(x, y);
+            return new MultiBallPowerUp(x, y);
         } else if (random < 0.6) {
-            return new com.arkanoid.core.entities.GunPaddlePowerUp(x, y);
+            return new GunPaddlePowerUp(x, y);
         } else if (random < 0.8) {
-            return new com.arkanoid.core.entities.ExplosiveBallPowerUp(x, y);
+            return new ExplosiveBallPowerUp(x, y);
         } else {
-            return new com.arkanoid.core.entities.RowClearPowerUp(x, y);
+            return new RowClearPowerUp(x, y);
         }
     }
 

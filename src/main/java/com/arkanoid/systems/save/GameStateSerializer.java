@@ -38,7 +38,7 @@ import com.google.gson.JsonSyntaxException;
  * 
  * @author Game Save System Specification
  * @version 1.0
- * @see com.arkanoid.systems.save.GameState
+ * @see GameState
  */
 public interface GameStateSerializer {
 

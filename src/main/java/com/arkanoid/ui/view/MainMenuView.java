@@ -2,6 +2,7 @@ package com.arkanoid.ui.view;
 
 import com.arkanoid.GameApplication;
 import com.arkanoid.systems.sound.SoundManager;
+import com.arkanoid.ui.components.ToastNotification;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
@@ -81,7 +82,7 @@ public class MainMenuView {
     public void onQuitClick(MouseEvent event) {
 
         soundManager.playSound("Accept.wav");
-        Platform.exit(); // thoát toàn bộ ứng dụng
+        Platform.exit();
         System.exit(0);
 
     }
@@ -91,6 +92,11 @@ public class MainMenuView {
         System.out.println("Shop");
 
         soundManager.playSound("Accept.wav");
+
+        if (SessionManager.getCurrentUser() == null) {
+            ToastNotification.showToast("⚠️ Please log in to access the shop!", root, ToastNotification.ToastType.ERROR);
+            return;
+        }
 
         SceneManager.switchTo("shopView");
     }
@@ -113,41 +119,49 @@ public class MainMenuView {
     private VBox createModeSelectPopup() {
         VBox overlay = new VBox(30);
         overlay.setAlignment(Pos.CENTER);
-        overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.85);"
+        overlay.setStyle("-fx-background-color: linear-gradient(to bottom, rgba(10, 20, 35, 0.95), rgba(5, 10, 20, 0.95));"
                 + "-fx-padding: 40;"
                 + "-fx-border-radius: 20;"
                 + "-fx-background-radius: 20;"
-                + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 20,0,0,0);");
-        overlay.setPrefSize(root.getWidth() * 0.6, root.getHeight() * 0.5);
+                + "-fx-border-color: linear-gradient(to right, #00d4ff, #0080ff, #00d4ff);"
+                + "-fx-border-width: 3;"
+                + "-fx-effect: dropshadow(gaussian, rgba(0, 212, 255, 0.7), 30, 0.6, 0, 0);");
+        
+        double overlayWidth = 450;
+        double overlayHeight = 400;
+        overlay.setMinSize(overlayWidth, overlayHeight);
+        overlay.setMaxSize(overlayWidth, overlayHeight);
+        overlay.setPrefSize(overlayWidth, overlayHeight);
 
-        // Chữ MODE SELECT
         Text title = new Text("MODE SELECT");
         title.setFont(Font.font("Arial Black", 50));
         title.setFill(Color.WHITE);
         title.setStroke(Color.CYAN);
         title.setStrokeWidth(2);
+        title.setStyle("-fx-effect: dropshadow(gaussian, rgba(0, 212, 255, 0.8), 15, 0.7, 0, 0);");
 
-        // Nút Single Player
         Button singleBtn = new Button("Single Player");
         styleModeSelectButton(singleBtn);
         singleBtn.setOnAction(e -> {
             soundManager.playSound("Accept.wav");
-            SceneManager.switchTo("map"); // hoặc start game
+            if (SessionManager.getCurrentUser() == null) {
+                root.getChildren().remove(overlay);
+                ToastNotification.showToast("⚠️ Please log in to play Single Player mode!", root, ToastNotification.ToastType.ERROR);
+                return;
+            }
+            SceneManager.switchTo("map");
             root.getChildren().remove(overlay);
         });
 
-        // Nút Multi Player
         Button multiBtn = new Button("Multi Player");
         styleModeSelectButton(multiBtn);
         multiBtn.setOnAction(e -> {
             soundManager.playSound("Accept.wav");
             root.getChildren().remove(overlay);
-            // TwoPlayerGameScreen creates its own Scene programmatically
             TwoPlayerGameScreen twoPlayerScreen = new TwoPlayerGameScreen(SceneManager.getStage());
             twoPlayerScreen.show();
         });
 
-        // Nút Back
         Button backBtn = new Button("Back");
         styleModeSelectButton(backBtn);
         backBtn.setOnAction(e -> {
@@ -157,11 +171,9 @@ public class MainMenuView {
 
         overlay.getChildren().addAll(title, singleBtn, multiBtn, backBtn);
 
-        // Căn giữa overlay
-        Platform.runLater(() -> {
-            overlay.setLayoutX((root.getWidth() - overlay.getPrefWidth()) / 2);
-            overlay.setLayoutY((root.getHeight() - overlay.getPrefHeight()) / 2);
-        });
+        // Center the overlay
+        AnchorPane.setTopAnchor(overlay, (root.getHeight() - overlayHeight) / 2);
+        AnchorPane.setLeftAnchor(overlay, (root.getWidth() - overlayWidth) / 2);
 
         return overlay;
     }
@@ -191,9 +203,16 @@ public class MainMenuView {
         button.setPrefWidth(200);
         button.setPrefHeight(50);
 
-        // Hiệu ứng hover
-        button.setOnMouseEntered(e -> button.setStyle(hoverStyle));
-        button.setOnMouseExited(e -> button.setStyle(normalStyle));
+        button.setOnMouseEntered(e -> {
+            button.setStyle(hoverStyle);
+            button.setScaleX(1.05);
+            button.setScaleY(1.05);
+        });
+        button.setOnMouseExited(e -> {
+            button.setStyle(normalStyle);
+            button.setScaleX(1.0);
+            button.setScaleY(1.0);
+        });
     }
 
     public void closeModePopup() {

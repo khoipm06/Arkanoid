@@ -4,6 +4,8 @@ import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
@@ -43,30 +45,41 @@ public class ToastNotification {
         toastPane.setStyle("-fx-padding: 20;");
         toastPane.setMouseTransparent(true);
 
-        // Add to parent if it's a StackPane, otherwise wrap in one
+        final Pane parentPane;
+        
+        // Handle different parent types
         if (parent instanceof StackPane) {
-            StackPane stackParent = (StackPane) parent;
-            stackParent.getChildren().add(toastPane);
-
-            // Fade in
-            FadeTransition fadeIn = new FadeTransition(Duration.millis(300), toastPane);
-            fadeIn.setFromValue(0);
-            fadeIn.setToValue(1);
-
-            // Wait
-            PauseTransition pause = new PauseTransition(Duration.seconds(3));
-
-            // Fade out
-            FadeTransition fadeOut = new FadeTransition(Duration.millis(300), toastPane);
-            fadeOut.setFromValue(1);
-            fadeOut.setToValue(0);
-            fadeOut.setOnFinished(e -> stackParent.getChildren().remove(toastPane));
-
-            // Chain animations
-            fadeIn.setOnFinished(e -> pause.play());
-            pause.setOnFinished(e -> fadeOut.play());
-            fadeIn.play();
+            parentPane = (StackPane) parent;
+        } else if (parent instanceof AnchorPane) {
+            parentPane = (AnchorPane) parent;
+            // Position toast at bottom center for AnchorPane
+            AnchorPane.setBottomAnchor(toastPane, 20.0);
+            AnchorPane.setLeftAnchor(toastPane, 0.0);
+            AnchorPane.setRightAnchor(toastPane, 0.0);
+        } else {
+            return; // Unsupported parent type
         }
+        
+        parentPane.getChildren().add(toastPane);
+
+        // Fade in
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), toastPane);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        // Wait
+        PauseTransition pause = new PauseTransition(Duration.seconds(3));
+
+        // Fade out
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(300), toastPane);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+        fadeOut.setOnFinished(e -> parentPane.getChildren().remove(toastPane));
+
+        // Chain animations
+        fadeIn.setOnFinished(e -> pause.play());
+        pause.setOnFinished(e -> fadeOut.play());
+        fadeIn.play();
     }
 
     private static String getStyleForType(ToastType type) {
