@@ -1,0 +1,92 @@
+[33mc333803[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmanhpd[m[33m, [m[1;31morigin/manhpd[m[33m)[m Push mã nguồn của manhpd
+[33m86427fd[m Delete level1.json
+[33m7bd5cf7[m Add files via upload
+[33mc197c7e[m Add files via upload
+[33m106e752[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge branch 'develop' into 'main' by theirs strategy
+[33me71c538[m Merge pull request #6 from khoipm06/khoipm
+[33me56d002[m Merge remote-tracking branch 'origin/khoipm' into khoipm
+[33maad33c9[m feat(systems): add unit tests for game and level management
+[33mc9d4de4[m feat(database): add unit tests for user and profile management
+[33mdb87861[m feat(physics): add unit tests for CollisionDetector
+[33m03376ab[m feat(entities): add unit tests for Ball and Paddle
+[33m460f7d9[m Merge pull request #5 from khoipm06/khoipm
+[33m18378f5[m Merge branch 'develop' into khoipm
+[33maf07c22[m Revert f618c6e "refactor: remove unnecessary comments and update messages for clarity and consistency"
+[33m66aada4[m[33m ([m[1;31morigin/feature/power-ups[m[33m)[m feat: add explosion and line effect entities with rendering and updating logic
+[33ma2289a7[m feat: Implement row/column clear power-up and brick modifications
+[33m0c1b92f[m feat: Implement explosive ball power-up
+[33m0d212e8[m refactor: Refactor power-up handling and implement new power-up effects
+[33m5cd78a1[m chore: add sqlite jdbc support
+[33mbf23007[m Merge pull request #4 from khoipm06/thaotv
+[33m114e54c[m Merge pull request #3 from khoipm06/revert-2-thaotv
+[33m29f199a[m Revert "Thaotv"
+[33m9a73c64[m Merge pull request #2 from thaotv branch
+[33me290943[m Merge branch 'main' into thaotv
+[33m07ce25a[m thêm màn hình game over và win
+[33maa4b3b8[m them power up gun cho paddle
+[33m7475c87[m thêm shop Paddle mua skin
+[33mae3e0ce[m thêm shop ball
+[33mf618c6e[m refactor: remove unnecessary comments and update messages for clarity and consistency
+[33m386a641[m Merge pull request #1 from khoipm06/develop
+[33m35a081c[m feat: implement database management and user profile handling
+[33m4fc40b4[m chore: add sqlite jdbc support
+[33m3bc4806[m chore: add exclusion rules for database & assets
+[33m3b05102[m Merge branch 'refactor' into khoipm
+[33ma7e6a80[m load thành công 3 map để chơi
+[33m20ac47e[m add đô hoa va them map
+[33me813d48[m update đồ họa
+[33m14fdc19[m add sound click button
+[33m76f8ac5[m add sound background
+[33m363fa0c[m chore: fix typo in configuration file for the wrapper
+[33m225c585[m chore: add FXML support by cherry-picking 9faf198
+[33mb5b3810[m chore: add vscode exclusion rule
+[33m41a165d[m update đồ họa
+[33m9faf198[m sửa lại khởi tạo bóng ở trên thanh paddle
+[33mb94dfd7[m assets: add background and start button images
+[33md4af133[m feat: add main menu with navigation options
+[33m0721129[m feat: add settings screen for audio and graphics options
+[33m36e8f0c[m feat: add profile screen to display player statistics
+[33m25e727d[m feat: add mode selection screen
+[33m2def82b[m feat: add shop screen for in-game purchases
+[33mcde1b45[m feat: add SessionManager for player session handling
+[33mbc71ec9[m feat: add authentication screens (sign in and sign up)
+[33mbf34a39[m feat: implement SceneManager for scene transitions
+[33m23ccec0[m feat: add main entry point for Arkanoid game
+[33m1278b13[m chore(config): add module-info configuration for JavaFX modules
+[33mbbc325b[m add MIT License to the project
+[33m0a824ef[m docs: update README.md with game overview
+[33m0ac2525[m feat: implement GameScene with canvas rendering
+[33m656842a[m feat: implement MainMenuScene with navigation buttons
+[33m04f07c1[m feat: add Sprite component for image handling
+[33mfcccb9e[m feat: add Renderer component
+[33m64e0401[m feat: implement GameManager with game state and resume/pause menu
+[33m787c537[m chore: refine .gitignore by adding extra exclusion rules
+[33m675015d[m feat: add ExplosiveBallPowerUp
+[33m3829a5f[m feat: add MultiBallPowerUp
+[33m90e7fa0[m feat: implement ExpandPaddlePowerUp
+[33m36aee60[m feat: add PowerUp base class
+[33m7467ff3[m feat: add PlayerManager for input handling
+[33m99a7ffc[m feat: implement Player class combining profile, state, and paddle
+[33mfa45474[m feat: add PlayerProfile for coins and inventory
+[33mc99c0ba[m feat: implement PlayerState for score and lives tracking
+[33m9bff751[m fix: add fallback default level generation
+[33m9a6e680[m chore: add level1.json map configuration for functionality check
+[33m9d90618[m feat: implement LevelManager with JSON level loading
+[33mc74d93c[m feat: add EntityFactory for creating game entities
+[33md298481[m fix: improve ball-paddle collision detection and angle calculation
+[33m342b3ee[m feat: implement CollisionDetector for ball-brick collisions
+[33ma32004b[m feat: add PhysicsEngine utility class
+[33m35cd8dc[m feat: implement MovingBrick with horizontal movement
+[33ma56e3c7[m feat: add UnbreakableBrick type
+[33ma1fa361[m feat: add StrongBrick with multiple hit points
+[33m5b93cab[m feat: add NormalBrick implementation
+[33mf5226f3[m feat: implement BaseBrick abstract class
+[33m9812e1d[m feat: add Brick interface
+[33mec945a3[m feat: implement Ball entity with physics
+[33m279ccbf[m feat: implement Paddle entity with movement controls
+[33me16ebe0[m feat: add MovableObject class extending GameObject
+[33m6a90565[m feat: add GameObject base class
+[33m10ebb2f[m feat: implement GameApplication main class
+[33mdea28fa[m chore: set up initial Gradle project with JavaFX support
+[33mafaa764[m chore: add .gitignore from template
+[33m28533f0[m chore: init repo
