@@ -4,10 +4,12 @@ import com.arkanoid.database.entity.GameSave;
 import com.arkanoid.systems.GameManager;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.save.GameSaveManager;
+import com.arkanoid.systems.save.impl.GameSaveManagerImpl;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.components.ToastNotification;
 import com.arkanoid.ui.GameScene;
 import com.google.gson.JsonSyntaxException;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -112,11 +114,26 @@ public class SaveLoadScene {
      * Refreshes the save list and updates the save count label.
      */
     private void refreshSaveList() {
-        ObservableList<GameSave> saves = gameSaveManager.getAllSaves(currentUserId);
-        saveListView.setItems(saves);
-
-        int saveCount = gameSaveManager.getSaveCount(currentUserId);
-        saveCountLabel.setText(saveCount + "/100 saves");
+        // Use async method if available
+        if (gameSaveManager instanceof GameSaveManagerImpl) {
+            GameSaveManagerImpl impl = (GameSaveManagerImpl) gameSaveManager;
+            impl.getAllSavesAsync(currentUserId).thenAccept(saves -> {
+                Platform.runLater(() -> {
+                    saveListView.setItems(saves);
+                    int saveCount = gameSaveManager.getSaveCount(currentUserId);
+                    saveCountLabel.setText(saveCount + "/100 saves");
+                });
+            }).exceptionally(ex -> {
+                Platform.runLater(() -> showError("Failed to load saves: " + ex.getMessage()));
+                return null;
+            });
+        } else {
+            // Fallback to synchronous method
+            ObservableList<GameSave> saves = gameSaveManager.getAllSaves(currentUserId);
+            saveListView.setItems(saves);
+            int saveCount = gameSaveManager.getSaveCount(currentUserId);
+            saveCountLabel.setText(saveCount + "/100 saves");
+        }
     }
 
     @FXML
@@ -144,22 +161,49 @@ public class SaveLoadScene {
                 return;
             }
 
-            try {
-                // Capture thumbnail from game canvas
-                WritableImage canvasSnapshot = null;
-                if (gameScene != null) {
-                    try {
-                        canvasSnapshot = gameScene.captureCanvasSnapshot();
-                    } catch (Exception thumbEx) {
-                        logger.error("Failed to capture thumbnail: {}", thumbEx.getMessage());
-                        // Continue without thumbnail
-                    }
+            // Capture thumbnail from game canvas
+            WritableImage canvasSnapshot = null;
+            if (gameScene != null) {
+                try {
+                    canvasSnapshot = gameScene.captureCanvasSnapshot();
+                } catch (Exception thumbEx) {
+                    logger.error("Failed to capture thumbnail: {}", thumbEx.getMessage());
+                    // Continue without thumbnail
                 }
-                gameSaveManager.saveCurrentGame(currentUserId, saveName, canvasSnapshot);
-                refreshSaveList();
-                showSuccess("Game saved successfully!");
-            } catch (Exception e) {
-                showError("Failed to save game: " + e.getMessage());
+            }
+
+            // Use async save if available
+            if (gameSaveManager instanceof GameSaveManagerImpl) {
+                GameSaveManagerImpl impl = (GameSaveManagerImpl) gameSaveManager;
+                
+                // Show loading indicator
+                saveNewButton.setDisable(true);
+                ToastNotification.showToast("Saving game...", rootPane, ToastNotification.ToastType.INFO);
+                
+                impl.saveCurrentGameAsync(currentUserId, saveName, canvasSnapshot)
+                    .thenAccept(savedGame -> {
+                        Platform.runLater(() -> {
+                            saveNewButton.setDisable(false);
+                            refreshSaveList();
+                            showSuccess("Game saved successfully!");
+                        });
+                    })
+                    .exceptionally(ex -> {
+                        Platform.runLater(() -> {
+                            saveNewButton.setDisable(false);
+                            showError("Failed to save game: " + ex.getMessage());
+                        });
+                        return null;
+                    });
+            } else {
+                // Fallback to synchronous save
+                try {
+                    gameSaveManager.saveCurrentGame(currentUserId, saveName, canvasSnapshot);
+                    refreshSaveList();
+                    showSuccess("Game saved successfully!");
+                } catch (Exception e) {
+                    showError("Failed to save game: " + e.getMessage());
+                }
             }
         }
     }
@@ -174,26 +218,68 @@ public class SaveLoadScene {
             return;
         }
 
-        try {
-            gameSaveManager.loadGame(selectedSave.getId());
-            showSuccess("Game loaded successfully!");
-
-        } catch (JsonSyntaxException e) {
-            // Handle corrupted save files
-            showError("Save file is corrupted");
-        } catch (IllegalArgumentException e) {
-            // Handle missing saves
-            if (e.getMessage().contains("not found")) {
-                showError("Save not found");
-            } else {
-                showError("Invalid save: " + e.getMessage());
+        // Use async load if available
+        if (gameSaveManager instanceof GameSaveManagerImpl) {
+            GameSaveManagerImpl impl = (GameSaveManagerImpl) gameSaveManager;
+            
+            // Show loading indicator
+            loadButton.setDisable(true);
+            deleteButton.setDisable(true);
+            saveNewButton.setDisable(true);
+            ToastNotification.showToast("Loading game...", rootPane, ToastNotification.ToastType.INFO);
+            
+            impl.loadGameAsync(selectedSave.getId())
+                .thenAccept(loadedSave -> {
+                    Platform.runLater(() -> {
+                        loadButton.setDisable(false);
+                        deleteButton.setDisable(false);
+                        saveNewButton.setDisable(false);
+                        showSuccess("Game loaded successfully!");
+                    });
+                })
+                .exceptionally(ex -> {
+                    Platform.runLater(() -> {
+                        loadButton.setDisable(false);
+                        deleteButton.setDisable(false);
+                        saveNewButton.setDisable(false);
+                        
+                        // Handle different error types
+                        Throwable cause = ex.getCause();
+                        if (cause instanceof JsonSyntaxException) {
+                            showError("Save file is corrupted");
+                        } else if (cause instanceof IllegalArgumentException) {
+                            if (cause.getMessage().contains("not found")) {
+                                showError("Save not found");
+                            } else {
+                                showError("Invalid save: " + cause.getMessage());
+                            }
+                        } else if (cause instanceof IllegalStateException) {
+                            showError("Save file is corrupted - invalid game state");
+                        } else {
+                            showError("Failed to load game: " + ex.getMessage());
+                        }
+                    });
+                    return null;
+                });
+        } else {
+            // Fallback to synchronous load
+            try {
+                gameSaveManager.loadGame(selectedSave.getId());
+                showSuccess("Game loaded successfully!");
+            } catch (JsonSyntaxException e) {
+                showError("Save file is corrupted");
+            } catch (IllegalArgumentException e) {
+                if (e.getMessage().contains("not found")) {
+                    showError("Save not found");
+                } else {
+                    showError("Invalid save: " + e.getMessage());
+                }
+            } catch (IllegalStateException e) {
+                showError("Save file is corrupted - invalid game state");
+            } catch (Exception e) {
+                showError("Failed to load game: " + e.getMessage());
+                e.printStackTrace();
             }
-        } catch (IllegalStateException e) {
-            // Handle corrupted game state
-            showError("Save file is corrupted - invalid game state");
-        } catch (Exception e) {
-            showError("Failed to load game: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -215,15 +301,43 @@ public class SaveLoadScene {
 
         Optional<ButtonType> result = confirmDialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            try {
-                int saveId = selectedSave.getId();
-                gameSaveManager.deleteSave(saveId);
-                // Clear from thumbnail cache
-                GameSaveListCell.removeCachedThumbnail((long) saveId);
-                refreshSaveList();
-                showSuccess("Save deleted successfully!");
-            } catch (Exception e) {
-                showError("Failed to delete save: " + e.getMessage());
+            int saveId = selectedSave.getId();
+            
+            // Use async delete if available
+            if (gameSaveManager instanceof GameSaveManagerImpl) {
+                GameSaveManagerImpl impl = (GameSaveManagerImpl) gameSaveManager;
+                
+                // Disable buttons during deletion
+                deleteButton.setDisable(true);
+                loadButton.setDisable(true);
+                
+                impl.deleteSaveAsync(saveId)
+                    .thenAccept(v -> {
+                        Platform.runLater(() -> {
+                            // Clear from thumbnail cache
+                            GameSaveListCell.removeCachedThumbnail((long) saveId);
+                            refreshSaveList();
+                            showSuccess("Save deleted successfully!");
+                        });
+                    })
+                    .exceptionally(ex -> {
+                        Platform.runLater(() -> {
+                            deleteButton.setDisable(false);
+                            loadButton.setDisable(false);
+                            showError("Failed to delete save: " + ex.getMessage());
+                        });
+                        return null;
+                    });
+            } else {
+                // Fallback to synchronous delete
+                try {
+                    gameSaveManager.deleteSave(saveId);
+                    GameSaveListCell.removeCachedThumbnail((long) saveId);
+                    refreshSaveList();
+                    showSuccess("Save deleted successfully!");
+                } catch (Exception e) {
+                    showError("Failed to delete save: " + e.getMessage());
+                }
             }
         }
     }

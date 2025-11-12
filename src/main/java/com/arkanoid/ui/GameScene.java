@@ -295,15 +295,22 @@ public class GameScene {
             if (key == KeyCode.F5) {
                 if (gameManager.getCurrentState() == GameManager.GameState.PAUSED) {
                     try {
-                        GameSaveManager gameSaveManager = new GameSaveManagerImpl(
-                                gameManager);
+                        GameSaveManagerImpl gameSaveManager = new GameSaveManagerImpl(gameManager);
                         int userId = SessionManager.getCurrentUser() != null 
                             ? SessionManager.getCurrentUser().getId() 
                             : 0;
                         logger.info("F5 Quick save for userId: {}", userId);
                         WritableImage snapshot = captureCanvasSnapshot();
-                        gameSaveManager.saveCurrentGameWithAutoName(userId, snapshot);
-                        logger.info("Quick save created successfully (F5)");
+                        
+                        // Use async save
+                        gameSaveManager.saveCurrentGameWithAutoNameAsync(userId, snapshot)
+                            .thenAccept(savedGame -> {
+                                logger.info("Quick save created successfully (F5)");
+                            })
+                            .exceptionally(ex -> {
+                                logger.error("Quick save failed: {}", ex.getMessage());
+                                return null;
+                            });
                     } catch (Exception e) {
                         logger.error("Quick save failed: {}", e.getMessage());
                     }

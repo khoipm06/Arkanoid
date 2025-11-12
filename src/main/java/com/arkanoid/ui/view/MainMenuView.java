@@ -4,6 +4,7 @@ import com.arkanoid.GameApplication;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.components.ToastNotification;
+import com.arkanoid.utils.ImageLoader;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
@@ -51,6 +52,22 @@ public class MainMenuView {
             Image logo = new Image(getClass().getResourceAsStream("/images/arkanoid_intro.png"));
             welcome.setImage(logo);
             applyIntroEffect();
+            
+            // Preload game sounds asynchronously in background
+            soundManager.preloadGameSoundsAsync()
+                .thenAccept(v -> logger.info("Game sounds preloaded successfully"))
+                .exceptionally(ex -> {
+                    logger.error("Failed to preload game sounds: {}", ex.getMessage());
+                    return null;
+                });
+            
+            // Preload game images asynchronously in background
+            ImageLoader.preloadGameImagesAsync()
+                .thenAccept(v -> logger.info("Game images preloaded successfully"))
+                .exceptionally(ex -> {
+                    logger.error("Failed to preload game images: {}", ex.getMessage());
+                    return null;
+                });
         } catch (Exception e) {
             logger.error("Cannot load intro image", e);
         }
