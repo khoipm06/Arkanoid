@@ -1,44 +1,183 @@
-<h1>Arkanoid Game</h1>
+# Arkanoid Game - Object-Oriented Programming Project
 
-## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
+<details>
+<summary>Table of Contents</summary>
+
+- [Author](#author)
+- [Description](#description)
+- [UML Diagram](#uml-diagram)
+- [Design Patterns Implementation](#design-patterns-implementation)
+- [Multithreading Implementation](#multithreading-implementation)
 - [Installation](#installation)
 - [Usage](#usage)
+  - [Controls](#controls)
+  - [How to Play](#how-to-play)
+  - [Power-ups](#power-ups)
+- [Demo](#demo)
+- [Future Improvements](#future-improvements)
+- [Main Technologies Used](#main-technologies-used)
 - [License](#license)
 
-## Overview
-Arkanoid is a classic brick-breaking game. This repo is implementing the game in Java using the JavaFX framework.
-Players control a paddle to bounce a ball and break all bricks on the screen.The game features multiple levels, power-ups, and smooth gameplay.
+</details>
 
-## Features
-- Multiple levels with increasing difficulty
-- Power-ups items drop from broken bricks
-- Responsive paddle controls
-- Score tracking
+## Author
+
+Group 18 - Class 2526I_INT2204_6
+
+1. Phạm Minh Khởi - 24020186
+2. Trần Văn Thạo - 24020312
+3. Phạm Đức Mạnh - 24020222
+
+**Instructor**: [Kiều Văn Tuyên]  
+**Semester**: [Semester 1 - 2025/2026]
+
+---
+
+## Description
+
+This is a classic Arkanoid game developed in Java as a final project for Object-Oriented Programming course. The project demonstrates the implementation of OOP principles and design patterns.
+
+**Key features:**
+
+1. The game is developed using Java 21 with JavaFX for GUI.
+2. Implements core OOP principles: Encapsulation, Inheritance, Polymorphism, and Abstraction.
+3. Includes sound effects, animations, and power-up systems.
+4. Supports save/load game functionality and leaderboard system.
+
+**Game mechanics:**
+
+- Control a paddle to bounce a ball and destroy bricks
+- Collect power-ups for special abilities
+- Progress through multiple levels with increasing difficulty
+- Score points and compete on the leaderboard
+
+---
+
+## UML Diagram
+
+### Class Diagram
+
+![Class Diagram](docs/uml/rendered_uml.png)
+
+---
+
+## Design Patterns Implementation
+
+### 1. Singleton Pattern
+
+**Used in:** `GameManager`, `SoundManager`
+
+**Purpose:** Ensure only one instance exists throughout the application.
+
+---
+
+## Multithreading Implementation
+
+The game uses multiple threads to ensure smooth performance:
+
+1. **Game Loop Thread**: Updates game logic at 60 FPS
+2. **Rendering Thread**: Handles graphics rendering
+3. **Audio Thread Pool**: Plays sound effects asynchronously
+4. **I/O Thread**: Handles save/load operations without blocking UI
+
+---
 
 ## Installation
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/yourusername/ArkanoidGame.git Arkanoid
-    ```
-2. Navigate to the project directory:
-    ```bash
-    cd Arkanoid
-    ```
-3. Build the project using Gradle:
-    ```bash
-    ./gradlew build
-    ```
-4. Run the game using Gradle:
-    ```bash
-    ./gradlew run
-    ```
+
+1. Clone the project from the repository.
+2. Open the project in any IDEs that supports Java and Gradle.
+3. Run the project from prebuilt the run task or manually trigger build on CLI using gradle wrapper.
+   ```bash
+   ./gradlew run
+   ```
 
 ## Usage
-- Use the arrow keys to move the paddle.
-- Break all bricks to advance to the next level.
-- Collect power-ups for special abilities.
+
+### Controls
+
+| Key     | Action            |
+| ------- | ----------------- |
+| `←`     | Move paddle left  |
+| `→`     | Move paddle right |
+| `SPACE` | Launch ball       |
+| `ESC`   | Pause game        |
+
+### How to Play
+
+1. **Start the game**: Click "New Game" from the main menu.
+2. **Control the paddle**: Use arrow keys to move left and right.
+3. **Launch the ball**: Press SPACE to launch the ball from the paddle.
+4. **Destroy bricks**: Bounce the ball to hit and destroy bricks.
+5. **Collect power-ups**: Catch falling power-ups for special abilities.
+6. **Avoid losing the ball**: Keep the ball from falling below the paddle.
+7. **Complete the level**: Destroy all destructible bricks to advance.
+
+### Power-ups
+
+| Icon | Name           | Effect                           |
+| ---- | -------------- | -------------------------------- |
+| 🟦   | Expand Paddle  | Increases paddle                 |
+| ⚡   | Thunder        | A lightning bolt destroys bricks |
+| 🔫   | Gun            | Shoot lasers to destroy bricks   |
+| 💥   | Explosion Ball | Causes a small explosion         |
+
+### Brick
+
+- Normal Brick: Breaks after one hit.
+- Strong Brick: Breaks after three hit.
+- Moving Brick: Brick can move.
+- Unbreakable Brick: Cannot be destroyed by normal means.
+
+---
+
+## Demo
+
+### Screenshots
+
+**Main Menu**  
+![mainmenu](https://github.com/user-attachments/assets/03062118-272d-4e09-8642-eb284551d9d5)
+
+**Gameplay**  
+![gameplay](https://github.com/user-attachments/assets/ebfb0e84-b8e4-4d04-8fbd-5341bfca6724)
+
+**Leaderboard**  
+![leader board](https://github.com/user-attachments/assets/b6d1eefe-98a4-44b8-9315-3f969e8ef201)
+
+---
+
+## Future Improvements
+
+### Planned Features
+
+1. **Additional game modes**
+
+   - Time attack mode
+   - Survival mode with endless levels
+
+2. **Enhanced gameplay**
+
+   - Boss battles at end of worlds
+   - More power-up varieties (freeze time, shield wall, etc.)
+   - Achievements system
+
+3. **Technical improvements**
+   - Migrate to LibGDX or JavaFX for better graphics
+   - Add particle effects and advanced animations
+   - Implement AI opponent mode
+   - Add online leaderboard with database backend
+
+---
+
+## Main Technologies Used
+
+| Technology | Version | Purpose       |
+| ---------- | ------- | ------------- |
+| Java       | 21 LTS  | Core language |
+| JavaFX     | 21.0.9  | GUI framework |
+| Gradle     | 9.1.0   | Build tool    |
+
+---
 
 ## License
-This project is licensed under the MIT License.
+
+This project is licensed under the MIT License and developed for educational purposes only.
