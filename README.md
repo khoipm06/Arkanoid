@@ -69,6 +69,12 @@ This is a classic Arkanoid game developed in Java as a final project for Object-
 
 **Purpose:** Ensure only one instance exists throughout the application.
 
+### 2. Factory Pattern
+
+**Used in:** `EntityFactory`
+
+**Purpose:** Create game entities (Ball, PowerUp) without exposing the instantiation logic.
+
 ---
 
 ## Multithreading Implementation

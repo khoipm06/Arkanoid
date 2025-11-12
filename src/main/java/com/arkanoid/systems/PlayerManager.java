@@ -8,11 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerManager {
+    private static PlayerManager instance;
     private final Map<Integer, Player> players;
     private final Map<Integer, KeyCode> leftKeys;
     private final Map<Integer, KeyCode> rightKeys;
 
-    public PlayerManager() {
+    private PlayerManager() {
         this.players = new HashMap<>();
         this.leftKeys = new HashMap<>();
         this.rightKeys = new HashMap<>();
@@ -21,6 +22,14 @@ public class PlayerManager {
         rightKeys.put(1, KeyCode.RIGHT);
         leftKeys.put(2, KeyCode.A);
         rightKeys.put(2, KeyCode.D);
+    }
+
+    // Thread-safe singleton getInstance
+    public static synchronized PlayerManager getInstance() {
+        if (instance == null) {
+            instance = new PlayerManager();
+        }
+        return instance;
     }
 
     public void addPlayer(int playerNumber, Player player) {

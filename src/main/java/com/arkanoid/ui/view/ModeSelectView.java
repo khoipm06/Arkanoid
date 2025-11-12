@@ -10,6 +10,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class ModeSelectView {
+    private static final SoundManager soundManager = SoundManager.getInstance();
+
     @FXML
     private Button singlePlayer;
     @FXML
@@ -28,7 +30,7 @@ public class ModeSelectView {
 
     @FXML
     private void onSinglePlayerClick(MouseEvent event) throws IOException {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
         SceneManager.switchTo("map");
     }
 
@@ -36,7 +38,7 @@ public class ModeSelectView {
     public void onMultiPlayerClick(MouseEvent event) {
         System.out.println("Multi Player");
 
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("multiPlayerScene");
     }
@@ -45,7 +47,7 @@ public class ModeSelectView {
     public void onBackClick(MouseEvent event) {
         System.out.println("Quay lại menu chính");
 
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         if (mainController != null) {
             mainController.closeModePopup();

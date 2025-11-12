@@ -7,6 +7,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 public class ProfileScreen {
+    private static final SoundManager soundManager = SoundManager.getInstance();
+
     @FXML
     private AnchorPane authPane;
 
@@ -18,7 +20,6 @@ public class ProfileScreen {
 
     @FXML
     private Label thongtin;
-
 
     @FXML
     public void initialize() {
@@ -35,7 +36,7 @@ public class ProfileScreen {
     @FXML
     void onBackClick(MouseEvent event) {
 
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("mainMenuView");
     }
@@ -43,7 +44,7 @@ public class ProfileScreen {
     @FXML
     void onLogOutClick(MouseEvent event) {
         SessionManager.logout();
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("mainMenuView");
     }

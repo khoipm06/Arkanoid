@@ -9,6 +9,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 public class Pause {
+    private static final SoundManager soundManager = SoundManager.getInstance();
+
     @FXML
     private Button newGameButton;
     @FXML
@@ -28,21 +30,23 @@ public class Pause {
 
     @FXML
     public void onNewGameClick(MouseEvent event) {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
         int currentLevel = gameManager.getLevelNumber();
         GameScene newScene = new GameScene(stage, stage.getWidth(), stage.getHeight(), currentLevel);
         newScene.start();
         stage.setScene(newScene.getScene());
     }
+
     @FXML
     public void onResumeClick(MouseEvent event) {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
         gameManager.resume();
         gameScene.hidePauseOverlay();
     }
+
     @FXML
     public void onQuitClick(MouseEvent event) {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
         SceneManager.switchTo("mainMenuView");
     }
 }

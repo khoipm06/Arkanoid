@@ -358,6 +358,10 @@ public class GameScene {
             explosion.render(gc);
         }
 
+        for (Particle particle : gameManager.getParticles()) {
+            particle.render(gc);
+        }
+
         for (LineEffect lineEffect : gameManager.getLineEffects()) {
             lineEffect.render(gc);
         }

@@ -5,9 +5,11 @@ import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 
 public class AuthScreen {
+    private static final SoundManager soundManager = SoundManager.getInstance();
+
     @FXML
     public void onSignInButtonClick() {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("signIn");
         SessionManager.User user = new SessionManager.User("TenNguoiChoi");
@@ -17,14 +19,14 @@ public class AuthScreen {
 
     public void onBackClick(MouseEvent event) {
 
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("mainMenuView");
     }
 
     @FXML
     public void onSignUpButtonClick(MouseEvent event) {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("signUpView");
         SessionManager.User user = new SessionManager.User("TenNguoiChoi");

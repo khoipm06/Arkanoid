@@ -16,8 +16,13 @@
 }
 
 /* Label điểm số */
-#score,
-#highestScore {
+#score {
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-font-size: 20px;
+  -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.6), 10, 0.3, 0, 0);
+}
+#timePlayed {
   -fx-text-fill: white;
   -fx-font-weight: bold;
   -fx-font-size: 20px;

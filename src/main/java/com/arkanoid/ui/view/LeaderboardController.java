@@ -15,6 +15,7 @@ import javafx.scene.text.FontWeight;
 import java.util.List;
 
 public class LeaderboardController {
+    private static final SoundManager soundManager = SoundManager.getInstance();
 
     @FXML
     private ListView<PlayerProfileManager.LeaderboardEntry> leaderboardList;
@@ -65,7 +66,7 @@ public class LeaderboardController {
 
     @FXML
     private void onBackClick() {
-        SoundManager.playSound("Accept.wav");
+        soundManager.playSound("Accept.wav");
         SceneManager.switchTo("mainMenuView");
     }
 }

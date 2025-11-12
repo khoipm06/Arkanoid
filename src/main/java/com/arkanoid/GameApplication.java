@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class GameApplication extends Application {
+    private static final SoundManager soundManager = SoundManager.getInstance();
     public static final double GAME_WIDTH = 1000;
     public static final double GAME_HEIGHT = 650;
 
@@ -35,7 +36,8 @@ public class GameApplication extends Application {
         SceneManager.switchTo("mainMenuView");
 
         try {
-            primaryStage.getIcons().add(new javafx.scene.image.Image(getClass().getResourceAsStream("/icons/arkanoid.png")));
+            primaryStage.getIcons()
+                    .add(new javafx.scene.image.Image(getClass().getResourceAsStream("/icons/arkanoid.png")));
         } catch (Exception e) {
             System.err.println("Error loading application icon: " + e.getMessage());
         }
@@ -43,7 +45,7 @@ public class GameApplication extends Application {
         primaryStage.setTitle("Arkanoid Game");
         primaryStage.show();
 
-        SoundManager.playBackground("background.mp3", true);
+        soundManager.playBackground("background.mp3", true);
     }
 
     public static void main(String[] args) {

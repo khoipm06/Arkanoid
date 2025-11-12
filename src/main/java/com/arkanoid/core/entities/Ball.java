@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Ball extends MovableObject {
+    private static final SoundManager soundManager = SoundManager.getInstance();
     private static final Map<String, Image> SKINS = new HashMap<>();
     private static String currentSkin = "Default";
 
@@ -36,7 +37,7 @@ public class Ball extends MovableObject {
     }
 
     private static void loadSkins() {
-        String[] skinNames = {"Fire", "Ice", "Rainbow", "Default"};
+        String[] skinNames = { "Fire", "Ice", "Rainbow", "Default" };
         for (String name : skinNames) {
             try (InputStream stream = Ball.class.getResourceAsStream("/images/" + name + ".png")) {
                 if (stream != null) {
@@ -110,7 +111,7 @@ public class Ball extends MovableObject {
 
     public void checkPaddleCollision(Paddle paddle) {
         if (intersects(paddle) && velocityY > 0) {
-            SoundManager.playSound("paddleBounce.wav");
+            soundManager.playSound("paddleBounce.wav");
             y = paddle.getY() - height;
 
             double hitPosition = (getCenterX() - paddle.getCenterX()) / (paddle.getWidth() / 2);

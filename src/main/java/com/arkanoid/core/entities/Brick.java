@@ -1,6 +1,7 @@
 package com.arkanoid.core.entities;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 public interface Brick {
     void hit();
@@ -17,6 +18,7 @@ public interface Brick {
     double getCenterY();
     int getRow();
     int getCol();
+    Color getColor();
     
     boolean intersects(GameObject other);
     PowerUp dropPowerUp();

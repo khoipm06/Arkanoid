@@ -9,11 +9,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SoundManager {
-    private static MediaPlayer backgroundMusic;
-    private static final Map<String, AudioClip> soundEffects = new HashMap<>();
-    private static double currentVolume = 0.6;
+    private static SoundManager instance;
+    private MediaPlayer backgroundMusic;
+    private final Map<String, AudioClip> soundEffects = new HashMap<>();
+    private double currentVolume = 0.6;
 
-    public static void setVolume(double volume) {
+    // Private constructor to prevent instantiation
+    private SoundManager() {
+    }
+
+    // Thread-safe singleton getInstance
+    public static synchronized SoundManager getInstance() {
+        if (instance == null) {
+            instance = new SoundManager();
+        }
+        return instance;
+    }
+
+    public void setVolume(double volume) {
         currentVolume = volume;
         if (backgroundMusic != null) {
             backgroundMusic.setVolume(currentVolume);
@@ -23,25 +36,26 @@ public class SoundManager {
         }
     }
 
-    public static double getVolume() {
+    public double getVolume() {
         return currentVolume;
     }
 
-    public static void playBackground(String fileName, boolean loop) {
+    public void playBackground(String fileName, boolean loop) {
         stopBackground();
         URL resource = SoundManager.class.getResource("/sounds/" + fileName);
         if (resource != null) {
             Media media = new Media(resource.toString());
             backgroundMusic = new MediaPlayer(media);
             backgroundMusic.setVolume(currentVolume);
-            if (loop) backgroundMusic.setCycleCount(MediaPlayer.INDEFINITE);
+            if (loop)
+                backgroundMusic.setCycleCount(MediaPlayer.INDEFINITE);
             backgroundMusic.play();
         } else {
             System.out.println("Không tìm thấy file nhạc: " + fileName);
         }
     }
 
-    public static void stopBackground() {
+    public void stopBackground() {
         if (backgroundMusic != null) {
             backgroundMusic.stop();
             backgroundMusic.dispose();
@@ -49,7 +63,7 @@ public class SoundManager {
         }
     }
 
-    public static void playSound(String fileName) {
+    public void playSound(String fileName) {
         AudioClip clip = soundEffects.computeIfAbsent(fileName, key -> {
             URL resource = SoundManager.class.getResource("/sounds/" + key);
             return resource != null ? new AudioClip(resource.toString()) : null;
