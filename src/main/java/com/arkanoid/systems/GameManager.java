@@ -33,7 +33,8 @@ public class GameManager {
     private final List<Particle> particles;
     private final List<TrailEffect> trailEffects; // New field for trail effects
     private double trailSpawnTimer = 0.0; // Timer for spawning trail effects
-    private static final double TRAIL_SPAWN_INTERVAL = 0.02; // Spawn a trail effect every 0.02 seconds
+    private static final double TRAIL_SPAWN_INTERVAL = 0.015; // Spawn trail every 0.015s (smoother)
+    private static final int MAX_TRAIL_EFFECTS = 300; // Limit trails to prevent lag
     private final List<Bullet> bullets;
     private double gunFireCooldown = 0.0;
     private final List<FloatingText> floatingTexts;
@@ -98,14 +99,39 @@ public class GameManager {
             trailSpawnTimer += deltaTime;
         boolean canSpawnTrail = trailSpawnTimer >= TRAIL_SPAWN_INTERVAL;
 
+        if (trailEffects.size() > MAX_TRAIL_EFFECTS) {
+            int toRemove = trailEffects.size() - MAX_TRAIL_EFFECTS;
+            trailEffects.subList(0, toRemove).clear();
+        }
+
         for (Ball ball : balls) {
             if (ball.isAttachedToPaddle()) {
                 ball.setX(paddle.getX() + paddle.getWidth() / 2 - ball.getRadius());
                 ball.setY(paddle.getY() - ball.getRadius() * 2);
             } else {
-                if (canSpawnTrail) {
-                    trailEffects.add(new TrailEffect(ball.getCenterX(), ball.getCenterY(), ball.getRadius(), 0.5,
-                            Color.CYAN));
+                // Only spawn trails for moving balls
+                if (canSpawnTrail && (Math.abs(ball.getVelocityX()) > 10 || Math.abs(ball.getVelocityY()) > 10)) {
+                    // Calculate ball speed for trail intensity
+                    double speed = Math.sqrt(ball.getVelocityX() * ball.getVelocityX() + 
+                                            ball.getVelocityY() * ball.getVelocityY());
+                    
+                    // Trail life scales with speed (faster = longer trails)
+                    double trailLife = 0.3 + (speed / 1000.0); // 0.3-0.6s based on speed
+                    
+                    // Trail radius slightly smaller than ball for better visual
+                    double trailRadius = ball.getRadius() * 0.8;
+                    
+                    // Color varies with speed - cyan to white for fast balls
+                    double speedFactor = Math.min(speed / 500.0, 1.0);
+                    Color trailColor = Color.CYAN.interpolate(Color.WHITE, speedFactor * 0.3);
+                    
+                    trailEffects.add(new TrailEffect(
+                        ball.getCenterX(), 
+                        ball.getCenterY(), 
+                        trailRadius, 
+                        trailLife,
+                        trailColor
+                    ));
                 }
             }
             ball.update(deltaTime);

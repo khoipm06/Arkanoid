@@ -48,11 +48,11 @@
   -fx-font-weight: bold;
 }
 
-#preLevel:hover {
-  /* Hiệu ứng phát sáng mạnh hơn khi hover */
+/* #preLevel:hover {
+  /* Hiệu ứng phát sáng mạnh hơn khi hover
   -fx-background-color: #0055aa;
   -fx-border-color: #66ffff;
-}
+} */
 
 #nextLevel {
   -fx-pref-width: 50px;
@@ -73,11 +73,11 @@
   -fx-font-weight: bold;
 }
 
-#nextLevel:hover {
-  /* Hiệu ứng phát sáng mạnh hơn khi hover */
+/* #nextLevel:hover {
+  /* Hiệu ứng phát sáng mạnh hơn khi hover
   -fx-background-color: #0055aa;
   -fx-border-color: #66ffff;
-}
+} */
 
 /* Nút Home */
 #home {

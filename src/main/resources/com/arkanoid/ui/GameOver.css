@@ -42,11 +42,12 @@
   -fx-background-radius: 10;
   -fx-cursor: hand;
 }
-#newGame:hover {
-  /* Hiệu ứng phát sáng mạnh hơn khi hover */
+/* #newGame:hover {
+  /* Hiệu ứng phát sáng mạnh hơn khi hover
   -fx-background-color: #0055aa;
   -fx-border-color: #66ffff;
-}
+} */
+
 #timePlayed {
   -fx-text-fill: white;
   -fx-font-weight: bold;
@@ -92,8 +93,8 @@
 }
 
 #newGame:hover {
-  -fx-background-color: linear-gradient(to bottom, #00eaff, #0066ff);
+  /* -fx-background-color: linear-gradient(to bottom, #00eaff, #0066ff); */
   -fx-text-fill: white;
-  -fx-border-color: white;
+  /* -fx-border-color: white; */
   -fx-effect: dropshadow(gaussian, rgba(0, 200, 255, 0.9), 15, 0.4, 0, 0);
 }

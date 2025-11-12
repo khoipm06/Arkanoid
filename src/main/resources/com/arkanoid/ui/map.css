@@ -23,11 +23,11 @@
   -fx-font-weight: bold;
 }
 
-#preMapButton:hover {
-  /* Hiệu ứng phát sáng mạnh hơn khi hover */
+/* #preMapButton:hover {
+  /* Hiệu ứng phát sáng mạnh hơn khi hover
   -fx-background-color: #0055aa;
   -fx-border-color: #66ffff;
-}
+} */
 
 #nextMapButton {
   -fx-pref-width: 50px;
@@ -48,11 +48,11 @@
   -fx-font-weight: bold;
 }
 
-#nextMapButton:hover {
-  /* Hiệu ứng phát sáng mạnh hơn khi hover */
+/* #nextMapButton:hover {
+  /* Hiệu ứng phát sáng mạnh hơn khi hover
   -fx-background-color: #0055aa;
   -fx-border-color: #66ffff;
-}
+} */
 
 #playGameButton {
   -fx-pref-width: 150px;
@@ -73,11 +73,11 @@
   -fx-font-weight: bold;
 }
 
-#playGameButton:hover {
-  /* Hiệu ứng phát sáng mạnh hơn khi hover */
+/* #playGameButton:hover {
+  /* Hiệu ứng phát sáng mạnh hơn khi hover
   -fx-background-color: #0055aa;
   -fx-border-color: #66ffff;
-}
+} */
 
 #backToMainMenuButton {
   -fx-background-color: transparent;

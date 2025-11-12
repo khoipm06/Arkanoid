@@ -82,7 +82,7 @@ public class GameScene {
                 logger.warn("Background warning: Cannot find background.png file. Using black background.");
             }
         } catch (Exception e) {
-            logger.error("Error loading background image: {}", e.getMessage());
+            logger.error("Failed to load game background image resource: {}", e.getMessage(), e);
         }
 
         BorderPane mainLayout = new BorderPane();
@@ -156,9 +156,9 @@ public class GameScene {
         info.setPrefWidth(350);
 
         info.setStyle(
-                "-fx-background-color: linear-gradient(to bottom, #1a1a2e, #162447); " + // xanh tím gradient
+                "-fx-background-color: linear-gradient(to bottom, #1a1a2e, #162447); " + // Dark blue-purple gradient background
                         "-fx-padding: 30; " +
-                        "-fx-border-color: #00ffff; " + // viền cyan nổi bật
+                        "-fx-border-color: #00ffff; " + // Bright cyan border for visibility
                         "-fx-border-width: 2; " +
                         "-fx-background-radius: 15; " +
                         "-fx-border-radius: 15;");
@@ -190,7 +190,7 @@ public class GameScene {
 
         // Shadow effect to make panel stand out
         DropShadow shadow = new DropShadow();
-        shadow.setColor(Color.rgb(0, 255, 255, 0.6)); // cyan mờ
+        shadow.setColor(Color.rgb(0, 255, 255, 0.6)); // Semi-transparent cyan glow effect
         shadow.setRadius(15);
         info.setEffect(shadow);
 
@@ -299,20 +299,21 @@ public class GameScene {
                         int userId = SessionManager.getCurrentUser() != null 
                             ? SessionManager.getCurrentUser().getId() 
                             : 0;
-                        logger.info("F5 Quick save for userId: {}", userId);
+                        logger.debug("Quick save initiated via F5 key for user ID: {}", userId);
                         WritableImage snapshot = captureCanvasSnapshot();
                         
                         // Use async save
                         gameSaveManager.saveCurrentGameWithAutoNameAsync(userId, snapshot)
                             .thenAccept(savedGame -> {
-                                logger.info("Quick save created successfully (F5)");
+                                logger.info("Quick save completed successfully - Save ID: {}, Name: '{}'", 
+                                           savedGame.getId(), savedGame.getSaveName());
                             })
                             .exceptionally(ex -> {
-                                logger.error("Quick save failed: {}", ex.getMessage());
+                                logger.error("Quick save operation failed: {}", ex.getMessage(), ex);
                                 return null;
                             });
                     } catch (Exception e) {
-                        logger.error("Quick save failed: {}", e.getMessage());
+                        logger.error("Quick save initialization failed: {}", e.getMessage(), e);
                     }
                 }
                 return;

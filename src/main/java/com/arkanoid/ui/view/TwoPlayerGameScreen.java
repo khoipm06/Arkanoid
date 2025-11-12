@@ -69,10 +69,16 @@ public class TwoPlayerGameScreen {
     }
 
     private void loadBackgroundImage() {
-        try {
-            backgroundImage = new Image(getClass().getResourceAsStream("/images/backgroundGame.png"));
+        try (java.io.InputStream stream = getClass().getResourceAsStream("/images/backgroundGame.png")) {
+            if (stream != null) {
+                backgroundImage = new Image(stream);
+                logger.info("Two-player game background image loaded successfully");
+            } else {
+                logger.error("Failed to load two-player game background: backgroundGame.png resource not found");
+                backgroundImage = null;
+            }
         } catch (Exception e) {
-            logger.error("Could not load background image: {}", e.getMessage());
+            logger.error("Exception occurred while loading two-player game background image", e);
             backgroundImage = null;
         }
     }

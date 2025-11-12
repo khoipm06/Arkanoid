@@ -31,7 +31,7 @@ public class UserSessionStorage {
             // Compress and write to file using LZ4 Frame format
             CompressionUtil.compressToFile(sessionData, SESSION_FILE.toFile());
             
-            logger.info("Saved session: {} (ID: {}) - Compressed to LZ4 frame format", username, userId);
+            logger.info("Saved session: {} (ID: {})", username, userId);
             return true;
         } catch (IOException e) {
             logger.error("Failed to save session: {}", e.getMessage());

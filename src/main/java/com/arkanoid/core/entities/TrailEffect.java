@@ -26,10 +26,38 @@ public class TrailEffect extends GameObject {
         if (life > 0) {
             double progress = life / maxLife;
             double currentRadius = initialRadius * progress;
-            double currentOpacity = progress;
+            double currentOpacity = progress * 0.7; // Slightly more transparent for smoother look
 
+            // Draw outer glow (larger, more transparent)
+            double glowRadius = currentRadius * 1.5;
+            double glowOpacity = currentOpacity * 0.3;
+            gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), glowOpacity));
+            gc.fillOval(
+                x + (initialRadius - glowRadius), 
+                y + (initialRadius - glowRadius), 
+                glowRadius * 2, 
+                glowRadius * 2
+            );
+
+            // Draw main trail circle
             gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), currentOpacity));
-            gc.fillOval(x + (initialRadius - currentRadius), y + (initialRadius - currentRadius), currentRadius * 2, currentRadius * 2);
+            gc.fillOval(
+                x + (initialRadius - currentRadius), 
+                y + (initialRadius - currentRadius), 
+                currentRadius * 2, 
+                currentRadius * 2
+            );
+            
+            // Draw bright center (smaller, more opaque)
+            double centerRadius = currentRadius * 0.5;
+            double centerOpacity = Math.min(currentOpacity * 1.5, 1.0);
+            gc.setFill(new Color(1.0, 1.0, 1.0, centerOpacity)); // White center
+            gc.fillOval(
+                x + (initialRadius - centerRadius), 
+                y + (initialRadius - centerRadius), 
+                centerRadius * 2, 
+                centerRadius * 2
+            );
         }
     }
 

@@ -1,6 +1,7 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.database.InventoryManager;
+import com.arkanoid.database.InventoryManager.InventoryItem;
 import com.arkanoid.database.PlayerProfileManager;
 import com.arkanoid.systems.sound.SoundManager;
 import javafx.fxml.FXML;
@@ -53,7 +54,7 @@ public class ProfileScreen {
         if (user != null) {
             // Get fresh user data from database
             PlayerProfileManager.ProfileData profile = PlayerProfileManager.getProfile(user.getId());
-            List<InventoryManager.InventoryItem> inventory = InventoryManager.getUserInventory(user.getId());
+            List<InventoryItem> inventory = InventoryManager.getUserInventory(user.getId());
 
             // Display user info
             usernameLabel.setText("Username: " + user.getUsername());
@@ -78,7 +79,7 @@ public class ProfileScreen {
                 inventoryLabel.setText("🛒 No items yet. Visit the shop to get started!");
             } else {
                 StringBuilder invText = new StringBuilder();
-                for (InventoryManager.InventoryItem item : inventory) {
+                for (InventoryItem item : inventory) {
                     String emoji = "📦";
                     String itemName = item.getItemId();
                     

@@ -55,21 +55,21 @@ public class MainMenuView {
             
             // Preload game sounds asynchronously in background
             soundManager.preloadGameSoundsAsync()
-                .thenAccept(v -> logger.info("Game sounds preloaded successfully"))
+                .thenAccept(v -> logger.info("Asset preloading: All game sound effects loaded and cached"))
                 .exceptionally(ex -> {
-                    logger.error("Failed to preload game sounds: {}", ex.getMessage());
+                    logger.error("Asset preloading failed: Unable to load game sound effects: {}", ex.getMessage());
                     return null;
                 });
             
             // Preload game images asynchronously in background
             ImageLoader.preloadGameImagesAsync()
-                .thenAccept(v -> logger.info("Game images preloaded successfully"))
+                .thenAccept(v -> logger.info("Asset preloading: All game images loaded and cached"))
                 .exceptionally(ex -> {
-                    logger.error("Failed to preload game images: {}", ex.getMessage());
+                    logger.error("Asset preloading failed: Unable to load game images: {}", ex.getMessage());
                     return null;
                 });
         } catch (Exception e) {
-            logger.error("Cannot load intro image", e);
+            logger.error("Main menu initialization failed: Unable to load intro image resource", e);
         }
     }
 
@@ -90,8 +90,6 @@ public class MainMenuView {
 
     @FXML
     public void onSettingClick(MouseEvent event) {
-        logger.debug("Settings button clicked");
-
         soundManager.playSound("Accept.wav");
 
         SceneManager.switchTo("settingView");
@@ -108,8 +106,6 @@ public class MainMenuView {
 
     @FXML
     public void onShopClick(MouseEvent event) {
-        logger.debug("Shop button clicked");
-
         soundManager.playSound("Accept.wav");
 
         if (SessionManager.getCurrentUser() == null) {
@@ -123,8 +119,6 @@ public class MainMenuView {
     }
 
     public void onProfileClick(MouseEvent event) {
-        logger.debug("Profile button clicked");
-
         soundManager.playSound("Accept.wav");
 
         GameApplication.switchToProfileOrAuth();

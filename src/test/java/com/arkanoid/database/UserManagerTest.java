@@ -1,7 +1,10 @@
 package com.arkanoid.database;
 
 import com.arkanoid.database.entity.User;
+import com.arkanoid.util.TestDatabaseHelper;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.sql.SQLException;
@@ -12,6 +15,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserManagerTest {
 
     private DatabaseManager databaseManager = DatabaseManager.getInstance();
+
+    @BeforeAll
+    static void backupDatabase() {
+        TestDatabaseHelper.backupDatabase();
+    }
+
+    @AfterAll
+    static void restoreDatabase() {
+        TestDatabaseHelper.restoreDatabase();
+    }
 
     @BeforeEach
     void setUp() throws SQLException {

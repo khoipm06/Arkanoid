@@ -1,6 +1,8 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.database.DatabaseManager;
+import com.arkanoid.util.TestDatabaseHelper;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,11 +22,20 @@ class SessionManagerTest {
 
     @BeforeAll
     static void initDatabase() {
+        // Backup database before tests
+        TestDatabaseHelper.backupDatabase();
+        
         // Initialize database connection pool before all tests
         DatabaseManager.getInstance().initialize();
         
         // Ensure test user has a profile
         ensureTestUserProfile();
+    }
+    
+    @AfterAll
+    static void cleanupDatabase() {
+        // Restore database after all tests complete
+        TestDatabaseHelper.restoreDatabase();
     }
 
     private static void ensureTestUserProfile() {

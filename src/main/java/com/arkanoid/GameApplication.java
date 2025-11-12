@@ -27,6 +27,11 @@ public class GameApplication extends Application {
     public void start(Stage primaryStage) throws IOException {
         logger.info("JavaFX Application starting...");
 
+        // **WARNING: THIS SEEMS NOT TO WORK ANYMORE**
+        // Suppress JavaFX CSS warnings
+        // and use full qualified name to avoid conflict with slf4j Logger
+        java.util.logging.Logger.getLogger("javafx.scene.CssStyleHelper").setLevel(java.util.logging.Level.SEVERE);
+    
         // Set up uncaught exception handler
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             logger.error("Uncaught exception in thread {}: {}", thread.getName(), throwable.getMessage(), throwable);
@@ -63,8 +68,8 @@ public class GameApplication extends Application {
         logger.info("Switching to main menu...");
         SceneManager.switchTo("mainMenuView");
 
-        try (InputStream iconStream = (InputStream) Objects.requireNonNull(
-                             getClass().getResourceAsStream("/icons/arkanoid.png"))) {
+        try (InputStream iconStream = (InputStream) Objects
+                .requireNonNull(getClass().getResourceAsStream("/icons/arkanoid.png"))) {
             primaryStage.getIcons().add(new Image(iconStream));
         } catch (Exception e) {
             logger.error("Error loading application icon", e);
@@ -101,7 +106,6 @@ public class GameApplication extends Application {
         logger.info("Java Version: {}", System.getProperty("java.version"));
         logger.info("JavaFX Version: {}", System.getProperty("javafx.version"));
         logger.info("Log Level: {}", config.getLoggingConfig().getLogLevel());
-
 
         launch(args);
     }

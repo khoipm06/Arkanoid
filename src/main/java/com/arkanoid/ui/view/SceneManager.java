@@ -36,8 +36,9 @@ public class SceneManager {
             // Refresh data for scenes that need it
             refreshSceneIfNeeded(name);
             mainStage.setScene(scenes.get(name));
+            logger.info("Scene switched to: {}", name);
         } else {
-            logger.error("Scene not found: {}", name);
+            logger.error("Failed to switch scene: '{}' not registered in SceneManager or stage is null", name);
         }
     }
 

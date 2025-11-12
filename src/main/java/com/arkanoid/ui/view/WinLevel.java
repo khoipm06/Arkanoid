@@ -56,7 +56,7 @@ public class WinLevel {
             Image img = new Image(getClass().getResource("/images/You_Win.png").toExternalForm());
             winImage.setImage(img);
         } catch (Exception e) {
-            logger.error("Could not find image win.png: {}", e.getMessage());
+            logger.error("Win screen initialization failed: Unable to load You_Win.png image resource", e);
         }
         winImage.setScaleX(0.1);
         winImage.setScaleY(0.1);

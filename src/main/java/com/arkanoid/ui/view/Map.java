@@ -125,7 +125,7 @@ public class Map {
                 e.printStackTrace();
             }
         } else {
-            logger.error("Cannot find the image path: {}", imagePath);
+            logger.error("Map preview failed: Unable to load image resource at path: '{}'", imagePath);
         }
         if (currentMapIndex + 1 > unlockedLevel) {
             mapView.setOpacity(0.4);

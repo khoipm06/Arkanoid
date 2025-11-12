@@ -48,11 +48,11 @@
   -fx-font-weight: bold;
 }
 
-#shopButton:hover {
-  /* Hiệu ứng phát sáng mạnh hơn khi hover */
+/* #shopButton:hover {
+  /* Hiệu ứng phát sáng mạnh hơn khi hover
   -fx-background-color: #0055aa;
   -fx-border-color: #66ffff;
-}
+} */
 
 #quitButton {
   -fx-pref-width: 180px;
@@ -162,11 +162,11 @@
 #profile:hover,
 #setting:hover,
 #leaderBoard:hover {
-  -fx-background-color: linear-gradient(
+  /* -fx-background-color: linear-gradient(
     to bottom,
     #4682b4,
     #6495ed
-  ); /* SteelBlue -> CornflowerBlue */
+  ); */ /* SteelBlue -> CornflowerBlue */
   -fx-cursor: hand;
 }
 

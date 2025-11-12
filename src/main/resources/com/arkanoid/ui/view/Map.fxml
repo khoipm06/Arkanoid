@@ -4,19 +4,19 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="mapRoot" prefHeight="536.0" prefWidth="759.0" stylesheets="@../map.css"
+<AnchorPane fx:id="mapRoot" prefHeight="597.0" prefWidth="868.0" stylesheets="@../map.css"
    xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
    fx:controller="com.arkanoid.ui.view.Map">
    <children>
-      <ImageView fx:id="mapView" fitHeight="189.0" fitWidth="226.0" layoutX="257.0" layoutY="155.0"
+      <ImageView fx:id="mapView" fitHeight="211.0" fitWidth="259.0" layoutX="294.0" layoutY="173.0"
          pickOnBounds="true" preserveRatio="true" />
-      <Button fx:id="nextMapButton" layoutX="536.0" layoutY="237.0" mnemonicParsing="false"
-         onMouseClicked="#onNextMapButtonClick" prefHeight="43.0" prefWidth="46.0" />
-      <Button fx:id="preMapButton" layoutX="154.0" layoutY="237.0" mnemonicParsing="false"
-         onMouseClicked="#onPreMapButtonClick" prefHeight="43.0" prefWidth="46.0" />
-      <Button fx:id="playGameButton" layoutX="295.0" layoutY="388.0" mnemonicParsing="false"
-         onMouseClicked="#onPlayGameButtonClick" prefHeight="50.0" prefWidth="103.0" />
-      <Button fx:id="backToMainMenuButton" layoutX="30.0" layoutY="30.0" mnemonicParsing="false"
-         onMouseClicked="#onBackToMainMenuClick" prefHeight="50.0" prefWidth="50.0" />
+      <Button fx:id="nextMapButton" layoutX="613.0" layoutY="264.0" mnemonicParsing="false"
+         onMouseClicked="#onNextMapButtonClick" prefHeight="48.0" prefWidth="53.0" />
+      <Button fx:id="preMapButton" layoutX="176.0" layoutY="264.0" mnemonicParsing="false"
+         onMouseClicked="#onPreMapButtonClick" prefHeight="48.0" prefWidth="53.0" />
+      <Button fx:id="playGameButton" layoutX="337.0" layoutY="432.0" mnemonicParsing="false"
+         onMouseClicked="#onPlayGameButtonClick" prefHeight="56.0" prefWidth="118.0" />
+      <Button fx:id="backToMainMenuButton" layoutX="34.0" layoutY="33.0" mnemonicParsing="false"
+         onMouseClicked="#onBackToMainMenuClick" prefHeight="56.0" prefWidth="57.0" />
    </children>
 </AnchorPane>

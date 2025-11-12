@@ -130,7 +130,7 @@ public class ShopPaddle {
         if (user == null)
             return;
 
-        lblMoney.setText("Số dư: " + user.getMoney() + "$");
+        lblMoney.setText("Balance: " + user.getMoney() + "$");
 
         for (SkinItem item : skinItems) {
             boolean owned = user.hasPaddleSkin(item.name);

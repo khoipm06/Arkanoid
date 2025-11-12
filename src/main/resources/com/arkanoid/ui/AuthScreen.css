@@ -32,12 +32,15 @@
 }
 
 #signInButton {
+  -fx-background-color: transparent;
   -fx-background-image: url("../../../images/Sign_In.png");
   -fx-background-size: cover;
   -fx-background-repeat: no-repeat;
   -fx-background-position: center;
-  -fx-background-radius: 15; /* bo góc */
-  -fx-background-clip: padding-box; /* ảnh cắt theo border */
+  -fx-background-radius: 15;
+  -fx-background-insets: 0;
+  -fx-border-color: transparent;
+  -fx-border-width: 0;
   -fx-text-fill: white;
   -fx-font-size: 18px;
   -fx-font-weight: bold;
@@ -45,12 +48,15 @@
 
 /* Nút Sign Up */
 #signUpButton {
+  -fx-background-color: transparent;
   -fx-background-image: url("../../../images/Sign_Up.png");
   -fx-background-size: cover;
   -fx-background-repeat: no-repeat;
   -fx-background-position: center;
-  -fx-background-radius: 15; /* bo góc */
-  -fx-background-clip: padding-box; /* ảnh cắt theo border */
+  -fx-background-radius: 15;
+  -fx-background-insets: 0;
+  -fx-border-color: transparent;
+  -fx-border-width: 0;
   -fx-text-fill: white;
   -fx-font-size: 18px;
   -fx-font-weight: bold;
@@ -58,11 +64,11 @@
 
 #signInButton:hover,
 #signUpButton:hover {
-  -fx-background-color: linear-gradient(
+  /* -fx-background-color: linear-gradient(
     to bottom,
     #4682b4,
     #103f6d
-  ); /* Màu sáng hơn khi hover */
+  ); Màu sáng hơn khi hover */
   -fx-cursor: hand;
 }
 

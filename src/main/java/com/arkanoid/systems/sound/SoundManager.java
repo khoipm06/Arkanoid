@@ -148,12 +148,12 @@ public class SoundManager {
      */
     public CompletableFuture<Void> preloadGameSoundsAsync() {
         return preloadSoundsAsync(
-            "Brick.wav",
-            "Paddle.wav",
-            "Wall.wav",
-            "PowerUp.wav",
-            "LoseLife.wav",
-            "Accept.wav"
+            "background.mp3",
+            "Accept.wav",
+            "brickBounce.wav",
+            "paddleBounce.wav",
+            "GameOver.wav",
+            "win.wav"
         );
     }
 }

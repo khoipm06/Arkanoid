@@ -42,17 +42,16 @@ public class ModeSelectView {
         soundManager.playSound("Accept.wav");
         Stage mainStage = SceneManager.getStage();
         if (mainStage != null) {
+            logger.info("Initializing two-player game mode");
             TwoPlayerGameScreen twoPlayerScreen = new TwoPlayerGameScreen(mainStage);
             twoPlayerScreen.show();
         } else {
-            logger.error("Main stage not found");
+            logger.error("Failed to initialize two-player mode: Main stage reference is null");
         }
     }
 
     @FXML
     public void onBackClick(MouseEvent event) {
-        logger.debug("Back to main menu");
-
         soundManager.playSound("Accept.wav");
 
         if (mainController != null) {

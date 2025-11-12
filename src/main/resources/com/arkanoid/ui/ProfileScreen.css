@@ -1,3 +1,12 @@
+/* Prevent ScrollPane from gaining focus and applying scale transform */
+.scroll-pane {
+  -fx-focus-traversable: false;
+}
+
+.scroll-pane:focused {
+  -fx-background-color: transparent;
+}
+
 /* Background */
 #root {
   -fx-background-color: linear-gradient(
@@ -11,6 +20,8 @@
 /* Title */
 #thongtin {
   -fx-text-fill: #00ffff;
+  -fx-font-family: "Arial Black";
+  -fx-font-size: 32px;
   -fx-font-weight: bold;
   -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 0.8), 15, 0.4, 0, 0);
 }
@@ -33,9 +44,19 @@
   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 5, 0, 0, 2);
 }
 
+#usernameLabel {
+  -fx-font-size: 20px;
+}
+
+#userIdLabel {
+  -fx-font-size: 16px;
+}
+
 /* Balance Label - Special highlighting */
 .balance-label {
   -fx-text-fill: #ffd700;
+  -fx-font-family: "Arial Black";
+  -fx-font-size: 22px;
   -fx-font-weight: bold;
   -fx-effect: dropshadow(gaussian, rgba(255, 215, 0, 0.8), 10, 0.5, 0, 0);
 }
@@ -43,6 +64,8 @@
 /* Section Titles */
 .section-title {
   -fx-text-fill: #00d4ff;
+  -fx-font-family: "Arial Black";
+  -fx-font-size: 18px;
   -fx-font-weight: bold;
   -fx-effect: dropshadow(gaussian, rgba(0, 212, 255, 0.7), 8, 0.4, 0, 0);
 }
@@ -50,7 +73,12 @@
 /* Stat Labels */
 .stat-label {
   -fx-text-fill: #e0e0e0;
+  -fx-font-size: 16px;
   -fx-padding: 3 0 3 10;
+}
+
+#highScoreLabel {
+  -fx-font-size: 18px;
 }
 
 /* Divider */
@@ -78,6 +106,7 @@
 
 .inventory-label {
   -fx-text-fill: #c0c0c0;
+  -fx-font-size: 14px;
   -fx-padding: 10;
   -fx-line-spacing: 5;
 }

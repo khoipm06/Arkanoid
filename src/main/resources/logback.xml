@@ -1,52 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+    
+    <!-- Properties -->
     <property name="LOG_LEVEL" value="${LOG_LEVEL:-INFO}" />
-    <property name="LOG_PATTERN" value="[%date{ISO8601}] [%level] [%thread] [%logger] [%method:%line] - %msg%n" />
+    <property name="LOG_DIR" value="${LOG_DIR:-logs}" />
+    <property name="LOG_PATTERN" value="[%date{ISO8601}] [%level] [%thread] [%logger{36}] [%method:%line] - %msg%n" />
+    <property name="CONSOLE_PATTERN" value="[%date{HH:mm:ss.SSS}] [%highlight(%level)] [%green(%thread)] [%cyan(%logger{36})] [%magenta(%method:%line)] - %msg%n" />
 
-    <!-- Console Appender with Color -->
+    <!-- Console Appender with Color (Synchronous for immediate feedback) -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>[%date{ISO8601}] [%highlight(%level)] [%green(%thread)] [%cyan(%logger)] [%magenta(%method:%line)] - %msg%n</pattern>
+            <pattern>${CONSOLE_PATTERN}</pattern>
+            <immediateFlush>true</immediateFlush>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>${LOG_LEVEL}</level>
         </filter>
+        <target>System.out</target>
     </appender>
 
-    <!-- File Appender with Rolling Policy -->
+    <!-- Main File Appender with Rolling Policy -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/arkanoid.log</file>
+        <file>${LOG_DIR}/arkanoid.log</file>
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/arkanoid-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/arkanoid-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>10MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
             <maxHistory>30</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
         </rollingPolicy>
     </appender>
 
-    <!-- Async Appender for Console (non-blocking) -->
+    <!-- Error File Appender (ERROR and WARN only) -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/arkanoid-error.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/arkanoid-error-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>5MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>90</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Async Appender for Console (non-blocking for game performance) -->
     <appender name="ASYNC_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
         <queueSize>512</queueSize>
-        <discardingThreshold>0</discardingThreshold>
+        <discardingThreshold>20</discardingThreshold>
         <includeCallerData>true</includeCallerData>
+        <neverBlock>true</neverBlock>
         <appender-ref ref="CONSOLE" />
     </appender>
 
-    <!-- Async Appender for File (non-blocking) -->
+    <!-- Async Appender for Main File (non-blocking) -->
     <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
         <queueSize>512</queueSize>
-        <discardingThreshold>0</discardingThreshold>
+        <discardingThreshold>20</discardingThreshold>
         <includeCallerData>true</includeCallerData>
+        <neverBlock>false</neverBlock>
         <appender-ref ref="FILE" />
     </appender>
 
+    <!-- Async Appender for Error File -->
+    <appender name="ASYNC_ERROR_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>256</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <includeCallerData>true</includeCallerData>
+        <neverBlock>false</neverBlock>
+        <appender-ref ref="ERROR_FILE" />
+    </appender>
+
+    <!-- Suppress noisy JavaFX CSS warnings -->
+    <logger name="javafx.scene.CssStyleHelper" level="ERROR" additivity="false">
+        <appender-ref ref="ASYNC_FILE" />
+    </logger>
+
+    <!-- Suppress JavaFX verbose logging -->
+    <logger name="javafx" level="WARN" additivity="false">
+        <appender-ref ref="ASYNC_FILE" />
+    </logger>
+
+    <!-- Your game packages - inherit root level -->
+    <logger name="com.arkanoid" level="${LOG_LEVEL}" additivity="true" />
+
+    <!-- Database operations - can be more verbose for debugging -->
+    <logger name="com.arkanoid.database" level="${LOG_LEVEL}" additivity="true" />
+
+    <!-- Threading system - useful for debugging concurrency -->
+    <logger name="com.arkanoid.systems.threading" level="${LOG_LEVEL}" additivity="true" />
+
     <root level="${LOG_LEVEL}">
+        <!-- Use async appenders for better game performance -->
         <appender-ref ref="ASYNC_CONSOLE" />
         <appender-ref ref="ASYNC_FILE" />
+        <appender-ref ref="ASYNC_ERROR_FILE" />
     </root>
 </configuration>

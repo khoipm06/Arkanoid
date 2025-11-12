@@ -1,6 +1,7 @@
 package com.arkanoid.database;
 
 import com.arkanoid.database.entity.User;
+import com.arkanoid.util.TestDatabaseHelper;
 import org.junit.jupiter.api.*;
 
 import java.sql.PreparedStatement;
@@ -13,6 +14,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class PlayerProfileManagerTest {
 
     private static final DatabaseManager databaseManager = DatabaseManager.getInstance();
+
+    @BeforeAll
+    static void backupDatabase() {
+        TestDatabaseHelper.backupDatabase();
+    }
+
+    @AfterAll
+    static void restoreDatabase() {
+        TestDatabaseHelper.restoreDatabase();
+    }
 
     @BeforeEach
     void setUp() throws SQLException {

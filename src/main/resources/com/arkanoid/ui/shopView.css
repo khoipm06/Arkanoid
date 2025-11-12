@@ -72,8 +72,8 @@
     }
 
     #ballButton:hover, #paddleButton:hover {
-        -fx-background-color: rgba(30, 144, 255, 0.3);
-        -fx-border-color: #66FFFF;
+        /* -fx-background-color: rgba(30, 144, 255, 0.3);
+        -fx-border-color: #66FFFF; */
         -fx-cursor: hand;
     }
 

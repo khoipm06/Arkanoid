@@ -154,11 +154,14 @@ public class DatabaseManager implements AutoCloseable {
         for (int i = 0; i < POOL_SIZE; i++) {
             if (!connectionStatus.get(i)) {
                 connectionStatus.set(i, true);
+                logger.debug("Connection #{} acquired from pool", i);
                 return connectionPool.get(i);
             }
         }
         // If pool exhausted, create a temporary connection
-        logger.warn("Connection pool exhausted, creating temporary connection");
+        long activeCount = getActiveConnectionCount();
+        logger.warn("Connection pool exhausted ({}/{} active), creating temporary connection", 
+                    activeCount, POOL_SIZE);
         return DriverManager.getConnection(DB_URL);
     }
 
@@ -169,10 +172,12 @@ public class DatabaseManager implements AutoCloseable {
         int index = connectionPool.indexOf(conn);
         if (index >= 0) {
             connectionStatus.set(index, false);
+            logger.debug("Connection #{} released back to pool", index);
         } else {
             // Temporary connection, close it
             try {
                 conn.close();
+                logger.debug("Temporary connection closed");
             } catch (SQLException e) {
                 logger.error("Error closing temporary connection: {}", e.getMessage());
             }
@@ -241,8 +246,25 @@ public class DatabaseManager implements AutoCloseable {
         });
     }
 
+    /**
+     * Get connection pool statistics for monitoring
+     */
+    public synchronized String getPoolStats() {
+        long activeCount = getActiveConnectionCount();
+        return String.format("Connection Pool: %d/%d active, %d available", 
+                           activeCount, POOL_SIZE, POOL_SIZE - activeCount);
+    }
+
+    /**
+     * Get number of active connections
+     */
+    public synchronized long getActiveConnectionCount() {
+        return connectionStatus.stream().filter(status -> status).count();
+    }
+
     @Override
     public void close() {
+        logger.info("Closing database connection pool - {}", getPoolStats());
         for (Connection conn : connectionPool) {
             try {
                 if (conn != null && !conn.isClosed()) {
@@ -255,5 +277,6 @@ public class DatabaseManager implements AutoCloseable {
         connectionPool.clear();
         connectionStatus.clear();
         initialized = false;
+        logger.info("Database connections closed");
     }
 }

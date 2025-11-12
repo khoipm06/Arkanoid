@@ -4,9 +4,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.*?>
-<ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="597.0"
-   prefWidth="868.0"
-   vbarPolicy="NEVER" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+<ScrollPane hbarPolicy="NEVER" prefHeight="597.0" prefWidth="868.0" vbarPolicy="NEVER"
+   pannable="false" xmlns="http://javafx.com/javafx/21"
+   xmlns:fx="http://javafx.com/fxml/1"
    fx:controller="com.arkanoid.ui.view.ProfileScreen">
    <content>
       <AnchorPane fx:id="root" minHeight="760.0" prefWidth="868.0"
@@ -25,88 +25,52 @@
             <!-- Title -->
             <Label fx:id="thongtin" alignment="CENTER" layoutX="217.0" layoutY="20.0"
                prefHeight="54.0"
-               prefWidth="434.0" text="PLAYER PROFILE">
-               <font>
-                  <Font name="Arial Black" size="32.0" />
-               </font>
-            </Label>
+               prefWidth="434.0" text="PLAYER PROFILE" />
 
             <!-- Profile Card Container -->
             <VBox fx:id="profileCard" layoutX="108.0" layoutY="98.0" prefWidth="651.0" spacing="16"
                styleClass="profile-card">
                <children>
                   <!-- User Info Section -->
-                  <Label fx:id="usernameLabel" styleClass="info-label" text="Username: Guest">
-                     <font>
-                        <Font size="20.0" />
-                     </font>
-                  </Label>
+                  <Label fx:id="usernameLabel" styleClass="info-label" text="Username: Guest" />
 
-                  <Label fx:id="userIdLabel" styleClass="info-label" text="User ID: 0">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
+                  <Label fx:id="userIdLabel" styleClass="info-label" text="User ID: 0" />
 
-                  <Label fx:id="balance" styleClass="balance-label" text="Balance: $0">
-                     <font>
-                        <Font name="Arial Black" size="22.0" />
-                     </font>
-                  </Label>
+                  <Label fx:id="balance" styleClass="balance-label" text="Balance: $0" />
 
                   <!-- Divider -->
                   <Label styleClass="divider" text="───────────────────────" />
 
                   <!-- Game Stats Section -->
-                  <Label styleClass="section-title" text="GAME STATISTICS">
-                     <font>
-                        <Font name="Arial Black" size="18.0" />
-                     </font>
-                  </Label>
+                  <Label styleClass="section-title" text="GAME STATISTICS" />
 
-                  <Label fx:id="highScoreLabel" styleClass="stat-label" text="High Score: 0">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Label>
+                  <Label fx:id="highScoreLabel" styleClass="stat-label" text="High Score: 0" />
 
-                  <Label fx:id="gamesPlayedLabel" styleClass="stat-label" text="Games Played: 0">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
+                  <Label fx:id="gamesPlayedLabel" styleClass="stat-label" text="Games Played: 0" />
 
-                  <Label fx:id="totalScoreLabel" styleClass="stat-label" text="Total Score: 0">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
+                  <Label fx:id="totalScoreLabel" styleClass="stat-label" text="Total Score: 0" />
+
+                  <Label fx:id="gamesPlayedLabel" styleClass="stat-label" text="Games Played: 0" />
+
+                  <Label fx:id="totalScoreLabel" styleClass="stat-label" text="Total Score: 0" />
+
+                  <Label fx:id="totalScoreLabel" styleClass="stat-label" text="Total Score: 0" />
 
                   <Label fx:id="currentSkinLabel" styleClass="stat-label"
                      text="Equipped Skin: Default">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
                   </Label>
 
                   <!-- Divider -->
                   <Label styleClass="divider" text="───────────────────────" />
 
                   <!-- Inventory Section -->
-                  <Label styleClass="section-title" text="INVENTORY">
-                     <font>
-                        <Font name="Arial Black" size="18.0" />
-                     </font>
-                  </Label>
+                  <Label styleClass="section-title" text="INVENTORY" />
 
                   <ScrollPane fitToWidth="true" prefHeight="163.0" prefWidth="629.0"
                      styleClass="inventory-scroll">
                      <content>
                         <Label fx:id="inventoryLabel" styleClass="inventory-label"
                            text="No items yet. Visit the shop!" wrapText="true">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
                         </Label>
                      </content>
                   </ScrollPane>
