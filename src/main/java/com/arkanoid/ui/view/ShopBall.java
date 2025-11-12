@@ -1,6 +1,7 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.core.entities.Ball;
+import com.arkanoid.database.InventoryManager;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.PlayerProfile;
 import com.arkanoid.systems.sound.SoundManager;
@@ -94,20 +95,20 @@ public class ShopBall {
         SessionManager.User user = SessionManager.getCurrentUser();
         for (SkinItem item : skinItems) {
             if (item.name.equals(skinName)) {
-                if (user.hasSkin(skinName)) {
-                    logger.warn("Already own skin: {}", skinName);
+                if (user.hasBallSkin(skinName)) {
+                    logger.warn("Already own ball skin: {}", skinName);
                     return;
                 }
 
                 if (user.spendMoney(item.price)) {
-                    // Add to inventory database
-                    user.addOwnedSkin(skinName);
-                    logger.info("Purchase successful skin: {} | Price: {}", skinName, item.price);
+                    // Add to inventory database (prefix with "ball:")
+                    InventoryManager.addItem(user.getId(), "ball:" + skinName, 1);
+                    logger.info("Purchase successful ball skin: {} | Price: {}", skinName, item.price);
                     logger.info("Remaining balance: ${}", user.getMoney());
                     lblMoney.setText("Balance: " + user.getMoney() + "$");
                     ((ShopView) SceneManager.getController("shopView")).refreshMoney();
                 } else {
-                    logger.warn("Insufficient funds to buy skin: {} | Need: {} | Have: {}", skinName, item.price, user.getMoney());
+                    logger.warn("Insufficient funds to buy ball skin: {} | Need: {} | Have: {}", skinName, item.price, user.getMoney());
                 }
                 break;
             }
@@ -117,16 +118,15 @@ public class ShopBall {
 
     private void equipSkin(String skinName) {
         SessionManager.User user = SessionManager.getCurrentUser();
-        if (user.hasSkin(skinName)) {
-            user.setEquippedSkin(skinName);
-            SessionManager.setEquippedSkin(skinName);
+        if (user.hasBallSkin(skinName)) {
+            SessionManager.setEquippedBallSkin(skinName);
             Ball.setCurrentSkin(skinName);
-            logger.info("Equipped skin: {}", skinName);
+            logger.info("Equipped ball skin: {}", skinName);
             if (ballInGame != null) {
                 ballInGame.equipSkin(skinName);
             }
         } else {
-            logger.warn("Not owned skin: {}", skinName);
+            logger.warn("Ball skin not owned: {}", skinName);
         }
         updateShopUI();
     }
@@ -139,8 +139,8 @@ public class ShopBall {
         lblMoney.setText("Your money: " + user.getMoney() + "$");
 
         for (SkinItem item : skinItems) {
-            boolean owned = user.hasSkin(item.name);
-            boolean equipped = user.getEquippedSkin().equals(item.name);
+            boolean owned = user.hasBallSkin(item.name);
+            boolean equipped = user.getEquippedBallSkin().equals(item.name);
             boolean canAfford = user.getMoney() >= item.price;
 
             item.buyButton.getStyleClass().removeAll("buy-button", "owned-button");

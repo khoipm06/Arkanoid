@@ -5,9 +5,9 @@ import javafx.scene.paint.Color;
 
 public class TrailEffect extends GameObject {
     private double life;
-    private final double maxLife;
-    private final double initialRadius;
-    private final Color color;
+    private double maxLife;
+    private double initialRadius;
+    private Color color;
 
     public TrailEffect(double x, double y, double radius, double lifeDuration, Color color) {
         super(x - radius, y - radius, radius * 2, radius * 2);
@@ -15,6 +15,21 @@ public class TrailEffect extends GameObject {
         this.life = lifeDuration;
         this.maxLife = lifeDuration;
         this.color = color;
+    }
+    
+    /**
+     * Reset trail effect for object pool reuse.
+     */
+    public void reset(double x, double y, double radius, double lifeDuration, Color color) {
+        this.x = x - radius;
+        this.y = y - radius;
+        this.width = radius * 2;
+        this.height = radius * 2;
+        this.initialRadius = radius;
+        this.life = lifeDuration;
+        this.maxLife = lifeDuration;
+        this.color = color;
+        this.active = true;
     }
 
     public void update(double deltaTime) {

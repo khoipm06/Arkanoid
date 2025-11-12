@@ -56,10 +56,21 @@ public class GameScene {
     private Text levelLabel;
     private Text timeLabel;
     private String timeStr;
+    
+    // Performance monitoring (only visible in DEBUG mode)
+    private Text fpsLabel;
+    private HBox fpsBox;
+    private int frameCount = 0;
+    private long lastFpsUpdate = 0;
+    private double currentFps = 0.0;
+    private double averageFrameTime = 0.0;
+    private final boolean debugMode;
 
     private GameScene(Stage stage, double width, double height, int levelNumber) {
         this.stage = stage;
         this.pressedKeys = new HashSet<>();
+        // Check if DEBUG or TRACE logging is enabled
+        this.debugMode = logger.isDebugEnabled() || logger.isTraceEnabled();
 
         double gameAreaWidth = 700;
         double gameAreaHeight = height;
@@ -68,12 +79,6 @@ public class GameScene {
         gc = canvas.getGraphicsContext2D();
         this.gameManager = GameManager.getInstance(canvas.getWidth(), canvas.getHeight(), levelNumber);
         this.inputHandler = new InputHandler(gameManager);
-
-        if (gameManager.getPlayer() != null) {
-            String equippedSkin = SessionManager.getCurrentUser().getEquippedPaddleSkin();
-            logger.info("Current paddle skin: {}", equippedSkin);
-            gameManager.getPlayer().getPaddle().equipSkin(equippedSkin);
-        }
 
         try (InputStream streamBackGround = getClass().getResourceAsStream("/images/backgroundGame.png")) {
             if (streamBackGround != null) {
@@ -117,6 +122,8 @@ public class GameScene {
             pauseOverlay.setVisible(false);
         }
     }
+    
+
 
     private void openSaveLoadScene() {
         try {
@@ -186,7 +193,15 @@ public class GameScene {
         HBox timeBox = createInfoRow("TIME", "00:00", Color.LIGHTBLUE);
         timeLabel = (Text) timeBox.getChildren().get(1);
 
-        info.getChildren().addAll(title, scoreBox, livesBox, levelBox, timeBox);
+        // FPS (Performance monitoring - only in DEBUG mode or higher)
+        if (debugMode) {
+            fpsBox = createInfoRow("FPS", "60", Color.ORANGE);
+            fpsLabel = (Text) fpsBox.getChildren().get(1);
+            info.getChildren().addAll(title, scoreBox, livesBox, levelBox, timeBox, fpsBox);
+            logger.debug("FPS counter enabled (DEBUG mode active)");
+        } else {
+            info.getChildren().addAll(title, scoreBox, livesBox, levelBox, timeBox);
+        }
 
         // Shadow effect to make panel stand out
         DropShadow shadow = new DropShadow();
@@ -329,13 +344,37 @@ public class GameScene {
 
     public void start() {
         gameManager.startGame();
-        lastUpdate = System.nanoTime();
-
+        lastFpsUpdate = lastUpdate = System.nanoTime();
+        
         gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
                 lastUpdate = now;
+                
+                // Update FPS counter every second (only in DEBUG mode)
+                if (debugMode) {
+                    frameCount++;
+                    long timeSinceLastFpsUpdate = now - lastFpsUpdate;
+                    if (timeSinceLastFpsUpdate >= 1_000_000_000L) {
+                        currentFps = frameCount / (timeSinceLastFpsUpdate / 1_000_000_000.0);
+                        averageFrameTime = (timeSinceLastFpsUpdate / 1_000_000.0) / frameCount; // in milliseconds
+                        Platform.runLater(() -> {
+                            fpsLabel.setText(String.format("%.0f (%.1fms)", currentFps, averageFrameTime));
+                            // Color code FPS: green (60+), yellow (45-60), red (<45)
+                            if (currentFps >= 60) {
+                                fpsLabel.setFill(Color.LIMEGREEN);
+                            } else if (currentFps >= 45) {
+                                fpsLabel.setFill(Color.YELLOW);
+                            } else {
+                                fpsLabel.setFill(Color.RED);
+                            }
+                        });
+                        frameCount = 0;
+                        lastFpsUpdate = now;
+                    }
+                }
+                
                 inputHandler.handleContinuousInput(pressedKeys, deltaTime);
                 update(deltaTime);
                 render();

@@ -27,7 +27,8 @@ public class Paddle extends MovableObject {
     private double maxX;
     private Color color;
     private Image paddleImage;
-    private final String originalSkin = "paddle_Default";
+    private String equippedSkin = "paddle_Default"; // The skin equipped by the player
+                                                    // but now initially set to default
     private boolean gunMode = false;
     private long gunExpiryNano = -1;
     private Image gunImage;
@@ -117,10 +118,10 @@ public class Paddle extends MovableObject {
         if (gunMode && gunExpiryNano != -1 && System.nanoTime() > gunExpiryNano) {
             gunMode = false;
         }
-        // nếu skin tạm hết hạn → trả về skin gốc
-        if (!currentSkin.equals(originalSkin)) {
-            this.paddleImage = getSkin(originalSkin);
-            currentSkin = originalSkin;
+        // reset if current skin  differs from equipped skin
+        if (!currentSkin.equals(equippedSkin)) {
+            this.paddleImage = getSkin(equippedSkin);
+            currentSkin = equippedSkin;
         }
         if (hitFlashTime > 0) { // Update hit flash timer
             hitFlashTime -= deltaTime;

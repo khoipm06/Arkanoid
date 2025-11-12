@@ -9,7 +9,7 @@ public class Particle extends GameObject {
     private double velX;
     private double velY;
     private double life;
-    private final Color color;
+    private Color color;
     private static final Random rand = new Random();
 
     public Particle(double x, double y, Color color) {
@@ -18,6 +18,21 @@ public class Particle extends GameObject {
         this.velX = (rand.nextDouble() - 0.5) * (rand.nextInt(150) + 50); // Random velocity
         this.velY = (rand.nextDouble() - 0.5) * (rand.nextInt(150) + 50);
         this.life = rand.nextDouble() * 0.5 + 0.3; // Lifespan between 0.3 and 0.8 seconds
+    }
+    
+    /**
+     * Reset particle for object pool reuse.
+     */
+    public void reset(double x, double y, Color color) {
+        this.x = x;
+        this.y = y;
+        this.width = rand.nextInt(5) + 8;
+        this.height = rand.nextInt(5) + 8;
+        this.color = color;
+        this.velX = (rand.nextDouble() - 0.5) * (rand.nextInt(150) + 50);
+        this.velY = (rand.nextDouble() - 0.5) * (rand.nextInt(150) + 50);
+        this.life = rand.nextDouble() * 0.5 + 0.3;
+        this.active = true;
     }
 
     @Override

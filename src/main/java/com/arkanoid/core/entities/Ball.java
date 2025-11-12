@@ -168,6 +168,7 @@ public class Ball extends MovableObject {
     public void equipSkin(String skinName) {
         Image skin = SKINS.getOrDefault(skinName, SKINS.get("Default"));
         this.ballImage = skin;
+        logger.info("Ball equipSkin: Set to {} (image null: {})", skinName, ballImage == null);
     }
 
     @Override

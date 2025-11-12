@@ -6,6 +6,8 @@ import com.arkanoid.systems.level.LevelManager;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.Player;
 import com.arkanoid.systems.save.*;
+import com.arkanoid.ui.view.SessionManager;
+import com.arkanoid.utils.ObjectPool;
 import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 
@@ -33,12 +35,18 @@ public class GameManager {
     private final List<Particle> particles;
     private final List<TrailEffect> trailEffects; // New field for trail effects
     private double trailSpawnTimer = 0.0; // Timer for spawning trail effects
-    private static final double TRAIL_SPAWN_INTERVAL = 0.015; // Spawn trail every 0.015s (smoother)
+    private static final double TRAIL_SPAWN_INTERVAL = 0.015; // Spawn trail every 0.015s
     private static final int MAX_TRAIL_EFFECTS = 300; // Limit trails to prevent lag
     private final List<Bullet> bullets;
     private double gunFireCooldown = 0.0;
     private final List<FloatingText> floatingTexts;
     private double elapsedTimeSeconds = 0.0;
+    
+    // Object pools to reduce GC pressure
+    private final ObjectPool<Particle> particlePool;
+    private final ObjectPool<TrailEffect> trailPool;
+    private final ObjectPool<Bullet> bulletPool;
+    private final ObjectPool<FloatingText> floatingTextPool;
 
     private GameManager(double gameWidth, double gameHeight, int levelNumber) {
         this.gameWidth = gameWidth;
@@ -48,6 +56,33 @@ public class GameManager {
         this.playerManager = PlayerManager.getInstance();
         this.balls = new ArrayList<>();
         this.bricks = new ArrayList<>();
+        
+        // Initialize object pools
+        this.particlePool = new ObjectPool<>(
+            () -> new Particle(0, 0, Color.WHITE),
+            particle -> {}, // Reset handled by creating new Particle
+            300 // Max 300 particles in pool
+        );
+        this.trailPool = new ObjectPool<>(
+            () -> new TrailEffect(0, 0, 5, 0.5, Color.CYAN),
+            trail -> {}, // Reset handled by creating new TrailEffect
+            MAX_TRAIL_EFFECTS // Match max trail limit
+        );
+        this.bulletPool = new ObjectPool<>(
+            () -> new Bullet(0, 0, 6, 12, -300),
+            bullet -> {}, // Reset handled by creating new Bullet
+            50 // Max 50 bullets in pool
+        );
+        this.floatingTextPool = new ObjectPool<>(
+            () -> new FloatingText("", 0, 0, 1.0, 50, Color.WHITE),
+            text -> {}, // Reset handled by creating new FloatingText
+            20 // Max 20 floating texts in pool
+        );
+        
+        // Prewarm pools for better initial performance
+        particlePool.prewarm(50);
+        trailPool.prewarm(30);
+        bulletPool.prewarm(10);
         this.powerUps = new ArrayList<>();
         this.bullets = new ArrayList<>();
         this.explosions = new ArrayList<>();
@@ -58,6 +93,20 @@ public class GameManager {
         this.levelNumber = levelNumber;
         this.bricks = levelManager.loadLevel(levelNumber);
         Paddle paddle = new Paddle(gameWidth / 2 - 30, gameHeight - 30, 100, 25, 400, 0, gameWidth);
+        
+        // Apply equipped skin from SessionManager
+        SessionManager.User currentUser = SessionManager.getCurrentUser();
+        logger.info("GameManager: Current user: {}", currentUser != null ? currentUser.getUsername() : "NULL");
+        
+        if (currentUser != null) {
+            String equippedSkin = currentUser.getEquippedPaddleSkin();
+            logger.info("GameManager: Equipped paddle skin from DB: {}", equippedSkin);
+            paddle.equipSkin(equippedSkin);
+            logger.info("GameManager: Applied equipped paddle skin successfully");
+        } else {
+            logger.warn("GameManager: No current user found! Using default paddle skin");
+        }
+        
         player = new Player("Player1", 1, paddle);
         playerManager.addPlayer(1, player);
     }
@@ -78,6 +127,15 @@ public class GameManager {
         double ballY = paddle.getY() - ballRadius * 2;
         Ball ball = new Ball(ballX, ballY, ballRadius, ballSpeed);
         ball.setBounds(0, 0, gameWidth, gameHeight);
+        
+        // Apply equipped ball skin from SessionManager
+        SessionManager.User currentUser = SessionManager.getCurrentUser();
+        if (currentUser != null) {
+            String equippedBallSkin = currentUser.getEquippedBallSkin();
+            ball.equipSkin(equippedBallSkin);
+            logger.info("GameManager: Applied equipped ball skin: {}", equippedBallSkin);
+        }
+        
         balls.add(ball);
     }
 
@@ -125,13 +183,10 @@ public class GameManager {
                     double speedFactor = Math.min(speed / 500.0, 1.0);
                     Color trailColor = Color.CYAN.interpolate(Color.WHITE, speedFactor * 0.3);
                     
-                    trailEffects.add(new TrailEffect(
-                        ball.getCenterX(), 
-                        ball.getCenterY(), 
-                        trailRadius, 
-                        trailLife,
-                        trailColor
-                    ));
+                    // Use object pool instead of creating new TrailEffect
+                    TrailEffect trail = trailPool.acquire();
+                    trail.reset(ball.getCenterX(), ball.getCenterY(), trailRadius, trailLife, trailColor);
+                    trailEffects.add(trail);
                 }
             }
             ball.update(deltaTime);
@@ -155,8 +210,10 @@ public class GameManager {
 
             if (powerUp.checkPaddleCollision(player.getPaddle())) {
                 player.getState().addScore(50);
-                floatingTexts.add(new FloatingText("+50", powerUp.getCenterX(), powerUp.getCenterY(), 1.0, 50,
-                        Color.YELLOW)); // Floating text for power-up
+                // Use object pool for floating text
+                FloatingText text = floatingTextPool.acquire();
+                text.reset("+50", powerUp.getCenterX(), powerUp.getCenterY(), 1.0, 50, Color.YELLOW);
+                floatingTexts.add(text);
                 applyPowerUpEffect(powerUp, paddle);
                 powerUpIterator.remove(); // Remove after collecting
                 continue;
@@ -213,8 +270,11 @@ public class GameManager {
                 double bulletW = 6;
                 double bulletH = 12;
                 double speed = -300;
-                Bullet left = new Bullet(paddle.getLeftGunX(), paddle.getGunY(), bulletW, bulletH, speed);
-                Bullet right = new Bullet(paddle.getRightGunX(), paddle.getGunY(), bulletW, bulletH, speed);
+                // Use object pool instead of creating new Bullets
+                Bullet left = bulletPool.acquire();
+                left.reset(paddle.getLeftGunX(), paddle.getGunY(), bulletW, bulletH, speed);
+                Bullet right = bulletPool.acquire();
+                right.reset(paddle.getRightGunX(), paddle.getGunY(), bulletW, bulletH, speed);
                 bullets.add(left);
                 bullets.add(right);
                 gunFireCooldown = GUN_FIRE_INTERVAL;
@@ -232,6 +292,7 @@ public class GameManager {
 
             // check out of bounds (ở trên màn hình)
             if (b.isOutOfBounds(gameHeight)) {
+                bulletPool.release(b); // Return to pool
                 bulletIt.remove();
                 continue;
             }
@@ -254,6 +315,7 @@ public class GameManager {
                 }
             }
             if (hit) {
+                bulletPool.release(b); // Return to pool
                 bulletIt.remove();
             }
         }
@@ -267,6 +329,7 @@ public class GameManager {
             Particle particle = particleIterator.next();
             particle.update(deltaTime);
             if (!particle.isActive()) {
+                particlePool.release(particle); // Return to pool
                 particleIterator.remove();
             }
         }
@@ -276,6 +339,7 @@ public class GameManager {
             TrailEffect trail = trailIterator.next();
             trail.update(deltaTime);
             if (!trail.isActive()) {
+                trailPool.release(trail); // Return to pool
                 trailIterator.remove();
             }
         }
@@ -285,6 +349,7 @@ public class GameManager {
             FloatingText text = textIterator.next();
             text.update(deltaTime);
             if (!text.isActive()) {
+                floatingTextPool.release(text); // Return to pool
                 textIterator.remove();
             }
         }
@@ -317,8 +382,10 @@ public class GameManager {
     public void onBrickDestroyed(Brick brick) {
         if (brick.isDestroyed()) {
             player.getState().addScore(100);
-            floatingTexts.add(new FloatingText("+100", brick.getCenterX(), brick.getCenterY(), 1.0, 50,
-                    Color.CORAL));
+            // Use object pool for floating text
+            FloatingText text = floatingTextPool.acquire();
+            text.reset("+100", brick.getCenterX(), brick.getCenterY(), 1.0, 50, Color.CORAL);
+            floatingTexts.add(text);
             PowerUp powerUp = brick.dropPowerUp();
             if (powerUp != null) {
                 powerUps.add(powerUp);
@@ -326,7 +393,10 @@ public class GameManager {
 
             int particleCount = 15;
             for (int i = 0; i < particleCount; i++) {
-                particles.add(new Particle(brick.getCenterX(), brick.getCenterY(), brick.getColor()));
+                // Use object pool instead of creating new Particle
+                Particle particle = particlePool.acquire();
+                particle.reset(brick.getCenterX(), brick.getCenterY(), brick.getColor());
+                particles.add(particle);
             }
         }
     }

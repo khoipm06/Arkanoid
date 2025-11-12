@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 
 public class Bullet extends GameObject {
     private static final Logger logger = GameLogger.getLogger(Bullet.class);
-    private final double speedY;
+    private double speedY;
     private Image bulletImage;
 
     public Bullet(double x, double y, double width, double height, double speedY) {
@@ -20,6 +20,18 @@ public class Bullet extends GameObject {
             logger.error("Could not load bullet image: {}", e.getMessage());
             bulletImage = null;
         }
+    }
+    
+    /**
+     * Reset bullet for object pool reuse.
+     */
+    public void reset(double x, double y, double width, double height, double speedY) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.speedY = speedY;
+        this.active = true;
     }
 
     public void update(double deltaTime) {

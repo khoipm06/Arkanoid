@@ -184,4 +184,28 @@ public class InventoryManager {
         }
         return 0;
     }
+
+    /**
+     * Remove an item from inventory
+     */
+    public static boolean removeItem(int userId, String itemId) {
+        String sql = "DELETE FROM inventory WHERE user_id = ? AND item_id = ?";
+
+        Connection conn = null;
+        try {
+            conn = databaseManager.getConnection();
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, userId);
+                pstmt.setString(2, itemId);
+                return pstmt.executeUpdate() > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                databaseManager.releaseConnection(conn);
+            }
+        }
+        return false;
+    }
 }

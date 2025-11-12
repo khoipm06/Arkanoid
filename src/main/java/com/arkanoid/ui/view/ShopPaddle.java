@@ -3,6 +3,8 @@ package com.arkanoid.ui.view;
 import com.arkanoid.core.entities.Paddle;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
+import com.arkanoid.ui.components.ToastNotification;
+
 import org.slf4j.Logger;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -90,6 +92,7 @@ public class ShopPaddle {
             if (item.name.equals(skinName)) {
                 if (user.hasPaddleSkin(skinName)) {
                     logger.warn("Already own paddle skin: {}", skinName);
+                    // ToastNotification.showToast(message, root, ToastNotification.ToastType.ERROR);
                     return;
                 }
                 
@@ -112,7 +115,6 @@ public class ShopPaddle {
     private void equipSkin(String skinName) {
         SessionManager.User user = SessionManager.getCurrentUser();
         if (user.hasPaddleSkin(skinName)) {
-            user.setEquippedPaddleSkin(skinName);
             SessionManager.setEquippedPaddleSkin(skinName);
             Paddle.setCurrentSkin(skinName);
             logger.info("Equipped skin: {}", skinName);

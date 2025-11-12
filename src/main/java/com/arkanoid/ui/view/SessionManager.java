@@ -142,11 +142,38 @@ public class SessionManager {
         }
 
         /**
+         * Check if user owns a ball skin
+         */
+        public boolean hasBallSkin(String skin) {
+            if ("Default".equals(skin)) {
+                return true; // Everyone has default ball
+            }
+            return InventoryManager.hasItem(id, "ball:" + skin);
+        }
+
+        /**
+         * Get equipped ball skin (stored in inventory as current)
+         */
+        public String getEquippedBallSkin() {
+            List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(id);
+            for (InventoryManager.InventoryItem item : items) {
+                if (item.getItemId().startsWith("skin:equipped:")) {
+                    return item.getItemId().substring("skin:equipped:".length());
+                }
+            }
+            return "Default";
+        }
+
+        /**
          * Set equipped paddle skin
          */
         public void setEquippedPaddleSkin(String skin) {
-            // Remove old equipped marker
-            // List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(id);
+            List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(id);
+            for (InventoryManager.InventoryItem item : items) {
+                if (item.getItemId().startsWith("paddle:equipped:")) {
+                    InventoryManager.removeItem(id, item.getItemId());
+                }
+            }
             InventoryManager.addItem(id, "paddle:equipped:" + skin, 1);
         }
 
@@ -283,7 +310,14 @@ public class SessionManager {
      */
     public static void setEquippedPaddleSkin(String skin) {
         if (currentUserId != null) {
-            // Store as equipped marker in inventory
+            // First, remove all old equipped markers
+            List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(currentUserId);
+            for (InventoryManager.InventoryItem item : items) {
+                if (item.getItemId().startsWith("paddle:equipped:")) {
+                    InventoryManager.removeItem(currentUserId, item.getItemId());
+                }
+            }
+            // Then add the new equipped marker
             InventoryManager.addItem(currentUserId, "paddle:equipped:" + skin, 1);
         }
     }
@@ -292,15 +326,58 @@ public class SessionManager {
      * Get equipped paddle skin for current user
      */
     public static String getEquippedPaddleSkin() {
+        logger.info("getEquippedPaddleSkin: currentUserId = {}", currentUserId);
         if (currentUserId != null) {
             List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(currentUserId);
+            logger.info("getEquippedPaddleSkin: Found {} items in inventory", items.size());
             for (InventoryManager.InventoryItem item : items) {
                 if (item.getItemId().startsWith("paddle:equipped:")) {
-                    return item.getItemId().substring("paddle:equipped:".length());
+                    String skinName = item.getItemId().substring("paddle:equipped:".length());
+                    logger.info("getEquippedPaddleSkin: Found equipped skin: {}", skinName);
+                    return skinName;
                 }
             }
+            logger.info("getEquippedPaddleSkin: No equipped paddle found, returning default");
         }
         return "paddle_Default";
+    }
+
+    /**
+     * Get equipped ball skin for current user
+     */
+    public static String getEquippedBallSkin() {
+        logger.info("getEquippedBallSkin: currentUserId = {}", currentUserId);
+        if (currentUserId != null) {
+            List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(currentUserId);
+            logger.info("getEquippedBallSkin: Found {} items in inventory", items.size());
+            for (InventoryManager.InventoryItem item : items) {
+                if (item.getItemId().startsWith("skin:equipped:")) {
+                    String skinName = item.getItemId().substring("skin:equipped:".length());
+                    logger.info("getEquippedBallSkin: Found equipped skin: {}", skinName);
+                    return skinName;
+                }
+            }
+            logger.info("getEquippedBallSkin: No equipped ball found, returning default");
+        }
+        return "Default";
+    }
+
+    /**
+     * Set equipped ball skin for current user
+     */
+    public static void setEquippedBallSkin(String skinName) {
+        if (currentUserId != null) {
+            // remove all old equipped markers
+            List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(currentUserId);
+            for (InventoryManager.InventoryItem item : items) {
+                if (item.getItemId().startsWith("skin:equipped:")) {
+                    InventoryManager.removeItem(currentUserId, item.getItemId());
+                }
+            }
+            // Then add the new equipped marker
+            InventoryManager.addItem(currentUserId, "skin:equipped:" + skinName, 1);
+            logger.info("Equipped ball skin set to: {}", skinName);
+        }
     }
 
     public static PlayerProfile getActiveProfile() {

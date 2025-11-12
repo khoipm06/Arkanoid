@@ -6,11 +6,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 public class FloatingText extends GameObject {
-    private final String text;
+    private String text;
     private double life;
-    private final double maxLife;
-    private final double speed;
-    private final Color color;
+    private double maxLife;
+    private double speed;
+    private Color color;
     private final Font font;
 
     public FloatingText(String text, double x, double y, double lifeDuration, double speed, Color color) {
@@ -21,6 +21,20 @@ public class FloatingText extends GameObject {
         this.speed = speed;
         this.color = color;
         this.font = Font.font("Arial", FontWeight.BOLD, 16);
+    }
+    
+    /**
+     * Reset floating text for object pool reuse.
+     */
+    public void reset(String text, double x, double y, double lifeDuration, double speed, Color color) {
+        this.text = text;
+        this.x = x;
+        this.y = y;
+        this.life = lifeDuration;
+        this.maxLife = lifeDuration;
+        this.speed = speed;
+        this.color = color;
+        this.active = true;
     }
 
     public void update(double deltaTime) {
