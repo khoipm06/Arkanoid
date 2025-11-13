@@ -107,4 +107,9 @@ public abstract class BaseBrick extends GameObject implements Brick {
     public int getCol() {
         return col;
     }
+
+    @Override
+    public Color getColor() {
+        return color;
+    }
 }

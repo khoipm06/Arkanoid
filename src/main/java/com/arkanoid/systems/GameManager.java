@@ -23,6 +23,7 @@ public class GameManager {
     private final int levelNumber;
     private final List<Explosion> explosions;
     private final List<LineEffect> lineEffects;
+    private final List<Particle> particles;
 
     private final List<Bullet> bullets;
     private double gunFireCooldown = 0.0; // thời gian đếm ngược tới lần bắn tiếp theo (giây)
@@ -39,6 +40,7 @@ public class GameManager {
         this.bullets = new ArrayList<>();
         this.explosions = new ArrayList<>();
         this.lineEffects = new ArrayList<>();
+        this.particles = new ArrayList<>();
         this.levelNumber = levelNumber;
         this.bricks = levelManager.loadLevel(levelNumber);
         Paddle paddle = new Paddle(gameWidth / 2 - 30, gameHeight - 30, 100, 25, 400, 0, gameWidth);
@@ -200,6 +202,16 @@ public class GameManager {
         if (bricks.isEmpty()) {
             currentState = GameState.LEVEL_COMPLETE;
         }
+
+        // Update particles
+        Iterator<Particle> particleIterator = particles.iterator();
+        while (particleIterator.hasNext()) {
+            Particle particle = particleIterator.next();
+            particle.update(deltaTime);
+            if (!particle.isActive()) {
+                particleIterator.remove();
+            }
+        }
     }
 
     public List<LineEffect> getLineEffects() {
@@ -216,6 +228,12 @@ public class GameManager {
             PowerUp powerUp = brick.dropPowerUp();
             if (powerUp != null) {
                 powerUps.add(powerUp);
+            }
+
+            // Create particles for the shatter effect
+            int particleCount = 15;
+            for (int i = 0; i < particleCount; i++) {
+                particles.add(new Particle(brick.getCenterX(), brick.getCenterY(), brick.getColor()));
             }
         }
     }
@@ -296,6 +314,10 @@ public class GameManager {
 
     public List<Explosion> getExplosions() {
         return explosions;
+    }
+
+    public List<Particle> getParticles() {
+        return particles;
     }
 
     private void applyPowerUpEffect(PowerUp powerUp, Paddle paddle) {
