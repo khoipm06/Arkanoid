@@ -122,5 +122,7 @@ public class Map {
             mapView.setOpacity(1.0);
             playGameButton.setDisable(false);
         }
+        preMapButton.setVisible(currentMapIndex > 0);
+        nextMapButton.setVisible(currentMapIndex < mapImages.size() - 1);
     }
 }
