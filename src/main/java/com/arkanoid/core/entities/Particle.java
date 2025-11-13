@@ -13,7 +13,7 @@ public class Particle extends GameObject {
     private static final Random rand = new Random();
 
     public Particle(double x, double y, Color color) {
-        super(x, y, rand.nextInt(3) + 2, rand.nextInt(3) + 2);
+        super(x, y, rand.nextInt(5) + 8, rand.nextInt(5) + 8); // Particles now randomly sized between 8 and 12
         this.color = color;
         this.velX = (rand.nextDouble() - 0.5) * (rand.nextInt(150) + 50); // Random velocity
         this.velY = (rand.nextDouble() - 0.5) * (rand.nextInt(150) + 50);
