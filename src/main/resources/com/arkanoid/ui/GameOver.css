@@ -47,10 +47,16 @@
   -fx-background-color: #0055aa;
   -fx-border-color: #66ffff;
 }
+#timePlayed {
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-font-size: 20px;
+  -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.6), 10, 0.3, 0, 0);
+}
 /* Nút Home */
 #backHome {
   -fx-background-color: transparent;
-  -fx-background-image: url("../../../images/New_Game.png");
+  -fx-background-image: url("../../../images/home.png");
   -fx-background-size: 100% 100%; /* ảnh lấp đầy button */
   -fx-background-repeat: no-repeat;
   -fx-background-position: center; /* vẫn căn giữa nếu muốn */
