@@ -38,6 +38,7 @@ public class Map {
     public static int getUnlockedLevel() {
         return unlockedLevel;
     }
+
     public void initialize() {
         mapImages = new ArrayList<>();
         mapFiles = new ArrayList<>();
@@ -50,10 +51,9 @@ public class Map {
         mapFiles.add("/levels/level2.json");
         mapFiles.add("/levels/level3.json");
 
-
-
         updatePreview();
     }
+
     public void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -65,20 +65,19 @@ public class Map {
             currentMapIndex++;
             updatePreview();
         } else {
-            System.out.println("Đang ở map cuối cùng rồi!");
+            System.out.println("We're at the last map!");
         }
 
     }
 
     @FXML
     public void onPreMapButtonClick(MouseEvent event) {
-        System.out.println("pre map");
         SoundManager.playSound("Accept.wav");
         if (currentMapIndex > 0) {
             currentMapIndex--;
             updatePreview();
         } else {
-            System.out.println("Đang ở map đầu tiên rồi!");
+            System.out.println("We're at the first map!");
         }
     }
 
@@ -91,13 +90,13 @@ public class Map {
             stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
         }
         int selectedLevel = currentMapIndex + 1;
-        GameScene gameScene = new GameScene(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT, selectedLevel);
+        GameScene gameScene = new GameScene(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT,
+                selectedLevel);
 
         stage.setScene(gameScene.getScene());
         stage.show();
         gameScene.start();
     }
-
 
     private void updatePreview() {
         String imagePath = mapImages.get(currentMapIndex);
@@ -113,7 +112,7 @@ public class Map {
                 e.printStackTrace();
             }
         } else {
-            System.err.println("LỖI: Không tìm thấy tệp ảnh tại đường dẫn: " + imagePath);
+            System.err.println("Cannot find the image path: " + imagePath);
         }
         if (currentMapIndex + 1 > unlockedLevel) {
             mapView.setOpacity(0.4);
@@ -122,5 +121,7 @@ public class Map {
             mapView.setOpacity(1.0);
             playGameButton.setDisable(false);
         }
+        preMapButton.setVisible(currentMapIndex > 0);
+        nextMapButton.setVisible(currentMapIndex < mapImages.size() - 1);
     }
 }
