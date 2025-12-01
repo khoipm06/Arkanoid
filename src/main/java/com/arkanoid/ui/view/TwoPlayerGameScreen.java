@@ -218,7 +218,7 @@ public class TwoPlayerGameScreen {
                 brick.hit();
                 hitThisFrame = true;
                 if (brick.isDestroyed()) {
-                    logger.debug("Player 1 destroyed brick at ({}, {})", brick.getX(), brick.getY());
+                    logger.debug("Player 1 destroyed brick at ({}, {})", String.format("%.2f", brick.getX()), String.format("%.2f", brick.getY()));
                     matchManager.applyBrickHit(1, 100); // Award points to player 1
                 }
             }
@@ -229,7 +229,7 @@ public class TwoPlayerGameScreen {
                 handleBallBrickCollision(ball2, brick);
                 brick.hit();
                 if (brick.isDestroyed()) {
-                    logger.debug("Player 2 destroyed brick at ({}, {})", brick.getX(), brick.getY());
+                    logger.debug("Player 2 destroyed brick at ({}, {})", String.format("%.2f", brick.getX()), String.format("%.2f", brick.getY()));
                     matchManager.applyBrickHit(2, 100); // Award points to player 2
                 }
             }
