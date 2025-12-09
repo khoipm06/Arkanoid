@@ -3,7 +3,7 @@
     <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
     
     <!-- Properties -->
-    <property name="LOG_LEVEL" value="${LOG_LEVEL:-INFO}" />
+    <!-- <property name="LOG_LEVEL" value="${LOG_LEVEL:-INFO}" /> -->
     <property name="LOG_DIR" value="${LOG_DIR:-logs}" />
     <property name="LOG_PATTERN" value="[%date{ISO8601}] [%level] [%thread] [%logger{36}] [%method:%line] - %msg%n" />
     <property name="CONSOLE_PATTERN" value="[%date{HH:mm:ss.SSS}] [%highlight(%level)] [%green(%thread)] [%cyan(%logger{36})] [%magenta(%method:%line)] - %msg%n" />
@@ -92,16 +92,10 @@
         <appender-ref ref="ASYNC_FILE" />
     </logger>
 
-    <!-- Your game packages - inherit root level -->
-    <logger name="com.arkanoid" level="${LOG_LEVEL}" additivity="true" />
+    <!-- All com.arkanoid loggers inherit from root (no explicit level) -->
+    <!-- This allows F3/F4 runtime changes to work correctly -->
 
-    <!-- Database operations - can be more verbose for debugging -->
-    <logger name="com.arkanoid.database" level="${LOG_LEVEL}" additivity="true" />
-
-    <!-- Threading system - useful for debugging concurrency -->
-    <logger name="com.arkanoid.systems.threading" level="${LOG_LEVEL}" additivity="true" />
-
-    <root level="${LOG_LEVEL}">
+    <root level="INFO">
         <!-- Use async appenders for better game performance -->
         <appender-ref ref="ASYNC_CONSOLE" />
         <appender-ref ref="ASYNC_FILE" />

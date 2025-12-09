@@ -114,6 +114,7 @@ assets/**
 .specify/templates/tasks-template.md
 specs/**
 GEMINI.md
+bin/**
 
 temporary_files/**
 .github/prompts/speckit.analyze.prompt.md
@@ -125,3 +126,4 @@ temporary_files/**
 .github/prompts/speckit.specify.prompt.md
 .github/prompts/speckit.tasks.prompt.md
 .github/copilot-instructions.md
+data/user_session.bin

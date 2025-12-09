@@ -5,7 +5,11 @@ import com.arkanoid.systems.GameManager;
 import com.arkanoid.systems.input.InputHandler;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.PlayerState;
+import com.arkanoid.debug.MemoryMonitor;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 import com.arkanoid.systems.save.GameSaveManager;
 import com.arkanoid.systems.save.impl.GameSaveManagerImpl;
 import com.arkanoid.ui.view.SaveLoadScene;
@@ -64,13 +68,11 @@ public class GameScene {
     private long lastFpsUpdate = 0;
     private double currentFps = 0.0;
     private double averageFrameTime = 0.0;
-    private final boolean debugMode;
+    private VBox infoPanel; // Keep reference to add/remove FPS dynamically
 
     private GameScene(Stage stage, double width, double height, int levelNumber) {
         this.stage = stage;
         this.pressedKeys = new HashSet<>();
-        // Check if DEBUG or TRACE logging is enabled
-        this.debugMode = logger.isDebugEnabled() || logger.isTraceEnabled();
 
         double gameAreaWidth = 700;
         double gameAreaHeight = height;
@@ -79,6 +81,10 @@ public class GameScene {
         gc = canvas.getGraphicsContext2D();
         this.gameManager = GameManager.getInstance(canvas.getWidth(), canvas.getHeight(), levelNumber);
         this.inputHandler = new InputHandler(gameManager);
+
+        // Enable memory monitoring
+        MemoryMonitor.setEnabled(true);
+        MemoryMonitor.getInstance().trackGameManager(gameManager);
 
         try (InputStream streamBackGround = getClass().getResourceAsStream("/images/backgroundGame.png")) {
             if (streamBackGround != null) {
@@ -92,7 +98,7 @@ public class GameScene {
 
         BorderPane mainLayout = new BorderPane();
 
-        VBox infoPanel = createInfoPanel();
+        this.infoPanel = createInfoPanel();
 
         // Put into BorderPane
         mainLayout.setCenter(canvas);
@@ -193,14 +199,17 @@ public class GameScene {
         HBox timeBox = createInfoRow("TIME", "00:00", Color.LIGHTBLUE);
         timeLabel = (Text) timeBox.getChildren().get(1);
 
-        // FPS (Performance monitoring - only in DEBUG mode or higher)
-        if (debugMode) {
-            fpsBox = createInfoRow("FPS", "60", Color.ORANGE);
-            fpsLabel = (Text) fpsBox.getChildren().get(1);
-            info.getChildren().addAll(title, scoreBox, livesBox, levelBox, timeBox, fpsBox);
-            logger.debug("FPS counter enabled (DEBUG mode active)");
-        } else {
-            info.getChildren().addAll(title, scoreBox, livesBox, levelBox, timeBox);
+        // FPS (Performance monitoring - dynamically shown in DEBUG/TRACE mode)
+        fpsBox = createInfoRow("FPS", "60", Color.ORANGE);
+        fpsLabel = (Text) fpsBox.getChildren().get(1);
+
+        // Add base info
+        info.getChildren().addAll(title, scoreBox, livesBox, levelBox, timeBox);
+        
+        // Add FPS if debug level is active
+        if (isDebugMode()) {
+            info.getChildren().add(fpsBox);
+            logger.debug("FPS counter enabled (DEBUG/TRACE mode active)");
         }
 
         // Shadow effect to make panel stand out
@@ -306,6 +315,16 @@ public class GameScene {
                 pauseOverlay.setVisible(gameManager.getCurrentState() == GameManager.GameState.PAUSED);
                 return;
             }
+            // F3 - Increase log level (less verbose)
+            if (key == KeyCode.F3) {
+                increaseLogLevel();
+                return;
+            }
+            // F4 - Decrease log level (more verbose)
+            if (key == KeyCode.F4) {
+                decreaseLogLevel();
+                return;
+            }
             // F5 - Quick save
             if (key == KeyCode.F5) {
                 if (gameManager.getCurrentState() == GameManager.GameState.PAUSED) {
@@ -352,27 +371,32 @@ public class GameScene {
                 double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
                 lastUpdate = now;
                 
-                // Update FPS counter every second (only in DEBUG mode)
-                if (debugMode) {
-                    frameCount++;
-                    long timeSinceLastFpsUpdate = now - lastFpsUpdate;
-                    if (timeSinceLastFpsUpdate >= 1_000_000_000L) {
+                // Update FPS counter every second (dynamically check log level)
+                boolean isDebug = isDebugMode();
+                frameCount++;
+                long timeSinceLastFpsUpdate = now - lastFpsUpdate;
+                if (timeSinceLastFpsUpdate >= 1_000_000_000L) {
+                    if (isDebug) {
                         currentFps = frameCount / (timeSinceLastFpsUpdate / 1_000_000_000.0);
-                        averageFrameTime = (timeSinceLastFpsUpdate / 1_000_000.0) / frameCount; // in milliseconds
-                        Platform.runLater(() -> {
-                            fpsLabel.setText(String.format("%.0f (%.1fms)", currentFps, averageFrameTime));
-                            // Color code FPS: green (60+), yellow (45-60), red (<45)
-                            if (currentFps >= 60) {
-                                fpsLabel.setFill(Color.LIMEGREEN);
-                            } else if (currentFps >= 45) {
-                                fpsLabel.setFill(Color.YELLOW);
-                            } else {
-                                fpsLabel.setFill(Color.RED);
-                            }
-                        });
-                        frameCount = 0;
-                        lastFpsUpdate = now;
+                        averageFrameTime = (timeSinceLastFpsUpdate / 1_000_000.0) / frameCount;
+                        if (!infoPanel.getChildren().contains(fpsBox)) {
+                            infoPanel.getChildren().add(fpsBox);
+                        }
+                        fpsLabel.setText(String.format("%.0f (%.1fms)", currentFps, averageFrameTime));
+                        // Color code FPS: green (60+), yellow (45-60), red (<45)
+                        if (currentFps >= 60) {
+                            fpsLabel.setFill(Color.LIMEGREEN);
+                        } else if (currentFps >= 45) {
+                            fpsLabel.setFill(Color.YELLOW);
+                        } else {
+                            fpsLabel.setFill(Color.RED);
+                        }
+                    } else {
+                        // Hide FPS box if debug mode is off
+                        infoPanel.getChildren().remove(fpsBox);
                     }
+                    frameCount = 0;
+                    lastFpsUpdate = now;
                 }
                 
                 inputHandler.handleContinuousInput(pressedKeys, deltaTime);
@@ -490,5 +514,66 @@ public class GameScene {
                 (int) canvas.getHeight());
         canvas.snapshot(null, snapshot);
         return snapshot;
+    }
+
+    /**
+     * Check if current log level is DEBUG or TRACE.
+     */
+    private boolean isDebugMode() {
+        return logger.isDebugEnabled() || logger.isTraceEnabled();
+    }
+
+    /**
+     * Decrease log level (make more verbose): ERROR -> WARN -> INFO -> DEBUG -> TRACE
+     */
+    private void decreaseLogLevel() {
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        ch.qos.logback.classic.Logger rootLogger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+        Level currentLevel = rootLogger.getLevel();
+        Level newLevel = currentLevel;
+        
+        if (currentLevel == Level.ERROR) {
+            newLevel = Level.WARN;
+        } else if (currentLevel == Level.WARN) {
+            newLevel = Level.INFO;
+        } else if (currentLevel == Level.INFO) {
+            newLevel = Level.DEBUG;
+        } else if (currentLevel == Level.DEBUG) {
+            newLevel = Level.TRACE;
+        }
+        
+        if (newLevel != currentLevel) {
+            com.arkanoid.systems.logging.LoggingManager.getInstance().setLogLevel(newLevel);
+            logger.info("[F3] Log level decreased: {} -> {}", currentLevel, newLevel);
+        } else {
+            logger.info("[F3] Already at most verbose level: {}", currentLevel);
+        }
+    }
+
+    /**
+     * Increase log level (make less verbose): TRACE -> DEBUG -> INFO -> WARN -> ERROR
+     */
+    private void increaseLogLevel() {
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        ch.qos.logback.classic.Logger rootLogger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+        Level currentLevel = rootLogger.getLevel();
+        Level newLevel = currentLevel;
+        
+        if (currentLevel == Level.TRACE) {
+            newLevel = Level.DEBUG;
+        } else if (currentLevel == Level.DEBUG) {
+            newLevel = Level.INFO;
+        } else if (currentLevel == Level.INFO) {
+            newLevel = Level.WARN;
+        } else if (currentLevel == Level.WARN) {
+            newLevel = Level.ERROR;
+        }
+        
+        if (newLevel != currentLevel) {
+            com.arkanoid.systems.logging.LoggingManager.getInstance().setLogLevel(newLevel);
+            logger.info("[F4] Log level increased: {} -> {}", currentLevel, newLevel);
+        } else {
+            logger.info("[F4] Already at least verbose level: {}", currentLevel);
+        }
     }
 }
