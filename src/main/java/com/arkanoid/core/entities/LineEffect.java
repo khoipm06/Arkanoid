@@ -1,5 +1,6 @@
 package com.arkanoid.core.entities;
 
+import com.arkanoid.utils.ColorCache;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -54,7 +55,7 @@ public class LineEffect extends GameObject {
     @Override
     public void render(GraphicsContext gc) {
         double alpha = 1.0 - (age / duration); // fade out
-        gc.setStroke(new Color(0.3, 0.8, 1.0, alpha)); // light blue color
+        gc.setStroke(ColorCache.getColor(0.3, 0.8, 1.0, alpha)); // light blue color
         gc.setLineWidth(2);
 
         for (double[] seg : segments) {

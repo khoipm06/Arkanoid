@@ -1,5 +1,6 @@
 package com.arkanoid.core.entities;
 
+import com.arkanoid.utils.ColorCache;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -49,7 +50,7 @@ public class FloatingText extends GameObject {
             double opacity = progress;
 
             gc.setFont(font);
-            gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity));
+            gc.setFill(ColorCache.getWithAlpha(color, opacity));
             gc.fillText(text, x, y);
         }
     }
