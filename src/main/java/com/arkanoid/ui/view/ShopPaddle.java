@@ -3,7 +3,6 @@ package com.arkanoid.ui.view;
 import com.arkanoid.core.entities.Paddle;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
-import com.arkanoid.ui.components.ToastNotification;
 
 import org.slf4j.Logger;
 import javafx.fxml.FXML;

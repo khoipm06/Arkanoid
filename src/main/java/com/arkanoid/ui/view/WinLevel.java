@@ -34,12 +34,10 @@ public class WinLevel {
     private ImageView winImage;
 
     private int currentLevel;
-    private int currentScore;
     private final int maxLevel = 3;
 
     public void init(int level, int scoreValue, String timePlayedS) {
         this.currentLevel = level;
-        this.currentScore = scoreValue;
         score.setText("Score: " + scoreValue);
         timePlayed.setText("Time: " + timePlayedS);
         

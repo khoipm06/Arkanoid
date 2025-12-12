@@ -3,7 +3,6 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class GunPaddlePowerUp extends PowerUp {
-    private final long expiryNano;
     private long appliedExpiryNano = -1;
 
     public GunPaddlePowerUp(double x, double y) {
@@ -18,7 +17,6 @@ public class GunPaddlePowerUp extends PowerUp {
         } else {
             logger.warn("GunPaddlePowerUp image not found");
         }
-        this.expiryNano = 0;
     }
 
     @Override

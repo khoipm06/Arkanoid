@@ -155,7 +155,7 @@ public class MemoryMonitor {
     
     private void suggestGC() {
         long beforeMB = memoryBean.getHeapMemoryUsage().getUsed() / (1024 * 1024);
-        logger.info("[MEMORY] Suggesting garbage collection...");
+        logger.info("[MEMORY] Suggesting garbage collection..., before: {} MB", beforeMB);
         
         System.gc();
         

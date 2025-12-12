@@ -57,7 +57,6 @@ public class GameScene {
 
     private Text scoreLabel;
     private Text livesLabel;
-    private Text levelLabel;
     private Text timeLabel;
     private String timeStr;
     
@@ -193,7 +192,6 @@ public class GameScene {
 
         // LEVEL
         HBox levelBox = createInfoRow("LEVEL", String.valueOf(gameManager.getLevelNumber()), Color.GOLD);
-        levelLabel = (Text) levelBox.getChildren().get(1);
 
         // TIME
         HBox timeBox = createInfoRow("TIME", "00:00", Color.LIGHTBLUE);

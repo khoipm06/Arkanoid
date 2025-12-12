@@ -186,7 +186,6 @@ public class ShopBall {
         Button buyButton;
         Button equipButton;
         ImageView imageView;
-        private SessionManager.User currentUser;
 
         SkinItem(String name, int price, Button buyButton, Button equipButton, ImageView imageView) {
             this.name = name;
