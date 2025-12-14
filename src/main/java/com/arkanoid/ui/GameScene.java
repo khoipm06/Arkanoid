@@ -119,7 +119,10 @@ public class GameScene {
     }
 
     public static GameScene getInstance(Stage stage, double width, double height, int levelNumber) {
-        return new GameScene(stage, width, height, levelNumber);
+        GameScene gameScene = new GameScene(stage, width, height, levelNumber);
+        // Register with SceneManager for proper cleanup
+        SceneManager.setActiveGameScene(gameScene);
+        return gameScene;
     }
 
     public void hidePauseOverlay() {
@@ -128,7 +131,36 @@ public class GameScene {
         }
     }
     
+    /**
+     * Cleanup resources when leaving the game scene. CRITICAL: Prevents memory
+     * leaks by stopping AnimationTimer and removing event handlers.
+     */
+    public void cleanup() {
+        logger.info("GameScene cleanup started");
 
+        // Stop the game loop timer
+        if (gameLoop != null) {
+            gameLoop.stop();
+            logger.info("AnimationTimer stopped");
+        }
+
+        // Remove event handlers to prevent memory leaks
+        if (scene != null) {
+            scene.setOnKeyPressed(null);
+            scene.setOnKeyReleased(null);
+            logger.info("Event handlers removed");
+        }
+
+        // Clear pressed keys
+        pressedKeys.clear();
+        
+        // Stop tracking in MemoryMonitor
+        if (MemoryMonitor.getInstance() != null) {
+            // We can't easily untrack, but stopping the loop stops the updates
+        }
+
+        logger.info("GameScene cleanup completed");
+    }
 
     private void openSaveLoadScene() {
         try {
@@ -264,6 +296,7 @@ public class GameScene {
         Button newGameBtn = new Button("New Game");
         stylePauseButton(newGameBtn);
         newGameBtn.setOnAction(e -> {
+            this.cleanup(); // Clean up current scene before creating new one
             GameScene newScene = GameScene.getInstance(stage, stage.getWidth(), stage.getHeight(),
                     gameManager.getLevelNumber());
             newScene.start();
@@ -273,6 +306,7 @@ public class GameScene {
         Button quitBtn = new Button("Quit");
         stylePauseButton(quitBtn);
         quitBtn.setOnAction(e -> {
+            this.cleanup(); // Clean up current scene before quitting
             SceneManager.switchTo("mainMenuView");
         });
 

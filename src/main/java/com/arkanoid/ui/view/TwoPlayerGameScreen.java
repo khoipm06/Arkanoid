@@ -401,9 +401,7 @@ public class TwoPlayerGameScreen {
     }
 
     private void restartGame() {
-        if (gameLoop != null) {
-            gameLoop.stop();
-        }
+        this.cleanup();
         hidePauseMenu();
 
         initializeGame();
@@ -411,12 +409,21 @@ public class TwoPlayerGameScreen {
     }
 
     private void backToMenu() {
-        if (gameLoop != null) {
-            gameLoop.stop();
-        }
+        this.cleanup();
         hidePauseMenu();
 
         SceneManager.switchTo("mainMenuView");
+    }
+
+    /**
+     * Stops the game loop and clears listeners.
+     */
+    public void cleanup() {
+        if (gameLoop != null) {
+            gameLoop.stop();
+            logger.info("Two-player game loop stopped");
+        }
+        activeKeys.clear();
     }
 
     private void showGameOver() {
