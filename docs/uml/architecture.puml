@@ -1,143 +1,1093 @@
 @startuml
-' Simplified Arkanoid Game Architecture
 
-skinparam classAttributeIconSize 0
-hide empty members
+!theme plain
+top to bottom direction
+skinparam linetype ortho
 
-package "com.arkanoid" {
-
-  class GameApplication {
-    + start(Stage)
-  }
-
-  package "ui" {
-    class SceneManager {
-      + {static} loadScene(String, String)
-      + {static} switchTo(String)
-    }
-    class GameScene {
-      - gameManager: GameManager
-      + start()
-      + render()
-    }
-    class TwoPlayerGameView {
-      - gameManager: GameManager
-      + initialize()
-      + render()
-    }
-  }
-
-  package "systems" {
-    class GameManager {
-      - currentState: GameState
-      - players: List<Player>
-      - bricks: List<Brick>
-      + startSinglePlayerGame()
-      + startTwoPlayer()
-      + update(double)
-    }
-    class PlayerManager {
-      - players: Map<Integer, Player>
-      + createMultiplayerSession(): List<Player>
-      + handleInput(KeyCode, boolean, double)
-    }
-    class LevelManager {
-      + loadLevel(int): List<Brick>
-    }
-    class SoundManager {
-      + {static} playSound(String)
-    }
-  }
-
-  package "systems.player" {
-    class Player {
-      - profile: PlayerProfile
-      - state: PlayerState
-      - paddle: Paddle
-      - ball: Ball
-    }
-    class PlayerState {
-      - score: int
-      - lives: int
-      + addScore(int)
-      + loseLife()
-    }
-  }
-
-  package "core.entities" {
-    abstract class GameObject {
-      # x: double
-      # y: double
-      + update(double)
-      + render(GraphicsContext)
-    }
-    abstract class MovableObject extends GameObject {
-      # velocityX: double
-      # velocityY: double
-    }
-    class Paddle extends MovableObject {
-      + moveLeft()
-      + moveRight()
-    }
-    class Ball extends MovableObject {
-      + launch()
-      + checkPaddleCollision(Paddle)
-    }
-    class Brick extends GameObject {
-      - health: int
-      + hit()
-    }
-    class PowerUp extends MovableObject {
-      + applyEffect(Player)
-    }
-  }
-
-  package "core.physics" {
-    class CollisionDetector {
-      + {static} checkBallBrickCollisions(...)
-    }
-  }
-
-  package "database" {
-    class DatabaseManager {
-      + {static} initialize()
-      + getConnection(): Connection
-    }
-    class PlayerProfileManager {
-      + savePlayerProfile(PlayerProfile)
-      + loadPlayerProfile(String): PlayerProfile
-    }
-  }
+class AuthScreen {
+  + AuthScreen(): 
+  + onSignInButtonClick(): void
+  + onBackClick(MouseEvent): void
+  + onSignUpButtonClick(MouseEvent): void
+}
+class Ball {
+  + Ball(double, double, double, double): 
+  + reset(double, double): void
+  + setBounds(double, double, double, double): void
+  + launch(): void
+  + equipSkin(String): void
+  - checkWallCollision(): void
+  - loadSkins(): void
+  + checkPaddleCollision(Paddle): void
+  + hasExploded(): boolean
+  + render(GraphicsContext): void
+  + getSkin(String): Image
+  + update(double): void
+   currentSkin: String
+   color: Color
+   explosive: boolean
+   hasExploded: boolean
+   attachedToPaddle: boolean
+   topDeadSide: boolean
+   ballImage: Image
+   radius: double
+   topIsDeadSide: boolean
+   outOfBounds: boolean
+}
+entity BallState << record >> {
+  + BallState(double, double, double, double, double, boolean, String): 
+  + y(): double
+  + velocityY(): double
+  + attachedToPaddle(): boolean
+  + x(): double
+  + velocityX(): double
+  + radius(): double
+  + skin(): String
+}
+class BaseBrick {
+  + BaseBrick(double, double, double, double, int, Color, int, int): 
+  + BaseBrick(double, double, double, double, int, Color, int, int, String): 
+  + destroy(): void
+  + render(GraphicsContext): void
+  + hit(): void
+  + instantDestroy(): void
+  + dropPowerUp(): PowerUp
+  + update(double): void
+  - createRandomPowerUp(): PowerUp
+   destroyed: boolean
+   texturePath: String
+   color: Color
+   row: int
+   col: int
+}
+class BaseInputHandler {
+  + BaseInputHandler(): 
+  + handleContinuousInput(Set<KeyCode>, double): void
+  # isSpaceKey(KeyCode): boolean
+  # launchBall(Ball): boolean
+  # isPauseKey(KeyCode): boolean
+  + handleKeyPress(KeyCode): boolean
+}
+interface Brick << interface >> {
+  + hit(): void
+  + destroy(): void
+  + intersects(GameObject): boolean
+  + update(double): void
+  + render(GraphicsContext): void
+  + dropPowerUp(): PowerUp
+  + instantDestroy(): void
+   width: double
+   color: Color
+   row: int
+   height: double
+   x: double
+   y: double
+   destroyed: boolean
+   centerY: double
+   centerX: double
+   col: int
+}
+entity BrickState << record >> {
+  + BrickState(String, double, double, double, double, int, int, boolean, double, double, String): 
+  + y(): double
+  + visible(): boolean
+  + width(): double
+  + x(): double
+  + velocityY(): double
+  + height(): double
+  + hitPointsRemaining(): int
+  + velocityX(): double
+  + texturePath(): String
+  + type(): String
+  + colorIndex(): int
+}
+class Bullet {
+  + Bullet(double, double, double, double, double): 
+  + isOutOfBounds(double): boolean
+  + update(double): void
+  + render(GraphicsContext): void
+  + reset(double, double, double, double, double): void
+}
+class CollisionDetector {
+  + CollisionDetector(): 
+  - handleBallBrickCollision(Ball, Brick): void
+  + checkBallBrickCollisions(Ball, List<Brick>, CollisionCallback, GameManager): void
+}
+interface CollisionService << interface >> {
+  + resolveBallBallCollision(Ball, Ball): void
+  + checkBallBallCollision(Ball, Ball): boolean
+  + checkOpponentPaddleHit(Ball, int): boolean
+}
+class CollisionServiceImpl {
+  + CollisionServiceImpl(Player, Player): 
+  + resolveBallBallCollision(Ball, Ball): void
+  + checkBallBallCollision(Ball, Ball): boolean
+  + checkOpponentPaddleHit(Ball, int): boolean
+}
+class ColorCache {
+  + ColorCache(): 
+  + clear(): void
+  + getWithAlpha(Color, double): Color
+  + getColor(double, double, double, double): Color
+}
+class CommandLineArgs {
+  + CommandLineArgs(): 
+  + printUsage(): void
+  + parse(String[]): Config
+}
+class CompressionUtil {
+  + CompressionUtil(): 
+  + compress(String): byte[]
+  - decompressFrom(InputStream): String
+  - compressTo(String, OutputStream): void
+  + compressToFile(String, File): void
+  + decompressFromFile(File): String
+  + decompress(byte[]): String
+}
+class DatabaseException {
+  + DatabaseException(String): 
+  + DatabaseException(String, Throwable): 
+}
+class DatabaseManager {
+  - DatabaseManager(): 
+  + executeUpdate(Consumer<Connection>): void
+  - createTables(Connection): void
+  + executeInTransaction(Function<Connection, T>): T
+  + executeQuery(Function<Connection, T>): T
+  + initialize(): void
+  + close(): void
+  + releaseConnection(Connection): void
+   poolStats: String
+   connection: Connection
+   instance: DatabaseManager
+   activeConnectionCount: long
+}
+class DuplicateEntityException {
+  + DuplicateEntityException(String): 
+}
+class EntityFactory {
+  + EntityFactory(): 
+  + createPowerUp(String, double, double): PowerUp
+  + createBrick(JsonObject, int, int): Brick
+}
+class EntityNotFoundException {
+  + EntityNotFoundException(String): 
+}
+class ExpandPaddlePowerUp {
+  + ExpandPaddlePowerUp(double, double): 
+  + applyEffect(Paddle): void
+  + removeEffect(Paddle): void
+}
+class Explosion {
+  + Explosion(double, double, double, double, double): 
+  + update(double): void
+  + render(GraphicsContext): void
+}
+class ExplosiveBallPowerUp {
+  + ExplosiveBallPowerUp(double, double): 
+  + removeEffect(Paddle): void
+  + applyEffect(Paddle): void
+}
+class FloatingText {
+  + FloatingText(String, double, double, double, double, Color): 
+  + reset(String, double, double, double, double, Color): void
+  + update(double): void
+  + render(GraphicsContext): void
+   active: boolean
+}
+class GameApplication {
+  + GameApplication(): 
+  + switchToProfileOrAuth(): void
+  + start(Stage): void
+  + main(String[]): void
+}
+class GameLogger {
+  - GameLogger(): 
+  + getLogger(String): Logger
+  + logThreadInfo(Logger, String): void
+  + setThreadContext(String, Object): void
+  + logCollectionState(Logger, String, Collection<?>): void
+  + clearThreadContext(): void
+  + getLogger(Class<?>): Logger
+   threadContext: Map<String, String>
+}
+class GameManager {
+  - GameManager(double, double, int): 
+  + onBrickDestroyed(Brick): void
+  + togglePause(): void
+  - resetBall(Paddle): void
+  + pause(): void
+  + resume(): void
+  + restoreGameState(GameState): void
+  + extractCurrentGameState(): GameState
+  - createPowerUpFromState(PowerUpState): PowerUp
+  - applyPowerUpEffect(PowerUp, Paddle): void
+  + loadLevel(int): void
+  + getInstance(double, double, int): GameManager
+  + addExplosion(double, double, double, double, double): void
+  + update(double): void
+  + startGame(): void
+  - createBrickFromState(BrickState): Brick
+   balls: List<Ball>
+   currentState: GameState
+   playerManager: PlayerManager
+   explosions: List<Explosion>
+   bricks: List<Brick>
+   score: int
+   floatingTexts: List<FloatingText>
+   particles: List<Particle>
+   powerUps: List<PowerUp>
+   bullets: List<Bullet>
+   levelNumber: int
+   player: Player
+   lineEffects: List<LineEffect>
+   elapsedTimeSeconds: double
+   trailEffects: List<TrailEffect>
+}
+class GameObject {
+  + GameObject(double, double, double, double): 
+  + update(double): void
+  + intersects(GameObject): boolean
+  + render(GraphicsContext): void
+   width: double
+   height: double
+   x: double
+   y: double
+   centerY: double
+   centerX: double
+   active: boolean
+}
+class GameOver {
+  + GameOver(): 
+  - onBackHomeClick(): void
+  - onNewGameClick(): void
+  + init(int, int, String): void
+  - saveHighScore(int): void
+}
+class GameSave {
+  + GameSave(int, int, String, int, int, int, int, byte[], byte[], LocalDateTime): 
+   createdAt: LocalDateTime
+   thumbnailData: byte[]
+   saveName: String
+   lives: int
+   levelNumber: int
+   userId: int
+   id: int
+   score: int
+   compressedGameState: byte[]
+   elapsedTimeSeconds: int
+}
+class GameSaveListCell {
+  + GameSaveListCell(): 
+  - loadThumbnail(GameSave): void
+  # updateItem(GameSave, boolean): void
+  + clearCache(): void
+  + removeCachedThumbnail(Long): void
+}
+interface GameSaveManager << interface >> {
+  + loadGame(int): GameSave
+  + getAllSaves(int): ObservableList<GameSave>
+  + saveCurrentGame(int, String, WritableImage): GameSave
+  + deleteAllSaves(int): void
+  + getSaveCount(int): int
+  + saveCurrentGameWithAutoName(int, WritableImage): GameSave
+  + isValidSaveName(String): boolean
+  + canSaveCurrentGame(): boolean
+  + deleteSave(int): void
+  + getSaveById(int): Optional<GameSave>
+}
+class GameSaveManagerImpl {
+  + GameSaveManagerImpl(GameManager): 
+  + saveCurrentGameWithAutoName(int, WritableImage): GameSave
+  + saveCurrentGameWithAutoNameAsync(int, WritableImage): CompletableFuture<GameSave>
+  - deleteOldestSave(int): void
+  + saveCurrentGameAsync(int, String, WritableImage): CompletableFuture<GameSave>
+  + deleteSaveAsync(int): CompletableFuture<Void>
+  + getSaveCount(int): int
+  + deleteAllSaves(int): void
+  + loadGameAsync(int): CompletableFuture<GameSave>
+  + loadGame(int): GameSave
+  + getSaveById(int): Optional<GameSave>
+  + getAllSaves(int): ObservableList<GameSave>
+  + deleteSave(int): void
+  + getAllSavesAsync(int): CompletableFuture<ObservableList<GameSave>>
+  + saveCurrentGame(int, String, WritableImage): GameSave
+  + isValidSaveName(String): boolean
+  + canSaveCurrentGame(): boolean
+}
+interface GameSaveRepository << interface >> {
+  + findByUserId(int): List<GameSave>
+  + deleteById(int): boolean
+  + countByUserId(int): int
+  + findById(int): Optional<GameSave>
+  + create(int, String, int, int, int, int, byte[], byte[]): GameSave
+}
+class GameSaveRepositoryImpl {
+  + GameSaveRepositoryImpl(DatabaseManager): 
+  - mapResultSetToGameSave(ResultSet): GameSave
+  + deleteById(int): boolean
+  + create(int, String, int, int, int, int, byte[], byte[]): GameSave
+  + findById(int): Optional<GameSave>
+  + findByUserId(int): List<GameSave>
+  + countByUserId(int): int
+}
+class GameScene {
+  - GameScene(Stage, double, double, int): 
+  - createPauseOverlay(): VBox
+  + getInstance(Stage, double, double, int): GameScene
+  - stylePauseButton(Button): void
+  + start(): void
+  - setupInputHandlers(): void
+  - openSaveLoadScene(): void
+  + cleanup(): void
+  - createInfoPanel(): VBox
+  - decreaseLogLevel(): void
+  - createInfoRow(String, String, Color): HBox
+  - increaseLogLevel(): void
+  + hidePauseOverlay(): void
+  - update(double): void
+  - render(): void
+  + captureCanvasSnapshot(): WritableImage
+   scene: Scene
+   debugMode: boolean
+   canvas: Canvas
+}
+class GameState {
+  + GameState(): 
+  + GameState(int, int, int, int, PaddleState, List<BallState>, List<BrickState>, List<PowerUpState>): 
+   paddleState: PaddleState
+   lives: int
+   levelNumber: int
+   activePowerUps: List<PowerUpState>
+   score: int
+   ballStates: List<BallState>
+   brickStates: List<BrickState>
+   elapsedTimeSeconds: int
+}
+interface GameStateSerializer << interface >> {
+  + isValidJson(String): boolean
+  + isValidGameState(GameState): boolean
+  + extractMetadata(String): GameStateMetadata
+  + toJson(GameState): String
+  + fromJson(String): GameState
+}
+class GameStateSerializerImpl {
+  + GameStateSerializerImpl(): 
+  + fromJson(String): GameState
+  + isValidJson(String): boolean
+  + isValidGameState(GameState): boolean
+  + toJson(GameState): String
+  + extractMetadata(String): GameStateMetadata
+}
+class GunPaddlePowerUp {
+  + GunPaddlePowerUp(double, double): 
+  + removeEffect(Paddle): void
+  + applyEffect(Paddle): void
+}
+class ImageLoader {
+  - ImageLoader(): 
+  + preloadGameImagesAsync(): CompletableFuture<Void>
+  + clearCache(): void
+  + preloadImagesAsync(String[]): CompletableFuture<Void>
+  + getCachedImage(String): Image
+  + isCached(String): boolean
+  + loadImageAsync(String): CompletableFuture<Image>
+  + loadImage(String): Image
+   cacheSize: int
+}
+class InputHandler {
+  + InputHandler(GameManager): 
+  - launchAllBalls(): void
+  + handleKeyPress(KeyCode): boolean
+  + handleContinuousInput(Set<KeyCode>, double): void
+   gameManager: GameManager
+}
+class InventoryManager {
+  + InventoryManager(): 
+  + hasItem(int, String): boolean
+  + removeItem(int, String): boolean
+  + getItemQuantity(int, String): int
+  + addItem(int, String, int): boolean
+  + getUserInventory(int): List<InventoryItem>
+}
+class LeaderboardController {
+  + LeaderboardController(): 
+  + refreshData(): void
+  + initialize(): void
+  - onBackClick(): void
+  - setupCellFactory(): void
+}
+class LevelManager {
+  + LevelManager(): 
+  + loadLevel(int): List<Brick>
+  + nextLevel(): void
+   currentLevel: int
+}
+class LineEffect {
+  + LineEffect(double, double, double, double, double): 
+  + render(GraphicsContext): void
+  + update(double): void
+  - generateLightning(): void
+}
+class LoggingConfig {
+  + LoggingConfig(): 
+  + applyEnvironmentVariables(): void
+   logPattern: String
+   fileEnabled: boolean
+   consoleEnabled: boolean
+   logLevel: Level
+   logFilePath: String
+}
+class LoggingManager {
+  - LoggingManager(): 
+  + awaitTermination(long, TimeUnit): void
+  + shutdown(): void
+  + initialize(LoggingConfig): void
+   config: LoggingConfig
+   instance: LoggingManager
+   logLevel: Level
+   initialized: boolean
+}
+class MainMenuView {
+  + MainMenuView(): 
+  - createModeSelectPopup(): VBox
+  + onLeaderBoardClick(MouseEvent): void
+  + onShopClick(MouseEvent): void
+  - styleModeSelectButton(Button): void
+  - applyIntroEffect(): void
+  + onStartGameClick(MouseEvent): void
+  + onQuitClick(MouseEvent): void
+  + onProfileClick(MouseEvent): void
+  + initialize(): void
+  + onSettingClick(MouseEvent): void
+  + closeModePopup(): void
+}
+class Map {
+  + Map(): 
+  - onPlayGameButtonClick(MouseEvent): void
+  - updatePreview(): void
+  + initialize(): void
+  + onPreMapButtonClick(MouseEvent): void
+  - onBackToMainMenuClick(MouseEvent): void
+  + onNextMapButtonClick(MouseEvent): void
+   stage: Stage
+   unlockedLevel: int
+}
+class MemoryMonitor {
+  - MemoryMonitor(): 
+  + trackGameManager(GameManager): void
+  - updateStats(String, int): void
+  - reportMemoryUsage(long, long, long, double): void
+  - suggestGC(): void
+  - trackCollections(): void
+  - reportTopCollections(): void
+  + shutdown(): void
+  - checkAndReport(): void
+   instance: MemoryMonitor
+   monitoringEnabled: boolean
+   enabled: boolean
+}
+class ModeSelectView {
+  + ModeSelectView(): 
+  + onBackClick(MouseEvent): void
+  + onMultiPlayerClick(MouseEvent): void
+  - onSinglePlayerClick(MouseEvent): void
+   multiPlayerButton: Button
+   mainController: MainMenuView
+   backButton: Button
+   singlePlayerButton: Button
+}
+class MovableObject {
+  + MovableObject(double, double, double, double, double): 
+  + reverseY(): void
+  + move(double): void
+  + reverseX(): void
+   velocityX: double
+   speed: double
+   velocityY: double
+}
+class MovingBrick {
+  + MovingBrick(double, double, double, double, double, double, int, int, String): 
+  + update(double): void
+}
+class MultiBallPowerUp {
+  + MultiBallPowerUp(double, double): 
+  + applyEffect(Paddle): void
+  + removeEffect(Paddle): void
+}
+class NormalBrick {
+  + NormalBrick(double, double, double, double, int, int, String): 
+}
+class ObjectPool<T> {
+  + ObjectPool(Supplier<T>, Consumer<T>, int): 
+  + acquire(): T
+  + clear(): void
+  + prewarm(int): void
+  + release(T): void
+   availableCount: int
+   totalCount: int
+}
+enum Orientation << enumeration >> {
+  - Orientation(int): 
+  + fromPlayerNumber(int): Orientation
+  + values(): Orientation[]
+  + valueOf(String): Orientation
+   directionMultiplier: int
+}
+class Paddle {
+  + Paddle(double, double, double, double, double, double, double): 
+  + Paddle(double, double, double, double): 
+  + stop(): void
+  + expand(double): void
+  + getSkin(String): Image
+  + update(double): void
+  + render(GraphicsContext): void
+  - loadSkins(): void
+  - constrainToBounds(): void
+  + resetSize(): void
+  + moveLeft(double): void
+  + moveRight(double): void
+  + equipSkin(String): void
+  + triggerHitFlash(double, double, double): void
+   currentSkin: String
+   rightGunX: double
+   color: Color
+   gunY: double
+   gunMode: boolean
+   leftGunX: double
+   paddleImage: Image
+   gunExpiry: long
+}
+entity PaddleState << record >> {
+  + PaddleState(double, double, double, double, double, String, String, long): 
+  + x(): double
+  + width(): double
+  + height(): double
+  + velocityX(): double
+  + equippedSkin(): String
+  + activePowerUp(): String
+  + y(): double
+  + powerUpExpiryNano(): long
+}
+class Particle {
+  + Particle(double, double, Color): 
+  + update(double): void
+  + reset(double, double, Color): void
+  + render(GraphicsContext): void
+}
+class PasswordHasher {
+  + PasswordHasher(): 
+  + hashPassword(String): String
+  + verifyPassword(String, String): boolean
+  - generateSalt(): byte[]
+  - hashWithSalt(String, byte[]): String
+}
+class PhysicsEngine {
+  + PhysicsEngine(): 
+  + normalizeVelocity(double, double, double): double[]
+  + reflect(double, double, double, double): double[]
+  + calculateSpeed(double, double): double
+}
+class Player {
+  + Player(String, int, Paddle): 
+  + update(double): void
+   playerNumber: int
+   orientation: Orientation
+   paddle: Paddle
+   ball: Ball
+   state: PlayerState
+   profile: PlayerProfile
+}
+class PlayerManager {
+  - PlayerManager(): 
+  + update(double): void
+  + handleInput(KeyCode, boolean, double): void
+  + addPlayer(int, Player): void
+  + getPlayer(int): Player
+   instance: PlayerManager
+}
+class PlayerProfile {
+  + PlayerProfile(String): 
+  + hasItem(String): boolean
+  + addItem(String, int): void
+   currentSkin: String
+   playerId: String
+   currentPlayer: PlayerProfile
+   equippedPaddleSkin: String
+}
+class PlayerProfile {
+  + PlayerProfile(int, int, int, String, int, int): 
+  + incrementGamesPlayed(): void
+  + addToTotalScore(int): void
+   totalScore: int
+   currentSkin: String
+   highScore: int
+   userId: int
+   money: int
+   gamesPlayed: int
+}
+class PlayerProfileManager {
+  + PlayerProfileManager(): 
+  + addToTotalScore(int, int): void
+  + incrementGamesPlayed(int): void
+  + updateMoney(int, int): void
+  + updateHighScore(int, int): void
+  + getProfile(int): ProfileData?
+  + updateSkin(int, String): void
+  - executeUpdate(String, Object[]): void
+   leaderboardData: List<LeaderboardEntry>
+}
+interface PlayerProfileRepository << interface >> {
+  + update(PlayerProfile): void
+  + create(int): PlayerProfile
+  + findByUserId(int): Optional<PlayerProfile>
+  + getLeaderboard(int): List<PlayerProfile>
+}
+class PlayerProfileRepositoryImpl {
+  + PlayerProfileRepositoryImpl(DatabaseManager): 
+  + create(int): PlayerProfile
+  + findByUserId(int): Optional<PlayerProfile>
+  + getLeaderboard(int): List<PlayerProfile>
+  - mapResultSetToProfile(ResultSet): PlayerProfile
+  + update(PlayerProfile): void
+}
+class PlayerState {
+  + PlayerState(): 
+  + addLife(): void
+  + loseLife(): void
+  + reset(): void
+  + addScore(int): void
+  + nextLevel(): void
+   level: int
+   score: int
+   lives: int
+   gameOver: boolean
+}
+class PowerUp {
+  + PowerUp(double, double, double): 
+  + render(GraphicsContext): void
+  + update(double): void
+  + removeEffect(Paddle): void
+  + applyEffect(Paddle): void
+  + checkPaddleCollision(Paddle): boolean
+   collected: boolean
+}
+interface PowerUpService << interface >> {
+  + applyPickup(int, PowerUp): void
+  + updateAll(double): void
+  + spawn(double, double, int): void
+  + clear(): void
+}
+class PowerUpServiceImpl {
+  + PowerUpServiceImpl(Player, Player): 
+  + spawn(double, double, int): void
+  - createRandomPowerUp(double, double): PowerUp
+  + applyPickup(int, PowerUp): void
+  + clear(): void
+  + updateAll(double): void
+  - isOutOfBounds(PowerUp): boolean
+}
+entity PowerUpState << record >> {
+  + PowerUpState(String, double, double, double, boolean): 
+  + x(): double
+  + velocityY(): double
+  + type(): String
+  + active(): boolean
+  + y(): double
+}
+class ProfileScreen {
+  + ProfileScreen(): 
+  + initialize(): void
+  ~ onLogOutClick(MouseEvent): void
+  ~ onBackClick(MouseEvent): void
+  + refreshProfile(): void
+}
+class Renderer {
+  + Renderer(GraphicsContext): 
+  + drawRect(double, double, double, double, Color): void
+  + clear(double, double): void
+  + drawCircle(double, double, double, Color): void
+  + drawText(String, double, double, Color, double): void
+   graphicsContext: GraphicsContext
+}
+class RepositoryFactory {
+  - RepositoryFactory(): 
+  + shutdown(): void
+   playerProfileRepository: PlayerProfileRepository
+   userRepository: UserRepository
+   databaseManager: DatabaseManager
+   instance: RepositoryFactory
+   gameSaveRepository: GameSaveRepository
+   passwordHasher: PasswordHasher
+}
+interface RespawnService << interface >> {
+  + respawnBall(int): void
+   launchSpeed: double
+}
+class RespawnServiceImpl {
+  + RespawnServiceImpl(Player, Player, double): 
+  + respawnBall(int): void
+   launchSpeed: double
+}
+class RowClearPowerUp {
+  + RowClearPowerUp(double, double): 
+  + removeEffect(Paddle): void
+  + applyEffect(Paddle): void
+}
+class SaveLoadScene {
+  + SaveLoadScene(): 
+  - showError(String): void
+  - setupKeyboardShortcuts(): void
+  - refreshSaveList(): void
+  - showSuccess(String): void
+  + init(GameSaveManager, GameManager, Stage, int, Runnable, StackPane, GameScene): void
+  + onLoadGame(ActionEvent): void
+  + onDeleteGame(ActionEvent): void
+  + onBack(ActionEvent): void
+  + onSaveNewGame(ActionEvent): void
+}
+class SceneManager {
+  + SceneManager(): 
+  + switchTo(String): void
+  + loadScene(String, String): void
+  + getController(String): Object
+  - refreshSceneIfNeeded(String): void
+  + showWinLevel(int, int, String): void
+  + showGameOver(int, int, String): void
+   stage: Stage
+   activeGameScene: GameScene
+}
+class SessionManager {
+  + SessionManager(): 
+  + login(int, String, String, boolean): void
+  + login(int, String, String): void
+  + restoreSession(): boolean
+  + savePlayer(PlayerProfile): void
+  + logout(): void
+   equippedSkin: String
+   activeProfile: PlayerProfile
+   equippedBallSkin: String
+   loggedIn: boolean
+   equippedPaddleSkin: String
+   currentUser: User?
+}
+class SettingView {
+  + SettingView(): 
+  - savePreferences(): void
+  - onOKClick(): void
+  - setupVolumeListener(): void
+  + initialize(): void
+  - onCancelClick(): void
+  - loadUserPreferences(): void
+}
+class ShopBall {
+  + ShopBall(): 
+  + onEquip2Click(MouseEvent): void
+  + onBackClick(MouseEvent): void
+  + onEquip1Click(MouseEvent): void
+  + onBuy1Click(MouseEvent): void
+  + onEquip3Click(MouseEvent): void
+  + onBuy2Click(MouseEvent): void
+  - buySkin(String): void
+  + onBuy3Click(MouseEvent): void
+  + refreshMoney(): void
+  - updateShopUI(): void
+  + setPlayer(PlayerProfile, Ball): void
+  + initialize(): void
+  - equipSkin(String): void
+}
+class ShopPaddle {
+  + ShopPaddle(): 
+  + onEquip3Click(MouseEvent): void
+  - equipSkin(String): void
+  + initialize(): void
+  + onEquip2Click(MouseEvent): void
+  + onBackHomeClick(MouseEvent): void
+  - updateShopUI(): void
+  + refreshMoney(): void
+  + onBuy1Click(MouseEvent): void
+  + onEquip1Click(MouseEvent): void
+  + onBuy3Click(MouseEvent): void
+  + onBuy2Click(MouseEvent): void
+  - buySkin(String): void
+   player: Paddle
+}
+class ShopView {
+  + ShopView(): 
+  - updateMoneyLabel(): void
+  - showMessage(String): void
+  + initialize(): void
+  + onBallShopClick(MouseEvent): void
+  + onPaddleShopClick(MouseEvent): void
+  + onDepositClick(MouseEvent): void
+  + onBackClick(MouseEvent): void
+  + refreshMoney(): void
+}
+class SignIn {
+  + SignIn(): 
+  + onSignUpLinkClick(MouseEvent): void
+  + onSignInClick(): void
+  + onCancelClick(MouseEvent): void
+}
+class SignUpView {
+  + SignUpView(): 
+  + onCancelClick(MouseEvent): void
+  + onSignInLinkClick(MouseEvent): void
+  + onSignUpClick(): void
+}
+class SoundManager {
+  - SoundManager(): 
+  + preloadSoundsAsync(String[]): CompletableFuture<Void>
+  + stopBackground(): void
+  + playBackground(String, boolean): void
+  + playSound(String): void
+  + preloadGameSoundsAsync(): CompletableFuture<Void>
+   instance: SoundManager
+   volume: double
+}
+class Sprite {
+  + Sprite(String, double, double): 
+   width: double
+   image: Image
+   height: double
+   loaded: boolean
+}
+class StrongBrick {
+  + StrongBrick(double, double, double, double, int, int, String): 
+  + hit(): void
+  + destroy(): void
+  + render(GraphicsContext): void
+  + instantDestroy(): void
+  - loadImage(String): Image?
+   destroyed: boolean
+}
+class ThreadContext {
+  + ThreadContext(): 
+  + unregister(): void
+  + clear(): void
+  + getMetadata(long): ThreadMetadata
+  + register(String): void
+  + get(String): Object
+  + set(String, Object): void
+  + remove(String): void
+   currentMetadata: ThreadMetadata
+   allMetadata: Map<Long, ThreadMetadata>
+   all: Map<String, Object>
+}
+class ThreadManager {
+  - ThreadManager(): 
+  + shutdown(): void
+  + executeBackground(Callable<T>, String): Future<T>
+  + executeOnGameLoop(Runnable, String): Future<?>
+  + scheduleWithFixedDelay(Runnable, long, long, TimeUnit, String): ScheduledFuture<?>
+  + executeBackground(Runnable, String): Future<?>
+  + schedule(Runnable, long, TimeUnit, String): ScheduledFuture<?>
+   instance: ThreadManager
+   terminated: boolean
+}
+interface ThumbnailCapture << interface >> {
+  + estimateThumbnailSizeBytes(int, int): int
+  + loadThumbnailFromBytes(byte[]): Image
+  + calculateThumbnailDimensions(double, double): ThumbnailDimensions
+  + isValidPngBytes(byte[]): boolean
+  + captureThumbnailPNG(WritableImage): byte[]
+  + isValidCanvas(WritableImage): boolean
+  + captureThumbnailPNG(WritableImage, int, int): byte[]
+}
+class ThumbnailCaptureImpl {
+  + ThumbnailCaptureImpl(): 
+  + calculateThumbnailDimensions(double, double): ThumbnailDimensions
+  - scaleImage(BufferedImage, int, int): BufferedImage
+  + captureThumbnailPNG(WritableImage): byte[]
+  + isValidCanvas(WritableImage): boolean
+  + isValidPngBytes(byte[]): boolean
+  + captureThumbnailPNG(WritableImage, int, int): byte[]
+  + estimateThumbnailSizeBytes(int, int): int
+  + loadThumbnailFromBytes(byte[]): Image
+}
+class ToastNotification {
+  + ToastNotification(): 
+  + showToast(String, Region): void
+  - getStyleForType(ToastType): String
+  + showToast(String, Region, ToastType): void
+}
+class TrailEffect {
+  + TrailEffect(double, double, double, double, Color): 
+  + reset(double, double, double, double, Color): void
+  + update(double): void
+  + render(GraphicsContext): void
+   active: boolean
+}
+class TwoPlayerGameOverScreen {
+  + TwoPlayerGameOverScreen(Stage, int, EndReason, int, int): 
+  - startRematch(): void
+  + show(): void
+  - returnToMenu(): void
+   resultMessage: String
+}
+class TwoPlayerGameScreen {
+  + TwoPlayerGameScreen(Stage): 
+  - resumeGame(): void
+  - initializeGame(): void
+  - showPauseMenu(): void
+  + cleanup(): void
+  - handleBallBrickCollision(Ball, Brick): void
+  - update(double): void
+  - createMenuButton(String): Button
+  - startGameLoop(): void
+  - backToMenu(): void
+  - showGameOver(): void
+  - loadBackgroundImage(): void
+  - setupInput(Scene): void
+  - checkBrickCollisions(): void
+  + show(): void
+  - hidePauseMenu(): void
+  - restartGame(): void
+  - render(): void
+}
+class TwoPlayerInputHandler {
+  + TwoPlayerInputHandler(Player, Player, TwoPlayerMatchManager): 
+  - launchAllBalls(): void
+  - togglePause(): void
+  + handleKeyPress(KeyCode): boolean
+  + handleContinuousInput(Set<KeyCode>, double): void
+   matchManager: TwoPlayerMatchManager
+   onResumeCallback: Runnable
+   onPauseCallback: Runnable
+}
+interface TwoPlayerMatchManager << interface >> {
+  + endMatch(EndReason): void
+  + resume(): void
+  + update(double): void
+  + startMatch(): void
+  + handleLifeLoss(int, LifeLossCause): void
+  + applyBrickHit(int, int): void
+  + pause(): void
+   state: MatchState
+}
+class TwoPlayerMatchManagerImpl {
+  + TwoPlayerMatchManagerImpl(Player, Player, CollisionService, RespawnService, PowerUpService, List<Brick>): 
+  + TwoPlayerMatchManagerImpl(Player, Player, CollisionService, RespawnService, PowerUpService): 
+  - checkWinConditions(): void
+  - areAllBricksDestroyed(): boolean
+  + handleLifeLoss(int, LifeLossCause): void
+  + endMatch(EndReason): void
+  + resume(): void
+  + update(double): void
+  + startMatch(): void
+  + applyBrickHit(int, int): void
+  + pause(): void
+   endReason: EndReason
+   state: MatchState
+   winningPlayer: int
+   player2: Player
+   player1: Player
+}
+class TwoPlayerStatsPanel {
+  + TwoPlayerStatsPanel(Player, Player): 
+  + update(): void
+  - createPlayerSection(int): VBox
+  - setupUI(): void
+}
+class UnbreakableBrick {
+  + UnbreakableBrick(double, double, double, double, int, int, String): 
+  + hit(): void
+}
+class User {
+  + User(int, String, String, LocalDateTime, LocalDateTime): 
+   passwordHash: String
+   createdAt: LocalDateTime
+   username: String
+   lastLogin: LocalDateTime
+   id: int
+}
+class UserManager {
+  + UserManager(): 
+  + getProfile(int): PlayerProfile
+  + login(String, String): User?
+  + register(String, String): User?
+  + usernameExists(String): boolean
+}
+class UserPreferences {
+  + UserPreferences(): 
+  + UserPreferences(int): 
+  + toString(): String
+   musicVolume: int
+   userId: int
+   musicVolumeAsDouble: double
+}
+class UserPreferencesManager {
+  + UserPreferencesManager(): 
+  + savePreferences(UserPreferences): void
+  + getPreferences(int): Optional<UserPreferences>
+  + updateMusicVolume(int, int): void
+}
+interface UserRepository << interface >> {
+  + findById(int): Optional<User>
+  + findByUsername(String): Optional<User>
+  + existsByUsername(String): boolean
+  + create(String, String): User
+  + updateLastLogin(int): void
+}
+class UserRepositoryImpl {
+  + UserRepositoryImpl(DatabaseManager): 
+  + create(String, String): User
+  + existsByUsername(String): boolean
+  + updateLastLogin(int): void
+  - mapResultSetToUser(ResultSet): User
+  + findById(int): Optional<User>
+  + findByUsername(String): Optional<User>
+}
+class UserSessionStorage {
+  + UserSessionStorage(): 
+  + loadSession(): SessionData?
+  + clearSession(): boolean
+  + hasSession(): boolean
+  + saveSession(int, String, String): boolean
+}
+class WinLevel {
+  + WinLevel(): 
+  - onNextLevelClick(): void
+  + init(int, int, String): void
+  - onPreLevelClick(): void
+  - onHomeClick(): void
+  - onReplayClick(): void
+  - saveHighScore(int): void
 }
 
-' Relationships
-GameApplication --> SceneManager
-SceneManager --> GameScene
-SceneManager --> TwoPlayerGameView
-
-GameScene o-- GameManager
-TwoPlayerGameView o-- GameManager
-
-GameManager o-- PlayerManager
-GameManager o-- LevelManager
-GameManager "1" *-- "1..*" Player
-
-Player *-- Paddle
-Player *-- Ball
-Player o-- PlayerState
-
-LevelManager ..> Brick : creates
-
-GameManager ..> CollisionDetector : uses
-CollisionDetector ..> Brick
-CollisionDetector ..> Ball
-
-PlayerProfileManager o-- DatabaseManager
-
-MovableObject <|-- Paddle
-MovableObject <|-- Ball
-MovableObject <|-- PowerUp
-GameObject <|-- Brick
-GameObject <|-- MovableObject
-
+Ball                         -[#000082,plain]-^  MovableObject               
+BaseBrick                    -[#008200,dashed]-^  Brick                       
+BaseBrick                    -[#000082,plain]-^  GameObject                  
+Bullet                       -[#000082,plain]-^  GameObject                  
+CollisionServiceImpl         -[#008200,dashed]-^  CollisionService            
+DuplicateEntityException     -[#000082,plain]-^  DatabaseException           
+EntityNotFoundException      -[#000082,plain]-^  DatabaseException           
+ExpandPaddlePowerUp          -[#000082,plain]-^  PowerUp                     
+Explosion                    -[#000082,plain]-^  GameObject                  
+ExplosiveBallPowerUp         -[#000082,plain]-^  PowerUp                     
+FloatingText                 -[#000082,plain]-^  GameObject                  
+GameSaveManagerImpl          -[#008200,dashed]-^  GameSaveManager             
+GameSaveRepositoryImpl       -[#008200,dashed]-^  GameSaveRepository          
+GameStateSerializerImpl      -[#008200,dashed]-^  GameStateSerializer         
+GunPaddlePowerUp             -[#000082,plain]-^  PowerUp                     
+InputHandler                 -[#000082,plain]-^  BaseInputHandler            
+LineEffect                   -[#000082,plain]-^  GameObject                  
+MovableObject                -[#000082,plain]-^  GameObject                  
+MovingBrick                  -[#000082,plain]-^  BaseBrick                   
+MultiBallPowerUp             -[#000082,plain]-^  PowerUp                     
+NormalBrick                  -[#000082,plain]-^  BaseBrick                   
+Paddle                       -[#000082,plain]-^  MovableObject               
+Particle                     -[#000082,plain]-^  GameObject                  
+PlayerProfileRepositoryImpl  -[#008200,dashed]-^  PlayerProfileRepository     
+PowerUp                      -[#000082,plain]-^  MovableObject               
+PowerUpServiceImpl           -[#008200,dashed]-^  PowerUpService              
+RespawnServiceImpl           -[#008200,dashed]-^  RespawnService              
+RowClearPowerUp              -[#000082,plain]-^  PowerUp                     
+StrongBrick                  -[#000082,plain]-^  BaseBrick                   
+ThumbnailCaptureImpl         -[#008200,dashed]-^  ThumbnailCapture            
+TrailEffect                  -[#000082,plain]-^  GameObject                  
+TwoPlayerInputHandler        -[#000082,plain]-^  BaseInputHandler            
+TwoPlayerMatchManagerImpl    -[#008200,dashed]-^  TwoPlayerMatchManager       
+UnbreakableBrick             -[#000082,plain]-^  BaseBrick                   
+UserRepositoryImpl           -[#008200,dashed]-^  UserRepository              
 @enduml
