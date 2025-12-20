@@ -69,26 +69,30 @@ This is a classic Arkanoid game developed in Java as a final project for Object-
 
 ### Game Screenshots
 
-#### Main Menu
 <div align="center">
-  <img src="docs/images/img1.png" alt="Main Menu" width="400" height="300"/>
-  <img src="docs/images/img7.png" alt="User Profile & Shop" width="400" height="300"/>
-  <p><i>Main menu interface and user profile management</i></p>
-</div>
+
+#### Main Menu & Authentication
+<p>
+  <img src="docs/images/img1.png" alt="Main Menu" style="width:420px; height:304px; vertical-align:top;" />
+  <img src="docs/images/img7.png" alt="User Profile & Shop" style="width:420px; height:304px; vertical-align:top;" />
+</p>
+<p><i>Main menu interface and user profile management</i></p>
 
 #### Gameplay
-<div align="center">
-  <img src="docs/images/img2.png" alt="Single Player Gameplay" width="400" height="300"/>
-  <img src="docs/images/img5.png" alt="Two Player Mode" width="400" height="300"/>
-  <img src="docs/images/img3.png" alt="Pause Menu" width="400" height="300"/>
-  <p><i>Single player mode with visual effects and two-player competitive gameplay</i></p>
-</div>
+<p>
+  <img src="docs/images/img2.png" alt="Single Player Gameplay" style="width:650px; height:410px; vertical-align:top;" />
+  <img src="docs/images/img5.png" alt="Two Player Mode" style="width:650px; height:410px; vertical-align:top;" />
+  <img src="docs/images/img3.png" alt="Pause Menu" style="width:650px; height:410px; vertical-align:top;" />
+</p>
+<p><i>Single player mode with visual effects and two-player competitive gameplay</i></p>
 
 #### Game Features
-<div align="center">
-  <img src="docs/images/img4.png" alt="Save System & Leaderboard" width="400" height="300"/>
-  <img src="docs/images/img6.png" alt="Settings & Customization" width="400" height="300"/>
-  <p><i>Save/Load system with thumbnails and game settings</i></p>
+<p>
+  <img src="docs/images/img4.png" alt="Save System & Leaderboard" style="width:750px; height:590px; vertical-align:top;" />
+  <img src="docs/images/img6.png" alt="Settings & Customization" style="width:750px; height:590px; vertical-align:top;" />
+</p>
+<p><i>Save/Load system with thumbnails and game settings</i></p>
+
 </div>
 
 ---
