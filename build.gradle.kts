@@ -27,6 +27,7 @@ tasks.withType<JavaCompile> {
 
 application {
     mainClass.set("com.arkanoid.GameApplication")
+    mainModule.set("com.arkanoid")
 }
 
 javafx {
