@@ -23,7 +23,6 @@ public class GameOver {
     private ImageView youLostImage;
 
     private int currentLevel;
-    private int currentScore;
     // private GameScene gameScene;
     private Stage stage;
     // private GameManager gameManager;
@@ -31,7 +30,6 @@ public class GameOver {
 
     public void init(int level, int scoreValue, String timePlyed) {
         this.currentLevel = level;
-        this.currentScore = scoreValue;
         score.setText("Score: " + scoreValue);
         timePlayed.setText("Time:" + timePlyed);
 

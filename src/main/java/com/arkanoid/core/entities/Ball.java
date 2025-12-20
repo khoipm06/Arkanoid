@@ -133,8 +133,8 @@ public class Ball extends MovableObject {
         boolean isTopPaddleHit = topIsDeadSide && velocityY < 0;
 
         if (isBottomPaddleHit || isTopPaddleHit) {
-            logger.debug("Paddle collision: topIsDeadSide={}, velocityY={}, isBottom={}, isTop={}", 
-                topIsDeadSide, velocityY, isBottomPaddleHit, isTopPaddleHit);
+            logger.debug("Paddle collision: topIsDeadSide={}, velocityY={}, isBottom={}, isTop={}",
+                topIsDeadSide, String.format("%.2f", velocityY), isBottomPaddleHit, isTopPaddleHit);
             soundManager.playSound("paddleBounce.wav");
             double hitY = isBottomPaddleHit ? paddle.getY() : paddle.getY() + paddle.getHeight();
             paddle.triggerHitFlash(0.4, getCenterX(), hitY);

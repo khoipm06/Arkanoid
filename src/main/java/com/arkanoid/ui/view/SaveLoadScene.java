@@ -49,7 +49,6 @@ public class SaveLoadScene {
 
     private GameSaveManager gameSaveManager;
     private GameManager gameManager;
-    private Stage stage;
     private Runnable onBackCallback;
     private int currentUserId;
     private StackPane rootPane;
@@ -62,7 +61,6 @@ public class SaveLoadScene {
             Runnable onBackCallback, StackPane rootPane, GameScene gameScene) {
         this.gameSaveManager = gameSaveManager;
         this.gameManager = gameManager;
-        this.stage = stage;
         this.currentUserId = userId;
         this.onBackCallback = onBackCallback;
         this.rootPane = rootPane;

@@ -23,7 +23,7 @@ public class CollisionDetector {
                 continue;
 
             if (ball.intersects((GameObject) brick)) {
-                logger.debug("Ball-brick collision detected at ({}, {})", brick.getCenterX(), brick.getCenterY());
+                logger.debug("Ball-brick collision detected at ({}, {})", String.format("%.2f", brick.getCenterX()), String.format("%.2f", brick.getCenterY()));
                 SoundManager.getInstance().playSound("brickBounce.wav");
                 handleBallBrickCollision(ball, brick);
                 brick.hit();
@@ -34,7 +34,7 @@ public class CollisionDetector {
                     double explosionRadius = 80;
                     double explosionX = brick.getCenterX();
                     double explosionY = brick.getCenterY();
-                    logger.debug("Explosive ball triggered at ({}, {}) with radius {}", explosionX, explosionY, explosionRadius);
+                    logger.debug("Explosive ball triggered at ({}, {}) with radius {}", String.format("%.2f", explosionX), String.format("%.2f", explosionY), String.format("%.2f", explosionRadius));
 
                     gameManager.addExplosion(explosionX, explosionY, 64, 64, 1);
 

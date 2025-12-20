@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 
 public class Explosion extends GameObject {
     private static final Logger logger = GameLogger.getLogger(Explosion.class);
-    private double maxRadius;
-    private double currentRadius;
     private final double duration;
     private double age;
     private final int frameCount = 6; // number of explosion frames in the sprite sheet
@@ -19,7 +17,6 @@ public class Explosion extends GameObject {
 
     public Explosion(double x, double y, double frameWidth, double frameHeight, double duration) {
         super(x, y, 0, 0);
-        this.maxRadius = maxRadius;
         this.frameWidth = frameWidth;
         this.frameHeight = frameHeight;
         this.duration = duration;

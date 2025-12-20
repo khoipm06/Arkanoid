@@ -25,11 +25,6 @@ public class ModeSelectView {
     private AnchorPane root;
 
     private MainMenuView mainController;
-    private Stage stage;
-
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
 
     @FXML
     private void onSinglePlayerClick(MouseEvent event) throws IOException {

@@ -60,7 +60,7 @@ public abstract class PowerUp extends MovableObject {
 
     public boolean checkPaddleCollision(Paddle paddle) {
         if (!collected && intersects(paddle)) {
-            logger.debug("PowerUp collected: {} at ({}, {})", this.getClass().getSimpleName(), x, y);
+            logger.debug("PowerUp collected: {} at ({}, {})", this.getClass().getSimpleName(), String.format("%.2f", x), String.format("%.2f", y));
             setCollected(true);
             applyEffect(paddle);
             logger.debug("PowerUp effect applied: {}", this.getClass().getSimpleName());

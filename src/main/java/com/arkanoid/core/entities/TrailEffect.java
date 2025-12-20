@@ -1,5 +1,6 @@
 package com.arkanoid.core.entities;
 
+import com.arkanoid.utils.ColorCache;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -41,12 +42,13 @@ public class TrailEffect extends GameObject {
         if (life > 0) {
             double progress = life / maxLife;
             double currentRadius = initialRadius * progress;
-            double currentOpacity = progress * 0.7; // Slightly more transparent for smoother look
+            // Slightly more transparent for a smoother look
+            double currentOpacity = progress * 0.7;
 
             // Draw outer glow (larger, more transparent)
             double glowRadius = currentRadius * 1.5;
             double glowOpacity = currentOpacity * 0.3;
-            gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), glowOpacity));
+            gc.setFill(ColorCache.getWithAlpha(color, glowOpacity));
             gc.fillOval(
                 x + (initialRadius - glowRadius), 
                 y + (initialRadius - glowRadius), 
@@ -54,8 +56,8 @@ public class TrailEffect extends GameObject {
                 glowRadius * 2
             );
 
-            // Draw main trail circle
-            gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), currentOpacity));
+            // Draw the main trail circle
+            gc.setFill(ColorCache.getWithAlpha(color, currentOpacity));
             gc.fillOval(
                 x + (initialRadius - currentRadius), 
                 y + (initialRadius - currentRadius), 
@@ -66,7 +68,7 @@ public class TrailEffect extends GameObject {
             // Draw bright center (smaller, more opaque)
             double centerRadius = currentRadius * 0.5;
             double centerOpacity = Math.min(currentOpacity * 1.5, 1.0);
-            gc.setFill(new Color(1.0, 1.0, 1.0, centerOpacity)); // White center
+            gc.setFill(ColorCache.getColor(1.0, 1.0, 1.0, centerOpacity)); // White center
             gc.fillOval(
                 x + (initialRadius - centerRadius), 
                 y + (initialRadius - centerRadius), 

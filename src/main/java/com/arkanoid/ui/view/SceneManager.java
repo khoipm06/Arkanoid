@@ -1,6 +1,7 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.systems.logging.GameLogger;
+import com.arkanoid.ui.GameScene;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -15,6 +16,7 @@ public class SceneManager {
     private static Stage mainStage;
     private static final Map<String, Scene> scenes = new HashMap<>();
     private static final Map<String, Object> controllers = new HashMap<>();
+    private static GameScene activeGameScene; // Track active game scene for cleanup
 
     public static void setStage(Stage stage) {
         mainStage = stage;
@@ -33,6 +35,13 @@ public class SceneManager {
 
     public static void switchTo(String name) {
         if (mainStage != null && scenes.containsKey(name)) {
+            // Cleanup active game scene before switching away
+            if (activeGameScene != null && !"game".equals(name)) {
+                logger.info("Cleaning up active GameScene before switching to: {}", name);
+                activeGameScene.cleanup();
+                activeGameScene = null;
+            }
+            
             // Refresh data for scenes that need it
             refreshSceneIfNeeded(name);
             mainStage.setScene(scenes.get(name));
@@ -40,6 +49,13 @@ public class SceneManager {
         } else {
             logger.error("Failed to switch scene: '{}' not registered in SceneManager or stage is null", name);
         }
+    }
+
+    /**
+     * Register the active GameScene for cleanup when switching scenes.
+     */
+    public static void setActiveGameScene(com.arkanoid.ui.GameScene gameScene) {
+        activeGameScene = gameScene;
     }
 
     /**

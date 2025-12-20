@@ -74,14 +74,33 @@ public class LoggingManager {
     
     /**
      * Change log level at runtime.
+     * Optimized: Sets root logger FIRST for immediate effect, then updates children.
      */
     public void setLogLevel(Level level) {
         if (config != null) {
+            Level oldLevel = config.getLogLevel();
+            
+            // Use WARN level so message is visible at all log levels except ERROR-only
+            logger.warn("Log level changing: {} -> {}", oldLevel, level);
+            
+            // Update config
             config.setLogLevel(level);
+            
+            // CRITICAL: Set root logger FIRST for immediate effect
             LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
             Logger rootLogger = loggerContext.getLogger(ROOT_LOGGER_NAME);
             rootLogger.setLevel(level);
-            logger.info("Log level changed to: {}", level);
+            
+            // Update all child loggers to inherit from root (reset to null)
+            int updated = 0;
+            for (Logger childLogger : loggerContext.getLoggerList()) {
+                if (!childLogger.getName().equals(ROOT_LOGGER_NAME)) {
+                    childLogger.setLevel(null); // null means inherit from parent
+                    updated++;
+                }
+            }
+            
+            logger.warn("Log level changed successfully ({} child loggers updated)", updated);
         }
     }
     

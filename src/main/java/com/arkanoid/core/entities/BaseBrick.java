@@ -18,6 +18,11 @@ public abstract class BaseBrick extends GameObject implements Brick {
     protected Image texture;
     protected String texturePath;
 
+    // Color caching to prevent excessive allocations
+    // BUG FIX: Cache derived color and only recalculate when hitPoints change
+    private Color cachedRenderColor = null;
+    private int lastRenderedHitPoints = Integer.MIN_VALUE;
+
     public BaseBrick(double x, double y, double width, double height,
             int hitPoints, Color color, int row, int col) {
         this(x, y, width, height, hitPoints, color, row, col, null);
@@ -43,7 +48,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
     public void hit() {
         hitPoints--;
         if (hitPoints <= 0) {
-            logger.debug("Brick destroyed at ({}, {}) row={} col={}", x, y, row, col);
+            logger.debug("Brick destroyed at ({}, {}) row={} col={}", String.format("%.2f", x), String.format("%.2f", y), row, col);
             destroyed = true;
             active = false;
         }
@@ -51,7 +56,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
 
     @Override
     public void destroy() {
-        logger.debug("Brick.destroy() called at ({}, {}) row={} col={}", x, y, row, col);
+        logger.debug("Brick.destroy() called at ({}, {}) row={} col={}", String.format("%.2f", x), String.format("%.2f", y), row, col);
         destroyed = true;
         active = false;
     }
@@ -73,9 +78,13 @@ public abstract class BaseBrick extends GameObject implements Brick {
         if (texture != null) {
             gc.drawImage(texture, x, y, width, height);
         } else {
-            double brightness = (double) hitPoints / maxHitPoints;
-            Color renderColor = color.deriveColor(0, 1, brightness, 1);
-            gc.setFill(renderColor);
+            // Cache derived color - only recalculate when hit points change
+            if (cachedRenderColor == null || lastRenderedHitPoints != hitPoints) {
+                double brightness = (double) hitPoints / maxHitPoints;
+                cachedRenderColor = color.deriveColor(0, 1, brightness, 1);
+                lastRenderedHitPoints = hitPoints;
+            }
+            gc.setFill(cachedRenderColor);
             gc.fillRect(x, y, width, height);
         }
     }
@@ -84,7 +93,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
     public PowerUp dropPowerUp() {
         if (Math.random() < powerUpChance) {
             PowerUp powerUp = createRandomPowerUp();
-            logger.debug("PowerUp dropped: {} at ({}, {})", powerUp.getClass().getSimpleName(), getCenterX(), getCenterY());
+            logger.debug("PowerUp dropped: {} at ({}, {})", powerUp.getClass().getSimpleName(), String.format("%.2f", getCenterX()), String.format("%.2f", getCenterY()));
             return powerUp;
         }
         return null;
@@ -92,7 +101,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
 
     @Override
     public void instantDestroy() {
-        logger.debug("Brick instantly destroyed at ({}, {}) row={} col={}", x, y, row, col);
+        logger.debug("Brick instantly destroyed at ({}, {}) row={} col={}", String.format("%.2f", x), String.format("%.2f", y), row, col);
         this.destroyed = true;
         this.active = false;
         this.hitPoints = 0;

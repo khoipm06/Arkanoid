@@ -60,7 +60,7 @@ public class UserPreferencesManager {
             pstmt.setInt(2, prefs.getMusicVolume());
 
             pstmt.executeUpdate();
-            logger.debug("Saved preferences for user {}: volume={}", prefs.getUserId(), prefs.getMusicVolume());
+            logger.debug("Saved preferences for user {}: volume={}", prefs.getUserId(), String.format("%.2f", (double) prefs.getMusicVolume()));
 
         } catch (SQLException e) {
             logger.error("Failed to save preferences for user {}", prefs.getUserId(), e);
@@ -86,7 +86,7 @@ public class UserPreferencesManager {
                 prefs.setMusicVolume(volume);
                 savePreferences(prefs);
             } else {
-                logger.debug("Updated music volume for user {} to {}", userId, volume);
+                logger.debug("Updated music volume for user {} to {}", userId, String.format("%.2f", (double) volume));
             }
 
         } catch (SQLException e) {

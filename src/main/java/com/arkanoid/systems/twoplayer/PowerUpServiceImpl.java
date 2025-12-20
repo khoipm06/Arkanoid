@@ -60,7 +60,7 @@ public class PowerUpServiceImpl implements PowerUpService {
         if (powerUp != null) {
             powerUp.setVelocityY(velocityY);
             activePowerUps.add(new PowerUpInstance(powerUp, ownerPlayerNumber));
-            logger.debug("Power-up spawned at ({}, {}) for Player {}: {}", brickX, brickY, ownerPlayerNumber,
+            logger.debug("Power-up spawned at ({}, {}) for Player {}: {}", String.format("%.2f", brickX), String.format("%.2f", brickY), ownerPlayerNumber,
                     powerUp.getClass().getSimpleName());
         }
     }
