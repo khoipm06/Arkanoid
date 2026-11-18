@@ -17,18 +17,17 @@ class Ball {
   + launch(): void
   + equipSkin(String): void
   - checkWallCollision(): void
-  - loadSkins(): void
   + checkPaddleCollision(Paddle): void
   + hasExploded(): boolean
   + render(GraphicsContext): void
   + getSkin(String): Image
+  + getEquippedSkin(): String
   + update(double): void
-   currentSkin: String
+   equippedSkin: String
    color: Color
    explosive: boolean
    hasExploded: boolean
    attachedToPaddle: boolean
-   topDeadSide: boolean
    ballImage: Image
    radius: double
    topIsDeadSide: boolean
@@ -201,6 +200,38 @@ class GameApplication {
   + start(Stage): void
   + main(String[]): void
 }
+class GameConstants {
+  - GameConstants(): 
+   {static} WINDOW_WIDTH: double
+   {static} WINDOW_HEIGHT: double
+   {static} SINGLE_PLAYER_CANVAS_WIDTH: double
+   {static} SINGLE_PLAYER_PANEL_WIDTH: double
+   {static} TWO_PLAYER_DESIGN_WIDTH: double
+   {static} TWO_PLAYER_CANVAS_WIDTH: double
+   {static} TWO_PLAYER_CANVAS_HEIGHT: double
+   {static} TWO_PLAYER_PANEL_WIDTH: double
+   {static} DEFAULT_DESIGN_WIDTH: double
+   {static} DEFAULT_DESIGN_HEIGHT: double
+   {static} MAX_FRAME_DELTA: double
+   {static} MAX_PHYSICS_STEP: double
+   {static} DEFAULT_BALL_RADIUS: double
+   {static} DEFAULT_BALL_SPEED: double
+   {static} DEFAULT_PADDLE_SPEED: double
+   {static} DEFAULT_PADDLE_WIDTH: double
+   {static} DEFAULT_PADDLE_HEIGHT: double
+   {static} MAX_TRAIL_EFFECTS: int
+   {static} MAX_PARTICLES: int
+   {static} MAX_BULLETS: int
+   {static} MAX_FLOATING_TEXTS: int
+   {static} MAX_LEVEL: int
+}
+class GameHudPanel {
+  + GameHudPanel(int, boolean): 
+  - createInfoRow(String, String, Color): HBox
+  + updateStats(int, int, int, int): void
+  + updateFps(boolean, double, double): void
+   formattedTime: String
+}
 class GameLogger {
   - GameLogger(): 
   + getLogger(String): Logger
@@ -220,17 +251,18 @@ class GameManager {
   + resume(): void
   + restoreGameState(GameState): void
   + extractCurrentGameState(): GameState
-  - createPowerUpFromState(PowerUpState): PowerUp
-  - applyPowerUpEffect(PowerUp, Paddle): void
+  - applyPowerUpEffect(PowerUp): void
+  - stepSimulation(double): void
   + loadLevel(int): void
   + getInstance(double, double, int): GameManager
   + addExplosion(double, double, double, double, double): void
   + update(double): void
   + startGame(): void
-  - createBrickFromState(BrickState): Brick
+  + cleanup(): void
    balls: List<Ball>
    currentState: GameState
    playerManager: PlayerManager
+   visualEffectsManager: VisualEffectsManager
    explosions: List<Explosion>
    bricks: List<Brick>
    score: int
@@ -263,6 +295,10 @@ class GameOver {
   - onNewGameClick(): void
   + init(int, int, String): void
   - saveHighScore(int): void
+}
+class GamePauseOverlay {
+  + GamePauseOverlay(double, double, Runnable, Runnable, Runnable, Runnable): 
+  - createStyledButton(String, Runnable): Button
 }
 class GameSave {
   + GameSave(int, int, String, int, int, int, int, byte[], byte[], LocalDateTime): 
@@ -333,19 +369,18 @@ class GameSaveRepositoryImpl {
 }
 class GameScene {
   - GameScene(Stage, double, double, int): 
-  - createPauseOverlay(): VBox
   + getInstance(Stage, double, double, int): GameScene
-  - stylePauseButton(Button): void
+  + onEnter(): void
+  + onExit(): void
   + start(): void
-  - setupInputHandlers(): void
   - openSaveLoadScene(): void
+  + onSaveLoaded(int): void
   + cleanup(): void
-  - createInfoPanel(): VBox
   - decreaseLogLevel(): void
-  - createInfoRow(String, String, Color): HBox
   - increaseLogLevel(): void
   + hidePauseOverlay(): void
   - update(double): void
+  - syncHudFromManager(): void
   - render(): void
   + captureCanvasSnapshot(): WritableImage
    scene: Scene
@@ -363,6 +398,13 @@ class GameState {
    ballStates: List<BallState>
    brickStates: List<BrickState>
    elapsedTimeSeconds: int
+}
+class GameStateMapper {
+  - GameStateMapper(): 
+  + {static} toGameState(int, double, Player, List<Ball>, List<Brick>, List<PowerUp>): GameState
+  + {static} applyGameState(GameState, double, double, Player, List<Ball>, List<Brick>, List<PowerUp>): double
+  - {static} createBrickFromState(BrickState, double): Brick
+  - {static} createPowerUpFromState(PowerUpState): PowerUp
 }
 interface GameStateSerializer << interface >> {
   + isValidJson(String): boolean
@@ -487,16 +529,6 @@ class MemoryMonitor {
    monitoringEnabled: boolean
    enabled: boolean
 }
-class ModeSelectView {
-  + ModeSelectView(): 
-  + onBackClick(MouseEvent): void
-  + onMultiPlayerClick(MouseEvent): void
-  - onSinglePlayerClick(MouseEvent): void
-   multiPlayerButton: Button
-   mainController: MainMenuView
-   backButton: Button
-   singlePlayerButton: Button
-}
 class MovableObject {
   + MovableObject(double, double, double, double, double): 
   + reverseY(): void
@@ -581,12 +613,6 @@ class PasswordHasher {
   + verifyPassword(String, String): boolean
   - generateSalt(): byte[]
   - hashWithSalt(String, byte[]): String
-}
-class PhysicsEngine {
-  + PhysicsEngine(): 
-  + normalizeVelocity(double, double, double): double[]
-  + reflect(double, double, double, double): double[]
-  + calculateSpeed(double, double): double
 }
 class Player {
   + Player(String, int, Paddle): 
@@ -702,14 +728,6 @@ class ProfileScreen {
   ~ onBackClick(MouseEvent): void
   + refreshProfile(): void
 }
-class Renderer {
-  + Renderer(GraphicsContext): 
-  + drawRect(double, double, double, double, Color): void
-  + clear(double, double): void
-  + drawCircle(double, double, double, Color): void
-  + drawText(String, double, double, Color, double): void
-   graphicsContext: GraphicsContext
-}
 class RepositoryFactory {
   - RepositoryFactory(): 
   + shutdown(): void
@@ -746,16 +764,25 @@ class SaveLoadScene {
   + onBack(ActionEvent): void
   + onSaveNewGame(ActionEvent): void
 }
+interface SceneLifecycle << interface >> {
+  + onEnter(): void
+  + onExit(): void
+}
 class SceneManager {
   + SceneManager(): 
-  + switchTo(String): void
-  + loadScene(String, String): void
-  + getController(String): Object
-  - refreshSceneIfNeeded(String): void
-  + showWinLevel(int, int, String): void
-  + showGameOver(int, int, String): void
-   stage: Stage
-   activeGameScene: GameScene
+  + {static} switchTo(String): void
+  + {static} showCustomRoot(String, Parent, SceneLifecycle): void
+  + {static} loadScene(String, String): void
+  + {static} setKeyHandlers(EventHandler<? super KeyEvent>, EventHandler<? super KeyEvent>): void
+  + {static} getController(String): Object
+  - {static} refreshSceneIfNeeded(String): void
+  + {static} showWinLevel(int, int, String): void
+  + {static} showGameOver(int, int, String): void
+  + {static} cleanup(): void
+   {static} stage: Stage
+   {static} mainScene: Scene
+   {static} activeSceneName: String
+   {static} activeGameScene: GameScene
 }
 class SessionManager {
   + SessionManager(): 
@@ -844,13 +871,6 @@ class SoundManager {
   + preloadGameSoundsAsync(): CompletableFuture<Void>
    instance: SoundManager
    volume: double
-}
-class Sprite {
-  + Sprite(String, double, double): 
-   width: double
-   image: Image
-   height: double
-   loaded: boolean
 }
 class StrongBrick {
   + StrongBrick(double, double, double, double, int, int, String): 
@@ -1045,6 +1065,30 @@ class UserSessionStorage {
   + hasSession(): boolean
   + saveSession(int, String, String): boolean
 }
+class ViewportScaler {
+  - ViewportScaler(): 
+  + {static} wrap(Parent, double, double): StackPane
+}
+class VisualEffectsManager {
+  + VisualEffectsManager(): 
+  + spawnBrickParticles(double, double, Color, int): void
+  + spawnFloatingText(String, double, double, double, double, Color): void
+  + spawnExplosion(double, double, double, double, double): void
+  + spawnLineEffect(double, double, double, double, double): void
+  + spawnBallTrails(List<Ball>, double): void
+  + update(double): void
+  + render(GraphicsContext): void
+  + clearAndReleaseAll(): void
+  + cleanup(): void
+   explosions: List<Explosion>
+   lineEffects: List<LineEffect>
+   particles: List<Particle>
+   trailEffects: List<TrailEffect>
+   floatingTexts: List<FloatingText>
+   particlePool: ObjectPool<Particle>
+   trailPool: ObjectPool<TrailEffect>
+   floatingTextPool: ObjectPool<FloatingText>
+}
 class WinLevel {
   + WinLevel(): 
   - onNextLevelClick(): void
@@ -1090,4 +1134,22 @@ TwoPlayerInputHandler        -[#000082,plain]-^  BaseInputHandler
 TwoPlayerMatchManagerImpl    -[#008200,dashed]-^  TwoPlayerMatchManager       
 UnbreakableBrick             -[#000082,plain]-^  BaseBrick                   
 UserRepositoryImpl           -[#008200,dashed]-^  UserRepository              
+GameScene                    -[#008200,dashed]-^  SceneLifecycle              
+MainMenuView                 -[#008200,dashed]-^  SceneLifecycle              
+SettingView                  -[#008200,dashed]-^  SceneLifecycle              
+ShopBall                     -[#008200,dashed]-^  SceneLifecycle              
+ShopPaddle                   -[#008200,dashed]-^  SceneLifecycle              
+TwoPlayerGameScreen          -[#008200,dashed]-^  SceneLifecycle              
+GameScene                    -->  GameHudPanel                
+GameScene                    -->  GamePauseOverlay            
+GameScene                    ..>  ViewportScaler              
+GameScene                    ..>  GameConstants               
+SceneManager                 ..>  ViewportScaler              
+SceneManager                 -->  SceneLifecycle              
+TwoPlayerGameScreen          ..>  ViewportScaler              
+ViewportScaler               ..>  GameConstants               
+GameManager                  -->  VisualEffectsManager        
+GameManager                  ..>  GameStateMapper             
+GameManager                  ..>  GameConstants               
+VisualEffectsManager         ..>  GameConstants               
 @enduml

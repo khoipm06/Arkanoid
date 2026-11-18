@@ -13,18 +13,17 @@ class Ball {
   + launch() void
   + equipSkin(String) void
   - checkWallCollision() void
-  - loadSkins() void
   + checkPaddleCollision(Paddle) void
   + hasExploded() boolean
   + render(GraphicsContext) void
   + getSkin(String) Image
+  + getEquippedSkin() String
   + update(double) void
-   String currentSkin
+   String equippedSkin
    Color color
    boolean explosive
    boolean hasExploded
    boolean attachedToPaddle
-   boolean topDeadSide
    Image ballImage
    double radius
    boolean topIsDeadSide
@@ -199,6 +198,38 @@ class GameApplication {
   + start(Stage) void
   + main(String[]) void
 }
+class GameConstants {
+  - GameConstants() 
+   double WINDOW_WIDTH$
+   double WINDOW_HEIGHT$
+   double SINGLE_PLAYER_CANVAS_WIDTH$
+   double SINGLE_PLAYER_PANEL_WIDTH$
+   double TWO_PLAYER_DESIGN_WIDTH$
+   double TWO_PLAYER_CANVAS_WIDTH$
+   double TWO_PLAYER_CANVAS_HEIGHT$
+   double TWO_PLAYER_PANEL_WIDTH$
+   double DEFAULT_DESIGN_WIDTH$
+   double DEFAULT_DESIGN_HEIGHT$
+   double MAX_FRAME_DELTA$
+   double MAX_PHYSICS_STEP$
+   double DEFAULT_BALL_RADIUS$
+   double DEFAULT_BALL_SPEED$
+   double DEFAULT_PADDLE_SPEED$
+   double DEFAULT_PADDLE_WIDTH$
+   double DEFAULT_PADDLE_HEIGHT$
+   int MAX_TRAIL_EFFECTS$
+   int MAX_PARTICLES$
+   int MAX_BULLETS$
+   int MAX_FLOATING_TEXTS$
+   int MAX_LEVEL$
+}
+class GameHudPanel {
+  + GameHudPanel(int, boolean) 
+  - createInfoRow(String, String, Color) HBox
+  + updateStats(int, int, int, int) void
+  + updateFps(boolean, double, double) void
+   String formattedTime
+}
 class GameLogger {
   - GameLogger() 
   + getLogger(String) Logger
@@ -218,17 +249,18 @@ class GameManager {
   + resume() void
   + restoreGameState(GameState) void
   + extractCurrentGameState() GameState
-  - createPowerUpFromState(PowerUpState) PowerUp
-  - applyPowerUpEffect(PowerUp, Paddle) void
+  - applyPowerUpEffect(PowerUp) void
+  - stepSimulation(double) void
   + loadLevel(int) void
   + getInstance(double, double, int) GameManager
   + addExplosion(double, double, double, double, double) void
   + update(double) void
   + startGame() void
-  - createBrickFromState(BrickState) Brick
+  + cleanup() void
    List~Ball~ balls
    GameState currentState
    PlayerManager playerManager
+   VisualEffectsManager visualEffectsManager
    List~Explosion~ explosions
    List~Brick~ bricks
    int score
@@ -261,6 +293,10 @@ class GameOver {
   - onNewGameClick() void
   + init(int, int, String) void
   - saveHighScore(int) void
+}
+class GamePauseOverlay {
+  + GamePauseOverlay(double, double, Runnable, Runnable, Runnable, Runnable) 
+  - createStyledButton(String, Runnable) Button
 }
 class GameSave {
   + GameSave(int, int, String, int, int, int, int, byte[], byte[], LocalDateTime) 
@@ -333,19 +369,18 @@ class GameSaveRepositoryImpl {
 }
 class GameScene {
   - GameScene(Stage, double, double, int) 
-  - createPauseOverlay() VBox
   + getInstance(Stage, double, double, int) GameScene
-  - stylePauseButton(Button) void
+  + onEnter() void
+  + onExit() void
   + start() void
-  - setupInputHandlers() void
   - openSaveLoadScene() void
+  + onSaveLoaded(int) void
   + cleanup() void
-  - createInfoPanel() VBox
   - decreaseLogLevel() void
-  - createInfoRow(String, String, Color) HBox
   - increaseLogLevel() void
   + hidePauseOverlay() void
   - update(double) void
+  - syncHudFromManager() void
   - render() void
   + captureCanvasSnapshot() WritableImage
    Scene scene
@@ -363,6 +398,13 @@ class GameState {
    List~BallState~ ballStates
    List~BrickState~ brickStates
    int elapsedTimeSeconds
+}
+class GameStateMapper {
+  - GameStateMapper() 
+  + toGameState(int, double, Player, List~Ball~, List~Brick~, List~PowerUp~) GameState
+  + applyGameState(GameState, double, double, Player, List~Ball~, List~Brick~, List~PowerUp~) double
+  - createBrickFromState(BrickState, double) Brick
+  - createPowerUpFromState(PowerUpState) PowerUp
 }
 class GameStateSerializer {
 <<Interface>>
@@ -488,16 +530,6 @@ class MemoryMonitor {
    boolean monitoringEnabled
    boolean enabled
 }
-class ModeSelectView {
-  + ModeSelectView() 
-  + onBackClick(MouseEvent) void
-  + onMultiPlayerClick(MouseEvent) void
-  - onSinglePlayerClick(MouseEvent) void
-   Button multiPlayerButton
-   MainMenuView mainController
-   Button backButton
-   Button singlePlayerButton
-}
 class MovableObject {
   + MovableObject(double, double, double, double, double) 
   + reverseY() void
@@ -583,12 +615,6 @@ class PasswordHasher {
   + verifyPassword(String, String) boolean
   - generateSalt() byte[]
   - hashWithSalt(String, byte[]) String
-}
-class PhysicsEngine {
-  + PhysicsEngine() 
-  + normalizeVelocity(double, double, double) double[]
-  + reflect(double, double, double, double) double[]
-  + calculateSpeed(double, double) double
 }
 class Player {
   + Player(String, int, Paddle) 
@@ -706,14 +732,6 @@ class ProfileScreen {
   ~ onBackClick(MouseEvent) void
   + refreshProfile() void
 }
-class Renderer {
-  + Renderer(GraphicsContext) 
-  + drawRect(double, double, double, double, Color) void
-  + clear(double, double) void
-  + drawCircle(double, double, double, Color) void
-  + drawText(String, double, double, Color, double) void
-   GraphicsContext graphicsContext
-}
 class RepositoryFactory {
   - RepositoryFactory() 
   + shutdown() void
@@ -751,15 +769,25 @@ class SaveLoadScene {
   + onBack(ActionEvent) void
   + onSaveNewGame(ActionEvent) void
 }
+class SceneLifecycle {
+<<Interface>>
+  + onEnter() void
+  + onExit() void
+}
 class SceneManager {
   + SceneManager() 
   + switchTo(String) void
+  + showCustomRoot(String, Parent, SceneLifecycle) void
   + loadScene(String, String) void
+  + setKeyHandlers(EventHandler~KeyEvent~, EventHandler~KeyEvent~) void
   + getController(String) Object
   - refreshSceneIfNeeded(String) void
   + showWinLevel(int, int, String) void
   + showGameOver(int, int, String) void
+  + cleanup() void
    Stage stage
+   Scene mainScene
+   String activeSceneName
    GameScene activeGameScene
 }
 class SessionManager {
@@ -849,13 +877,6 @@ class SoundManager {
   + preloadGameSoundsAsync() CompletableFuture~Void~
    SoundManager instance
    double volume
-}
-class Sprite {
-  + Sprite(String, double, double) 
-   double width
-   Image image
-   double height
-   boolean loaded
 }
 class StrongBrick {
   + StrongBrick(double, double, double, double, int, int, String) 
@@ -1053,6 +1074,30 @@ class UserSessionStorage {
   + hasSession() boolean
   + saveSession(int, String, String) boolean
 }
+class ViewportScaler {
+  - ViewportScaler() 
+  + wrap(Parent, double, double) StackPane
+}
+class VisualEffectsManager {
+  + VisualEffectsManager() 
+  + spawnBrickParticles(double, double, Color, int) void
+  + spawnFloatingText(String, double, double, double, double, Color) void
+  + spawnExplosion(double, double, double, double, double) void
+  + spawnLineEffect(double, double, double, double, double) void
+  + spawnBallTrails(List~Ball~, double) void
+  + update(double) void
+  + render(GraphicsContext) void
+  + clearAndReleaseAll() void
+  + cleanup() void
+   List~Explosion~ explosions
+   List~LineEffect~ lineEffects
+   List~Particle~ particles
+   List~TrailEffect~ trailEffects
+   List~FloatingText~ floatingTexts
+   ObjectPool~Particle~ particlePool
+   ObjectPool~TrailEffect~ trailPool
+   ObjectPool~FloatingText~ floatingTextPool
+}
 class WinLevel {
   + WinLevel() 
   - onNextLevelClick() void
@@ -1098,3 +1143,21 @@ TwoPlayerInputHandler  -->  BaseInputHandler
 TwoPlayerMatchManagerImpl  ..>  TwoPlayerMatchManager 
 UnbreakableBrick  -->  BaseBrick 
 UserRepositoryImpl  ..>  UserRepository 
+GameScene  ..>  SceneLifecycle 
+MainMenuView  ..>  SceneLifecycle 
+SettingView  ..>  SceneLifecycle 
+ShopBall  ..>  SceneLifecycle 
+ShopPaddle  ..>  SceneLifecycle 
+TwoPlayerGameScreen  ..>  SceneLifecycle 
+GameScene  -->  GameHudPanel 
+GameScene  -->  GamePauseOverlay 
+GameScene  ..>  ViewportScaler 
+GameScene  ..>  GameConstants 
+SceneManager  ..>  ViewportScaler 
+SceneManager  -->  SceneLifecycle 
+TwoPlayerGameScreen  ..>  ViewportScaler 
+ViewportScaler  ..>  GameConstants 
+GameManager  -->  VisualEffectsManager 
+GameManager  ..>  GameStateMapper 
+GameManager  ..>  GameConstants 
+VisualEffectsManager  ..>  GameConstants 
