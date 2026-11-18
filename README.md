@@ -1,6 +1,6 @@
 # Arkanoid
 
-A desktop Arkanoid arcade game built with Java 21 and JavaFX 21 featuring single-player level progression, local two-player competitive play, LZ4-compressed save slots with canvas thumbnails, and SQLite-backed player profiles and skin customization. All screens render inside a persistent `1000 x 650` viewport driven by a sub-stepped 120 Hz physics loop and pooled visual effects.
+A desktop Arkanoid arcade game built with Java 21 and JavaFX 21 featuring single-player level progression, local two-player competitive play, LZ4-compressed save slots with canvas thumbnails, and SQLite-backed player profiles and skin customization. All screens render inside a persistent aspect-aligned viewport driven by a deterministic 120 Hz sub-stepped physics loop and object-pooled visual effects.
 
 **Course:** Group 18 — Class 2526I_INT2204_6  
 **Instructor:** Kiều Văn Tuyên  
@@ -26,7 +26,7 @@ A desktop Arkanoid arcade game built with Java 21 and JavaFX 21 featuring single
 - **Bricks & Power-Ups:** Four brick types (`Normal`, `Strong`, `Moving`, `Unbreakable`) and five power-ups (`Expand Paddle`, `Multi-Ball`, `Gun Paddle`, `Explosive Ball`, `Row Clear`).
 - **LZ4 Save & Load System:** Asynchronous save/load slots (`GameSaveManagerImpl`) storing LZ4-compressed JSON game state and captured `Canvas` PNG thumbnails in SQLite, plus `F5` quick-save while paused.
 - **Accounts, Shop & Leaderboard:** SQLite WAL-backed user registration and login (`PasswordHasher`), persistent sessions, player profile stats, global high-score leaderboard, and ball/paddle skin shop (`Fire`, `Ice`, `Rainbow`, `Wood`, `Metal`, `Neon`).
-- **Viewport & Performance:** Unified `1000 x 650` `ViewportScaler` inside a single persistent `Scene`, 120 Hz max physics sub-stepping (`1/120 s`), bounded `ObjectPool` reuse for bullets, particles, trails, and floating text, `ColorCache`, and background `MemoryMonitor`.
+- **Viewport & Performance:** Unified scalable viewport (`ViewportScaler`) inside a single persistent `Scene`, deterministic 120 Hz max physics sub-stepping (`1/120 s`), bounded `ObjectPool` reuse for bullets, particles, trails, and floating text, `ColorCache`, and background `MemoryMonitor`.
 
 ### Brick Types & Power-Ups
 
@@ -34,7 +34,7 @@ A desktop Arkanoid arcade game built with Java 21 and JavaFX 21 featuring single
 
 | Power-Up | Effect |
 | :--- | :--- |
-| `Expand Paddle` | Temporarily widens the paddle by `30 px` |
+| `Expand Paddle` | Temporarily widens the paddle for easier ball catches |
 | `Multi-Ball` | Spawns two additional balls in flight |
 | `Gun Paddle` | Fires dual upward bullets from the paddle |
 | `Explosive Ball` | Triggers an area-of-effect brick explosion on next impact |
