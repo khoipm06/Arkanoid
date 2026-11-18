@@ -76,27 +76,25 @@ public class ShopBall implements SceneLifecycle {
 
     @FXML
     public void onEquip1Click(MouseEvent event) {
-        String selectedSkin = "Fire";
-        SessionManager.setEquippedSkin(selectedSkin);
         equipSkin("Fire");
     }
 
     @FXML
     public void onEquip2Click(MouseEvent event) {
-        String selectedSkin = "Ice";
-        SessionManager.setEquippedSkin(selectedSkin);
         equipSkin("Ice");
     }
 
     @FXML
     public void onEquip3Click(MouseEvent event) {
-        String selectedSkin = "Rainbow";
-        SessionManager.setEquippedSkin(selectedSkin);
         equipSkin("Rainbow");
     }
 
     private void buySkin(String skinName) {
         SessionManager.User user = SessionManager.getCurrentUser();
+        if (user == null) {
+            logger.warn("Cannot buy ball skin without a logged-in user");
+            return;
+        }
         for (SkinItem item : skinItems) {
             if (item.name.equals(skinName)) {
                 if (user.hasBallSkin(skinName)) {
@@ -109,7 +107,10 @@ public class ShopBall implements SceneLifecycle {
                     logger.info("Purchase successful ball skin: {} | Price: {}", skinName, item.price);
                     logger.info("Remaining balance: ${}", user.getMoney());
                     lblMoney.setText("Balance: " + user.getMoney() + "$");
-                    ((ShopView) SceneManager.getController("shopView")).refreshMoney();
+                    Object shopController = SceneManager.getController("shopView");
+                    if (shopController instanceof ShopView shopView) {
+                        shopView.refreshMoney();
+                    }
                 } else {
                     logger.warn("Insufficient funds to buy ball skin: {} | Need: {} | Have: {}", skinName, item.price, user.getMoney());
                 }
@@ -121,9 +122,13 @@ public class ShopBall implements SceneLifecycle {
 
     private void equipSkin(String skinName) {
         SessionManager.User user = SessionManager.getCurrentUser();
+        if (user == null) {
+            logger.warn("Cannot equip ball skin without a logged-in user");
+            return;
+        }
         if (user.hasBallSkin(skinName)) {
+            SessionManager.setEquippedSkin(skinName);
             SessionManager.setEquippedBallSkin(skinName);
-            Ball.setCurrentSkin(skinName);
             logger.info("Equipped ball skin: {}", skinName);
             if (ballInGame != null) {
                 ballInGame.equipSkin(skinName);

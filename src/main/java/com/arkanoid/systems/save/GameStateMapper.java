@@ -44,7 +44,7 @@ public final class GameStateMapper {
 
         List<BallState> ballStates = new ArrayList<>(balls.size());
         for (Ball ball : balls) {
-            String skin = ball.getEquippedSkin() != null ? ball.getEquippedSkin() : Ball.getCurrentSkin();
+            String skin = ball.getEquippedSkin() != null ? ball.getEquippedSkin() : "Default";
             ballStates.add(new BallState(
                     ball.getX(),
                     ball.getY(),

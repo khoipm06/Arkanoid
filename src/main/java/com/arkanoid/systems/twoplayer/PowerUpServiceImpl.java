@@ -103,10 +103,7 @@ public class PowerUpServiceImpl implements PowerUpService {
                 applyPickup(instance.ownerPlayerNumber, powerUp);
                 powerUp.setCollected(true);
                 iterator.remove();
-            }
-
-            // Remove if expired or out of bounds
-            if (!powerUp.isActive() || isOutOfBounds(powerUp)) {
+            } else if (!powerUp.isActive() || isOutOfBounds(powerUp)) {
                 iterator.remove();
             }
         }

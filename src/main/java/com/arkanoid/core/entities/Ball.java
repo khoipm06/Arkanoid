@@ -15,7 +15,6 @@ public class Ball extends MovableObject {
     private static final SoundManager soundManager = SoundManager.getInstance();
     private static final String DEFAULT_SKIN = "Default";
     private static final Set<String> VALID_SKINS = Set.of("Fire", "Ice", "Rainbow", "Default");
-    private static volatile String currentSkin = DEFAULT_SKIN;
 
     private final double radius;
     private Color color;
@@ -34,7 +33,7 @@ public class Ball extends MovableObject {
         this.velocityX = 0;
         this.velocityY = 0;
         this.attachedToPaddle = true;
-        equipSkin(currentSkin);
+        equipSkin(DEFAULT_SKIN);
     }
 
     public static Image getSkin(String skinName) {
@@ -44,19 +43,6 @@ public class Ball extends MovableObject {
             img = ImageLoader.loadImage("/images/" + DEFAULT_SKIN + ".png");
         }
         return img;
-    }
-
-    public static String getCurrentSkin() {
-        return currentSkin;
-    }
-
-    public static void setCurrentSkin(String skinName) {
-        if (skinName != null && VALID_SKINS.contains(skinName)) {
-            currentSkin = skinName;
-            logger.info("Current ball skin: {}", skinName);
-        } else {
-            logger.warn("Skin does not exist: {}", skinName);
-        }
     }
 
     public String getEquippedSkin() {

@@ -192,18 +192,28 @@ public class TwoPlayerGameScreen implements SceneLifecycle {
     }
 
     private void update(double deltaTime) {
-        if (matchManager.getState() != TwoPlayerMatchManager.MatchState.PLAYING) {
+        if (matchManager.getState() != TwoPlayerMatchManager.MatchState.PLAYING
+                || !Double.isFinite(deltaTime) || deltaTime <= 0.0) {
             return;
         }
 
-        inputHandler.handleContinuousInput(activeKeys, deltaTime);
+        double remaining = Math.min(deltaTime, GameConstants.MAX_FRAME_DELTA);
+        while (remaining > 0.0 && matchManager.getState() == TwoPlayerMatchManager.MatchState.PLAYING) {
+            double step = Math.min(remaining, GameConstants.MAX_PHYSICS_STEP);
+            stepSimulation(step);
+            remaining -= step;
+        }
+    }
+
+    private void stepSimulation(double step) {
+        inputHandler.handleContinuousInput(activeKeys, step);
         checkBrickCollisions();
 
         for (Brick brick : bricks) {
-            brick.update(deltaTime);
+            brick.update(step);
         }
 
-        matchManager.update(deltaTime);
+        matchManager.update(step);
     }
 
     private void checkBrickCollisions() {

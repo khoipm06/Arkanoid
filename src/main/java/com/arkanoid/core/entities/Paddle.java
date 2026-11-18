@@ -1,24 +1,20 @@
 package com.arkanoid.core.entities;
 
-import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.utils.ColorCache;
 import com.arkanoid.utils.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import org.slf4j.Logger;
 
 import java.util.Set;
 
 public class Paddle extends MovableObject {
-    private static final Logger logger = GameLogger.getLogger(Paddle.class);
     private static final String DEFAULT_SKIN = "paddle_Default";
     private static final Set<String> VALID_SKINS = Set.of(
             "paddle_Default", "paddle_Wood", "paddle_Metal", "paddle_Neon"
     );
     private static final Color HIT_FLASH_OUTER_COLOR = Color.color(0.2, 0.9, 1.0);
     private static final Color HIT_FLASH_INNER_COLOR = Color.WHITE;
-    private static volatile String defaultSkin = DEFAULT_SKIN;
 
     private final double originalWidth;
     private double minX;
@@ -43,7 +39,7 @@ public class Paddle extends MovableObject {
         this.minX = minX;
         this.maxX = maxX;
         this.originalWidth = width;
-        this.currentSkin = defaultSkin;
+        this.currentSkin = DEFAULT_SKIN;
         this.paddleImage = getSkin(this.currentSkin);
         this.gunImage = ImageLoader.loadImage("/images/gun.png");
     }
@@ -55,18 +51,6 @@ public class Paddle extends MovableObject {
             img = ImageLoader.loadImage("/images/" + DEFAULT_SKIN + ".png");
         }
         return img;
-    }
-
-    /**
-     * @deprecated Use instance {@link #equipSkin(String)} and {@link #getCurrentSkin()} instead.
-     */
-    @Deprecated
-    public static void setCurrentSkin(String skinName) {
-        if (skinName != null && VALID_SKINS.contains(skinName)) {
-            defaultSkin = skinName;
-        } else {
-            logger.warn("Could not find skin: {}", skinName);
-        }
     }
 
     public String getCurrentSkin() {

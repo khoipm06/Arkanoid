@@ -133,4 +133,23 @@ class GameManagerTest {
         assertTrue(gameManager.getLineEffects().isEmpty());
         assertNull(PlayerManager.getInstance().getPlayer(1));
     }
+
+    @Test
+    void testMultiBallInheritsSourceBallInstanceSkin() {
+        gameManager.startGame();
+        Ball primary = gameManager.getBalls().get(0);
+        primary.equipSkin("Fire");
+        primary.launch();
+
+        Paddle paddle = gameManager.getPlayer().getPaddle();
+        MultiBallPowerUp multiBall = new MultiBallPowerUp(paddle.getX() + 10, paddle.getY());
+        gameManager.getPowerUps().add(multiBall);
+
+        gameManager.update(0.016);
+
+        assertEquals(3, gameManager.getBalls().size());
+        for (Ball b : gameManager.getBalls()) {
+            assertEquals("Fire", b.getEquippedSkin());
+        }
+    }
 }

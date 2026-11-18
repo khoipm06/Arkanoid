@@ -37,6 +37,7 @@ public class GameManager {
     private final double gameWidth;
     private final double gameHeight;
     private final int levelNumber;
+    private String equippedBallSkin = "Default";
 
     private double gunFireCooldown = 0.0;
     private double elapsedTimeSeconds = 0.0;
@@ -100,7 +101,7 @@ public class GameManager {
 
         SessionManager.User currentUser = SessionManager.getCurrentUser();
         if (currentUser != null) {
-            String equippedBallSkin = currentUser.getEquippedBallSkin();
+            equippedBallSkin = currentUser.getEquippedBallSkin();
             ball.equipSkin(equippedBallSkin);
             logger.debug("Applied equipped ball skin: {}", equippedBallSkin);
         }
@@ -161,19 +162,24 @@ public class GameManager {
         }
         bricks.removeIf(Brick::isDestroyed);
 
+        boolean lostBall = false;
         Iterator<Ball> ballIt = balls.iterator();
         while (ballIt.hasNext()) {
             Ball ball = ballIt.next();
             if (ball.isOutOfBounds()) {
-                player.getState().loseLife();
-                if (player.getState().isGameOver()) {
-                    currentState = GameState.GAME_OVER;
-                }
                 ballIt.remove();
+                lostBall = true;
             }
         }
 
-        if (balls.isEmpty() && currentState == GameState.PLAYING) {
+        if (lostBall && balls.isEmpty()) {
+            player.getState().loseLife();
+            if (player.getState().isGameOver()) {
+                currentState = GameState.GAME_OVER;
+            } else if (currentState == GameState.PLAYING) {
+                resetBall(paddle);
+            }
+        } else if (balls.isEmpty() && currentState == GameState.PLAYING) {
             resetBall(paddle);
         }
 
@@ -289,6 +295,7 @@ public class GameManager {
         double ballY = paddle.getY() - ballRadius * 2;
         Ball ball = new Ball(ballX, ballY, ballRadius, GameConstants.DEFAULT_BALL_SPEED);
         ball.setBounds(0, 0, gameWidth, gameHeight);
+        ball.equipSkin(equippedBallSkin);
         ball.setAttachedToPaddle(true);
         ball.setExplosive(false);
         ball.setHasExploded(false);
@@ -302,6 +309,21 @@ public class GameManager {
             for (Ball ball : balls) {
                 ball.setExplosive(true);
                 ball.setHasExploded(false);
+            }
+        } else if (powerUp instanceof MultiBallPowerUp && !balls.isEmpty()) {
+            Ball source = balls.get(0);
+            String skin = source.getEquippedSkin() != null ? source.getEquippedSkin() : equippedBallSkin;
+            double speed = GameConstants.DEFAULT_BALL_SPEED;
+            double[] vxOffsets = {-speed * 0.45, speed * 0.45};
+            double vy = -Math.sqrt(Math.max(1.0, speed * speed - vxOffsets[0] * vxOffsets[0]));
+            for (double vx : vxOffsets) {
+                Ball extra = new Ball(source.getCenterX(), source.getCenterY(), source.getRadius(), speed);
+                extra.setBounds(0, 0, gameWidth, gameHeight);
+                extra.setAttachedToPaddle(false);
+                extra.setVelocityX(vx);
+                extra.setVelocityY(vy);
+                extra.equipSkin(skin);
+                balls.add(extra);
             }
         } else if (powerUp instanceof RowClearPowerUp) {
             boolean clearRow = random.nextBoolean();

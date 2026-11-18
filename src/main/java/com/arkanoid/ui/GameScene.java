@@ -244,10 +244,12 @@ public class GameScene implements SceneLifecycle {
             return;
         }
 
+        GameManager.GameState stateBefore = gameManager.getCurrentState();
         if (inputHandler.handleKeyPress(key)) {
-            boolean paused = gameManager.getCurrentState() == GameManager.GameState.PAUSED;
+            GameManager.GameState stateAfter = gameManager.getCurrentState();
+            boolean paused = stateAfter == GameManager.GameState.PAUSED;
             pauseOverlay.setVisible(paused);
-            if (!paused) {
+            if (stateBefore != stateAfter) {
                 lastUpdate = 0L;
                 pressedKeys.clear();
             }
