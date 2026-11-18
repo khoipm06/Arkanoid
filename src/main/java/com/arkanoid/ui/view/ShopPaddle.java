@@ -14,7 +14,7 @@ import javafx.scene.input.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShopPaddle {
+public class ShopPaddle implements SceneLifecycle {
     private static final Logger logger = GameLogger.getLogger(ShopPaddle.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
@@ -41,6 +41,11 @@ public class ShopPaddle {
             item.imageView.setImage(Paddle.getSkin(item.name));
         }
 
+        updateShopUI();
+    }
+
+    @Override
+    public void onEnter() {
         updateShopUI();
     }
 
@@ -87,21 +92,26 @@ public class ShopPaddle {
 
     private void buySkin(String skinName) {
         SessionManager.User user = SessionManager.getCurrentUser();
+        if (user == null) {
+            logger.warn("Cannot buy paddle skin without a logged-in user");
+            return;
+        }
         for (SkinItem item : skinItems) {
             if (item.name.equals(skinName)) {
                 if (user.hasPaddleSkin(skinName)) {
                     logger.warn("Already own paddle skin: {}", skinName);
-                    // ToastNotification.showToast(message, root, ToastNotification.ToastType.ERROR);
                     return;
                 }
                 
                 if (user.spendMoney(item.price)) {
-                    // Add to inventory database
                     user.addOwnedPaddleSkin(skinName);
                     logger.info("Purchase successful paddle skin: {} | Price: {}", skinName, item.price);
                     logger.info("Remaining balance: ${}", user.getMoney());
                     lblMoney.setText("Balance: " + user.getMoney() + "$");
-                    ((ShopView) SceneManager.getController("shopView")).refreshMoney();
+                    Object shopController = SceneManager.getController("shopView");
+                    if (shopController instanceof ShopView shopView) {
+                        shopView.refreshMoney();
+                    }
                 } else {
                     logger.warn("Insufficient funds to buy paddle skin: {} | Need: {} | Have: {}", skinName, item.price, user.getMoney());
                 }
@@ -113,9 +123,12 @@ public class ShopPaddle {
 
     private void equipSkin(String skinName) {
         SessionManager.User user = SessionManager.getCurrentUser();
+        if (user == null) {
+            logger.warn("Cannot equip paddle skin without a logged-in user");
+            return;
+        }
         if (user.hasPaddleSkin(skinName)) {
             SessionManager.setEquippedPaddleSkin(skinName);
-            Paddle.setCurrentSkin(skinName);
             logger.info("Equipped skin: {}", skinName);
             if (paddleInGame != null) {
                 paddleInGame.equipSkin(skinName);

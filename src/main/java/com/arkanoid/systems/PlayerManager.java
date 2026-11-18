@@ -35,6 +35,10 @@ public class PlayerManager {
         players.put(playerNumber, player);
     }
 
+    public void removePlayer(int playerNumber, Player expectedPlayer) {
+        players.remove(playerNumber, expectedPlayer);
+    }
+
     public Player getPlayer(int playerNumber) {
         return players.get(playerNumber);
     }

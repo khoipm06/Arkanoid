@@ -1,6 +1,7 @@
 package com.arkanoid.core.entities;
 
 import com.arkanoid.systems.logging.GameLogger;
+import com.arkanoid.utils.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -40,7 +41,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
         this.row = row;
         this.texturePath = texturePath;
         if (texturePath != null) {
-            this.texture = new Image(getClass().getResourceAsStream(texturePath));
+            this.texture = ImageLoader.loadImage(texturePath);
         }
     }
 
@@ -48,7 +49,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
     public void hit() {
         hitPoints--;
         if (hitPoints <= 0) {
-            logger.debug("Brick destroyed at ({}, {}) row={} col={}", String.format("%.2f", x), String.format("%.2f", y), row, col);
+            logger.debug("Brick destroyed at ({}, {}) row={} col={}", x, y, row, col);
             destroyed = true;
             active = false;
         }
@@ -56,7 +57,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
 
     @Override
     public void destroy() {
-        logger.debug("Brick.destroy() called at ({}, {}) row={} col={}", String.format("%.2f", x), String.format("%.2f", y), row, col);
+        logger.debug("Brick.destroy() called at ({}, {}) row={} col={}", x, y, row, col);
         destroyed = true;
         active = false;
     }
@@ -93,7 +94,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
     public PowerUp dropPowerUp() {
         if (Math.random() < powerUpChance) {
             PowerUp powerUp = createRandomPowerUp();
-            logger.debug("PowerUp dropped: {} at ({}, {})", powerUp.getClass().getSimpleName(), String.format("%.2f", getCenterX()), String.format("%.2f", getCenterY()));
+            logger.debug("PowerUp dropped: {} at ({}, {})", powerUp.getClass().getSimpleName(), getCenterX(), getCenterY());
             return powerUp;
         }
         return null;
@@ -101,7 +102,7 @@ public abstract class BaseBrick extends GameObject implements Brick {
 
     @Override
     public void instantDestroy() {
-        logger.debug("Brick instantly destroyed at ({}, {}) row={} col={}", String.format("%.2f", x), String.format("%.2f", y), row, col);
+        logger.debug("Brick instantly destroyed at ({}, {}) row={} col={}", x, y, row, col);
         this.destroyed = true;
         this.active = false;
         this.hitPoints = 0;
@@ -134,6 +135,10 @@ public abstract class BaseBrick extends GameObject implements Brick {
 
     public String getTexturePath() {
         return texturePath;
+    }
+
+    public int getHitPoints() {
+        return hitPoints;
     }
 
     @Override

@@ -1,9 +1,11 @@
 package com.arkanoid.core.entities;
-import javafx.scene.image.Image;
+
+import com.arkanoid.core.GameConstants;
+import com.arkanoid.utils.ImageLoader;
 import javafx.scene.paint.Color;
 
 public class GunPaddlePowerUp extends PowerUp {
-    private long appliedExpiryNano = -1;
+    private static final String IMAGE_PATH = "/images/GunPowerUp.png";
 
     public GunPaddlePowerUp(double x, double y) {
         super(x, y, 18);
@@ -11,30 +13,16 @@ public class GunPaddlePowerUp extends PowerUp {
         this.lifetime = 10.0;
         this.age = 0;
         this.active = true;
-        var url = getClass().getResource("/images/GunPowerUp.png");
-        if (url != null) {
-            this.image = new Image(url.toExternalForm());
-        } else {
-            logger.warn("GunPaddlePowerUp image not found");
-        }
+        this.image = ImageLoader.loadImage(IMAGE_PATH);
     }
 
     @Override
     public void applyEffect(Paddle paddle) {
-        // compute expiry time 2s from now
-        long expiry = System.nanoTime() + (long)(2.0 * 1_000_000_000L);
-        appliedExpiryNano = expiry;
-        paddle.setGunExpiry(expiry);   // store expiry into paddle
-        paddle.setGunMode(true);
+        paddle.activateGun(GameConstants.DEFAULT_POWERUP_DURATION_SECONDS);
     }
 
     @Override
     public void removeEffect(Paddle paddle) {
-        // Only remove if this instance is responsible for the current expiry
-        long currentExpiry = paddle.getGunExpiry();
-        if (appliedExpiryNano != -1 && currentExpiry == appliedExpiryNano) {
-            paddle.setGunMode(false);
-            paddle.setGunExpiry(-1);
-        }
+        paddle.setGunMode(false);
     }
 }

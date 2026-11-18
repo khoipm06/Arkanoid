@@ -1,10 +1,11 @@
 package com.arkanoid.ui.view;
 
-import com.arkanoid.GameApplication;
+import com.arkanoid.core.GameConstants;
 import com.arkanoid.database.PlayerProfileManager;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.GameScene;
+import com.arkanoid.utils.ImageLoader;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
@@ -12,7 +13,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 
@@ -34,27 +34,26 @@ public class WinLevel {
     private ImageView winImage;
 
     private int currentLevel;
-    private final int maxLevel = 3;
 
-    public void init(int level, int scoreValue, String timePlayedS) {
+    public void init(int level, int scoreValue, String timePlayedText) {
         this.currentLevel = level;
         score.setText("Score: " + scoreValue);
-        timePlayed.setText("Time: " + timePlayedS);
-        
-        // Save high score to database if user is logged in
+        timePlayed.setText("Time: " + timePlayedText);
+
         saveHighScore(scoreValue);
-        
-        if (currentLevel >= maxLevel) {
-            nextLevel.setDisable(true);
-            nextLevel.setOpacity(0.5);
-        }
+
+        boolean atMaxLevel = currentLevel >= GameConstants.MAX_LEVEL;
+        nextLevel.setDisable(atMaxLevel);
+        nextLevel.setOpacity(atMaxLevel ? 0.5 : 1.0);
+
         soundManager.stopBackground();
         soundManager.playSound("win.wav");
-        try {
-            Image img = new Image(getClass().getResource("/images/You_Win.png").toExternalForm());
+
+        Image img = ImageLoader.loadImage("/images/You_Win.png");
+        if (img != null) {
             winImage.setImage(img);
-        } catch (Exception e) {
-            logger.error("Win screen initialization failed: Unable to load You_Win.png image resource", e);
+        } else {
+            logger.error("Win screen initialization failed: Unable to load You_Win.png image resource");
         }
         winImage.setScaleX(0.1);
         winImage.setScaleY(0.1);
@@ -68,11 +67,8 @@ public class WinLevel {
     private void saveHighScore(int scoreValue) {
         SessionManager.User user = SessionManager.getCurrentUser();
         if (user != null) {
-            // Update high score if current score is higher
             PlayerProfileManager.updateHighScore(user.getId(), scoreValue);
-            // Increment games played
             PlayerProfileManager.incrementGamesPlayed(user.getId());
-            // Add to total score
             PlayerProfileManager.addToTotalScore(user.getId(), scoreValue);
             logger.info("Saved game stats for user: {} | Score: {}", user.getUsername(), scoreValue);
         }
@@ -82,16 +78,10 @@ public class WinLevel {
     private void onNextLevelClick() {
         soundManager.playSound("Accept.wav");
 
-        if (currentLevel < maxLevel) {
+        if (currentLevel < GameConstants.MAX_LEVEL) {
             int next = currentLevel + 1;
             soundManager.playBackground("background.mp3", true);
-
-            Stage stage = (Stage) nextLevel.getScene().getWindow();
-            GameScene nextScene = GameScene.getInstance(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT, next);
-
-            stage.setScene(nextScene.getScene());
-            stage.show();
-            nextScene.start();
+            startLevel(next);
         } else {
             logger.debug("Already at the last level");
         }
@@ -100,16 +90,9 @@ public class WinLevel {
     @FXML
     private void onPreLevelClick() {
         soundManager.playSound("Accept.wav");
-
         int prev = Math.max(1, currentLevel - 1);
         soundManager.playBackground("background.mp3", true);
-
-        Stage stage = (Stage) preLevel.getScene().getWindow();
-        GameScene prevScene = GameScene.getInstance(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT, prev);
-
-        stage.setScene(prevScene.getScene());
-        stage.show();
-        prevScene.start();
+        startLevel(prev);
     }
 
     @FXML
@@ -123,12 +106,16 @@ public class WinLevel {
     private void onReplayClick() {
         soundManager.playSound("Accept.wav");
         soundManager.playBackground("background.mp3", true);
+        startLevel(currentLevel);
+    }
 
-        Stage stage = (Stage) replay.getScene().getWindow();
-
-        GameScene newScene = GameScene.getInstance(stage, stage.getWidth(), stage.getHeight(), currentLevel);
-        stage.setScene(newScene.getScene());
-        stage.show();
-        newScene.start();
+    private void startLevel(int level) {
+        GameScene gameScene = GameScene.getInstance(
+                SceneManager.getStage(),
+                GameConstants.WINDOW_WIDTH,
+                GameConstants.WINDOW_HEIGHT,
+                level
+        );
+        gameScene.start();
     }
 }

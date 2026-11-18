@@ -1,7 +1,7 @@
 module com.arkanoid {
     // Export all packages for full modular compatibility
     exports com.arkanoid;
-    exports com.arkanoid.core.components;
+    exports com.arkanoid.core;
     exports com.arkanoid.core.entities;
     exports com.arkanoid.core.physics;
     exports com.arkanoid.database;
@@ -50,7 +50,7 @@ module com.arkanoid {
     // Third-party library modules
     requires transitive com.google.gson;
     requires transitive org.xerial.sqlitejdbc;
-    requires transitive org.lz4.java;
+    requires org.lz4.java;
     
     // Logging framework modules
     requires transitive org.slf4j;

@@ -1,46 +1,45 @@
 package com.arkanoid;
 
+import com.arkanoid.core.GameConstants;
 import com.arkanoid.database.DatabaseManager;
+import com.arkanoid.debug.MemoryMonitor;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.logging.LoggingManager;
 import com.arkanoid.systems.sound.SoundManager;
+import com.arkanoid.systems.threading.ThreadManager;
 import com.arkanoid.ui.view.SceneManager;
 import com.arkanoid.ui.view.SessionManager;
 import com.arkanoid.utils.CommandLineArgs;
+import com.arkanoid.utils.ImageLoader;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GameApplication extends Application {
     private static final Logger logger = GameLogger.getLogger(GameApplication.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
     private static final DatabaseManager databaseManager = DatabaseManager.getInstance();
-    public static final double GAME_WIDTH = 1000;
-    public static final double GAME_HEIGHT = 650;
+    private static final AtomicBoolean shutdownExecuted = new AtomicBoolean(false);
+
+    public static final double GAME_WIDTH = GameConstants.WINDOW_WIDTH;
+    public static final double GAME_HEIGHT = GameConstants.WINDOW_HEIGHT;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
         logger.info("JavaFX Application starting...");
 
-        // **WARNING: THIS SEEMS NOT TO WORK ANYMORE**
-        // Suppress JavaFX CSS warnings
-        // and use full qualified name to avoid conflict with slf4j Logger
         java.util.logging.Logger.getLogger("javafx.scene.CssStyleHelper").setLevel(java.util.logging.Level.SEVERE);
-    
-        // Set up uncaught exception handler
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            logger.error("Uncaught exception in thread {}: {}", thread.getName(), throwable.getMessage(), throwable);
-        });
+
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) ->
+                logger.error("Uncaught exception in thread {}: {}", thread.getName(), throwable.getMessage(), throwable));
 
         logger.info("Initializing database...");
         databaseManager.initialize();
 
-        // Restore saved user session if exists
         logger.info("Checking for saved user session...");
         boolean restoredSession = SessionManager.restoreSession();
         if (restoredSession) {
@@ -68,20 +67,60 @@ public class GameApplication extends Application {
         logger.info("Switching to main menu...");
         SceneManager.switchTo("mainMenuView");
 
-        try (InputStream iconStream = (InputStream) Objects
-                .requireNonNull(getClass().getResourceAsStream("/icons/arkanoid.png"))) {
-            primaryStage.getIcons().add(new Image(iconStream));
-        } catch (Exception e) {
-            logger.error("Error loading application icon", e);
+        Image appIcon = ImageLoader.loadImage("/icons/arkanoid.png");
+        if (appIcon != null) {
+            primaryStage.getIcons().add(appIcon);
+        } else {
+            logger.warn("Application icon /icons/arkanoid.png could not be loaded");
         }
 
         primaryStage.setTitle("Arkanoid Game");
+        primaryStage.setResizable(false);
+        primaryStage.sizeToScene();
         primaryStage.show();
 
         logger.info("Starting background music...");
         soundManager.playBackground("background.mp3", true);
 
         logger.info("Application started successfully");
+    }
+
+    @Override
+    public void stop() {
+        shutdownResources();
+    }
+
+    private static void shutdownResources() {
+        if (!shutdownExecuted.compareAndSet(false, true)) {
+            return;
+        }
+        logger.info("Application shutting down...");
+        try {
+            SceneManager.cleanup();
+        } catch (Exception e) {
+            logger.error("Error cleaning up SceneManager: {}", e.getMessage(), e);
+        }
+        try {
+            SoundManager.getInstance().cleanup();
+        } catch (Exception e) {
+            logger.error("Error cleaning up SoundManager: {}", e.getMessage(), e);
+        }
+        try {
+            MemoryMonitor.getInstance().shutdown();
+        } catch (Exception e) {
+            logger.error("Error shutting down MemoryMonitor: {}", e.getMessage(), e);
+        }
+        try {
+            ThreadManager.getInstance().shutdown();
+        } catch (Exception e) {
+            logger.error("Error shutting down ThreadManager: {}", e.getMessage(), e);
+        }
+        try {
+            DatabaseManager.getInstance().close();
+        } catch (Exception e) {
+            logger.error("Error closing DatabaseManager: {}", e.getMessage(), e);
+        }
+        LoggingManager.getInstance().shutdown();
     }
 
     public static void switchToProfileOrAuth() {
@@ -97,10 +136,7 @@ public class GameApplication extends Application {
         config.applyEnvironmentVariables();
         LoggingManager.getInstance().initialize(config.getLoggingConfig());
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            logger.info("Application shutting down...");
-            LoggingManager.getInstance().shutdown();
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(GameApplication::shutdownResources, "AppShutdownHook"));
 
         logger.info("=== Arkanoid Game Starting ===");
         logger.info("Java Version: {}", System.getProperty("java.version"));

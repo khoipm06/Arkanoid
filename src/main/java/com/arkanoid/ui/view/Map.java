@@ -1,18 +1,20 @@
 package com.arkanoid.ui.view;
 
-import com.arkanoid.GameApplication;
+import com.arkanoid.core.GameConstants;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.GameScene;
+import com.arkanoid.utils.ImageLoader;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import javafx.scene.image.ImageView;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import javafx.scene.control.Button;
 
 public class Map {
     private static final Logger logger = GameLogger.getLogger(Map.class);
@@ -31,9 +33,9 @@ public class Map {
 
     private Stage stage;
     private int currentMapIndex = 0;
-    private java.util.List<String> mapImages;
+    private List<String> mapImages;
     private List<String> mapFiles;
-    private static int unlockedLevel = 3;
+    private static int unlockedLevel = GameConstants.MAX_LEVEL;
 
     public static void setUnlockedLevel(int level) {
         if (level > unlockedLevel) {
@@ -74,7 +76,6 @@ public class Map {
         } else {
             logger.debug("Already at the last map");
         }
-
     }
 
     @FXML
@@ -90,18 +91,14 @@ public class Map {
 
     @FXML
     private void onPlayGameButtonClick(MouseEvent event) {
-
         soundManager.playSound("Accept.wav");
-
-        if (stage == null) {
-            stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
-        }
         int selectedLevel = currentMapIndex + 1;
-        GameScene gameScene = GameScene.getInstance(stage, GameApplication.GAME_WIDTH, GameApplication.GAME_HEIGHT,
-                selectedLevel);
-
-        stage.setScene(gameScene.getScene());
-        stage.show();
+        GameScene gameScene = GameScene.getInstance(
+                stage != null ? stage : SceneManager.getStage(),
+                GameConstants.WINDOW_WIDTH,
+                GameConstants.WINDOW_HEIGHT,
+                selectedLevel
+        );
         gameScene.start();
     }
 
@@ -113,20 +110,13 @@ public class Map {
 
     private void updatePreview() {
         String imagePath = mapImages.get(currentMapIndex);
-        java.io.InputStream is = getClass().getResourceAsStream(imagePath);
-
-        if (is != null) {
-            javafx.scene.image.Image img = new javafx.scene.image.Image(is);
+        Image img = ImageLoader.loadImage(imagePath);
+        if (img != null) {
             mapView.setImage(img);
-
-            try {
-                is.close();
-            } catch (java.io.IOException e) {
-                e.printStackTrace();
-            }
         } else {
             logger.error("Map preview failed: Unable to load image resource at path: '{}'", imagePath);
         }
+
         if (currentMapIndex + 1 > unlockedLevel) {
             mapView.setOpacity(0.4);
             playGameButton.setDisable(true);

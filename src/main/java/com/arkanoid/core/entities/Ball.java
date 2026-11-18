@@ -2,33 +2,29 @@ package com.arkanoid.core.entities;
 
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
+import com.arkanoid.utils.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
 public class Ball extends MovableObject {
     private static final Logger logger = GameLogger.getLogger(Ball.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
-    private static final Map<String, Image> SKINS = new HashMap<>();
-    private static String currentSkin = "Default";
-
-    static {
-        loadSkins();
-    }
+    private static final String DEFAULT_SKIN = "Default";
+    private static final Set<String> VALID_SKINS = Set.of("Fire", "Ice", "Rainbow", "Default");
 
     private final double radius;
     private Color color;
     private double minX, minY, maxX, maxY;
     private boolean attachedToPaddle = false;
     private Image ballImage;
+    private String equippedSkin;
     private boolean explosive = false;
     private boolean hasExploded = false;
-    private boolean topIsDeadSide = false; // For two-player mode: top player's drain
+    private boolean topIsDeadSide = false;
 
     public Ball(double x, double y, double radius, double speed) {
         super(x - radius, y - radius, radius * 2, radius * 2, speed);
@@ -36,45 +32,21 @@ public class Ball extends MovableObject {
         this.color = Color.RED;
         this.velocityX = 0;
         this.velocityY = 0;
-        attachedToPaddle = true;
-        equipSkin(currentSkin);
-    }
-
-    private static void loadSkins() {
-        String[] skinNames = { "Fire", "Ice", "Rainbow", "Default" };
-        for (String name : skinNames) {
-            try (InputStream stream = Ball.class.getResourceAsStream("/images/" + name + ".png")) {
-                if (stream != null) {
-                    SKINS.put(name, new Image(stream));
-                } else {
-                    logger.warn("Could not find image: {}.png", name);
-                }
-            } catch (Exception e) {
-                logger.error("Error loading skin {}: {}", name, e.getMessage());
-            }
-        }
-
-        // If Default skin can't be loaded, create a default circle
-        if (!SKINS.containsKey("Default")) {
-            SKINS.put("Default", null);
-        }
+        this.attachedToPaddle = true;
+        equipSkin(DEFAULT_SKIN);
     }
 
     public static Image getSkin(String skinName) {
-        return SKINS.getOrDefault(skinName, SKINS.get("Default"));
-    }
-
-    public static String getCurrentSkin() {
-        return currentSkin;
-    }
-
-    public static void setCurrentSkin(String skinName) {
-        if (SKINS.containsKey(skinName)) {
-            currentSkin = skinName;
-            logger.info("Current ball skin: {}", skinName);
-        } else {
-            logger.warn("Skin does not exist: {}", skinName);
+        String resolved = (skinName != null && VALID_SKINS.contains(skinName)) ? skinName : DEFAULT_SKIN;
+        Image img = ImageLoader.loadImage("/images/" + resolved + ".png");
+        if (img == null && !DEFAULT_SKIN.equals(resolved)) {
+            img = ImageLoader.loadImage("/images/" + DEFAULT_SKIN + ".png");
         }
+        return img;
+    }
+
+    public String getEquippedSkin() {
+        return equippedSkin;
     }
 
     public void setBounds(double minX, double minY, double maxX, double maxY) {
@@ -107,15 +79,12 @@ public class Ball extends MovableObject {
             x = maxX - width;
             reverseX();
         }
-        
-        // Top boundary: bounce only if it's NOT player 2's dead side
+
         if (y <= minY && !topIsDeadSide) {
             y = minY;
             reverseY();
         }
-        
-        // Bottom boundary: bounce only if it's NOT player 1's dead side
-        // (topIsDeadSide == true means this is player 2's ball, so bottom should bounce)
+
         if (y + height >= maxY && topIsDeadSide) {
             y = maxY - height;
             reverseY();
@@ -127,37 +96,33 @@ public class Ball extends MovableObject {
             return;
         }
 
-        // Bottom paddle (player 1): ball coming from above (velocityY > 0)
-        // Top paddle (player 2): ball coming from below (velocityY < 0)
         boolean isBottomPaddleHit = !topIsDeadSide && velocityY > 0;
         boolean isTopPaddleHit = topIsDeadSide && velocityY < 0;
 
         if (isBottomPaddleHit || isTopPaddleHit) {
             logger.debug("Paddle collision: topIsDeadSide={}, velocityY={}, isBottom={}, isTop={}",
-                topIsDeadSide, String.format("%.2f", velocityY), isBottomPaddleHit, isTopPaddleHit);
+                    topIsDeadSide, velocityY, isBottomPaddleHit, isTopPaddleHit);
             soundManager.playSound("paddleBounce.wav");
             double hitY = isBottomPaddleHit ? paddle.getY() : paddle.getY() + paddle.getHeight();
             paddle.triggerHitFlash(0.4, getCenterX(), hitY);
 
-            // Position ball at correct side of paddle
             if (isBottomPaddleHit) {
-                y = paddle.getY() - height; // Above paddle
+                y = paddle.getY() - height;
             } else {
-                y = paddle.getY() + paddle.getHeight(); // Below paddle
+                y = paddle.getY() + paddle.getHeight();
             }
 
             double hitPosition = (getCenterX() - paddle.getCenterX()) / (paddle.getWidth() / 2);
             velocityX = hitPosition * speed * 0.8;
-            
-            // Reverse Y direction based on paddle type
+
             if (isBottomPaddleHit) {
-                velocityY = -Math.abs(velocityY); // Bounce up
+                velocityY = -Math.abs(velocityY);
             } else {
-                velocityY = Math.abs(velocityY); // Bounce down
+                velocityY = Math.abs(velocityY);
             }
 
             double totalSpeed = Math.sqrt(velocityX * velocityX + velocityY * velocityY);
-            if (totalSpeed != speed) {
+            if (totalSpeed != speed && totalSpeed > 0) {
                 double ratio = speed / totalSpeed;
                 velocityX *= ratio;
                 velocityY *= ratio;
@@ -166,9 +131,9 @@ public class Ball extends MovableObject {
     }
 
     public void equipSkin(String skinName) {
-        Image skin = SKINS.getOrDefault(skinName, SKINS.get("Default"));
-        this.ballImage = skin;
-        logger.info("Ball equipSkin: Set to {} (image null: {})", skinName, ballImage == null);
+        String resolved = (skinName != null && VALID_SKINS.contains(skinName)) ? skinName : DEFAULT_SKIN;
+        this.equippedSkin = resolved;
+        this.ballImage = getSkin(resolved);
     }
 
     @Override
@@ -186,11 +151,9 @@ public class Ball extends MovableObject {
     }
 
     public boolean isOutOfBounds() {
-        // Player 1 (bottom player): loses life if ball goes past bottom (y > maxY)
         if (!topIsDeadSide && y > maxY) {
             return true;
         }
-        // Player 2 (top player): loses life if ball goes past top (y < minY)
         if (topIsDeadSide && y + height < minY) {
             return true;
         }

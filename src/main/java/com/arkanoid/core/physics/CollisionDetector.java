@@ -9,21 +9,24 @@ import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CollisionDetector {
     private static final Logger logger = GameLogger.getLogger(CollisionDetector.class);
+    private static final double EXPLOSION_RADIUS = 80.0;
+
+    private CollisionDetector() {
+    }
 
     public static void checkBallBrickCollisions(Ball ball, List<Brick> bricks, CollisionCallback callback,
             GameManager gameManager) {
-        List<Brick> bricksToExplode = new ArrayList<>();
         for (Brick brick : bricks) {
-            if (brick.isDestroyed())
+            if (brick.isDestroyed()) {
                 continue;
+            }
 
             if (ball.intersects((GameObject) brick)) {
-                logger.debug("Ball-brick collision detected at ({}, {})", String.format("%.2f", brick.getCenterX()), String.format("%.2f", brick.getCenterY()));
+                logger.debug("Ball-brick collision detected at ({}, {})", brick.getCenterX(), brick.getCenterY());
                 SoundManager.getInstance().playSound("brickBounce.wav");
                 handleBallBrickCollision(ball, brick);
                 brick.hit();
@@ -31,67 +34,43 @@ public class CollisionDetector {
                     callback.onBrickHit(brick);
                 }
                 if (ball.isExplosive() && !ball.hasExploded()) {
-                    double explosionRadius = 80;
                     double explosionX = brick.getCenterX();
                     double explosionY = brick.getCenterY();
-                    logger.debug("Explosive ball triggered at ({}, {}) with radius {}", String.format("%.2f", explosionX), String.format("%.2f", explosionY), String.format("%.2f", explosionRadius));
+                    logger.debug("Explosive ball triggered at ({}, {}) with radius {}",
+                            explosionX, explosionY, EXPLOSION_RADIUS);
 
-                    gameManager.addExplosion(explosionX, explosionY, 64, 64, 1);
+                    if (gameManager != null) {
+                        gameManager.addExplosion(explosionX, explosionY, 64, 64, 1);
+                    }
 
                     for (Brick otherBrick : bricks) {
-                        if (otherBrick.isDestroyed())
+                        if (otherBrick.isDestroyed() || otherBrick instanceof UnbreakableBrick) {
                             continue;
-
-                        // Skip unbreakable bricks
-                        if (otherBrick instanceof UnbreakableBrick)
-                            continue;
+                        }
 
                         double dx = otherBrick.getCenterX() - explosionX;
                         double dy = otherBrick.getCenterY() - explosionY;
-                        double dist = Math.sqrt(dx * dx + dy * dy);
-
-                        if (dist <= explosionRadius) {
-                            if (otherBrick instanceof UnbreakableBrick)
-                                continue;
-
-                            otherBrick.instantDestroy(); // Phá ngay, bỏ qua hitCount
-                            if (callback != null)
+                        if (dx * dx + dy * dy <= EXPLOSION_RADIUS * EXPLOSION_RADIUS) {
+                            otherBrick.instantDestroy();
+                            if (callback != null) {
                                 callback.onBrickHit(otherBrick);
+                            }
                         }
                     }
 
                     ball.setHasExploded(true);
                 }
-                // Only one brick can be hit at a time by a non-explosive ball
                 if (!ball.isExplosive()) {
                     break;
                 }
             }
         }
-        for (Brick explodedBrick : bricksToExplode) {
-            double explosionCenterX = explodedBrick.getCenterX();
-            double explosionCenterY = explodedBrick.getCenterY();
-            double explosionRadius = 50; // Define explosion radius
-
-            for (Brick otherBrick : bricks) {
-                if (otherBrick.isDestroyed())
-                    continue;
-
-                double distance = Math.sqrt(
-                        Math.pow(otherBrick.getCenterX() - explosionCenterX, 2) +
-                                Math.pow(otherBrick.getCenterY() - explosionCenterY, 2));
-
-                if (distance <= explosionRadius) {
-                    otherBrick.destroy();
-                    if (callback != null) {
-                        callback.onBrickHit(otherBrick);
-                    }
-                }
-            }
-        }
     }
 
-    private static void handleBallBrickCollision(Ball ball, Brick brick) {
+    /**
+     * Resolves bounce reflection and positional separation between a ball and a brick.
+     */
+    public static void handleBallBrickCollision(Ball ball, Brick brick) {
         double ballCenterX = ball.getCenterX();
         double ballCenterY = ball.getCenterY();
         double brickCenterX = brick.getX() + brick.getWidth() / 2;

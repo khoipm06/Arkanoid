@@ -9,15 +9,17 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Improved DatabaseManager with connection pooling, transaction support, and
- * proper lifecycle management.
- * Singleton pattern with thread-safe initialization.
+ * Thread-safe DatabaseManager with bounded SQLite connection pooling, WAL mode,
+ * transaction support, and clean lifecycle management.
  */
 public class DatabaseManager implements AutoCloseable {
     private static final Logger logger = GameLogger.getLogger(DatabaseManager.class);
@@ -25,13 +27,14 @@ public class DatabaseManager implements AutoCloseable {
     private static final String DB_URL = "jdbc:sqlite:data/arkanoid.db";
     private static final int POOL_SIZE = 5;
 
-    private final List<Connection> connectionPool;
-    private final List<Boolean> connectionStatus;
-    private boolean initialized = false;
+    private final BlockingQueue<Connection> connectionPool;
+    private final Set<Connection> leasedConnections;
+    private final AtomicInteger activeConnections = new AtomicInteger(0);
+    private volatile boolean initialized = false;
 
     private DatabaseManager() {
-        this.connectionPool = new ArrayList<>(POOL_SIZE);
-        this.connectionStatus = new ArrayList<>(POOL_SIZE);
+        this.connectionPool = new ArrayBlockingQueue<>(POOL_SIZE);
+        this.leasedConnections = ConcurrentHashMap.newKeySet();
     }
 
     public static DatabaseManager getInstance() {
@@ -51,7 +54,6 @@ public class DatabaseManager implements AutoCloseable {
         }
 
         try {
-            // Ensure directory exists
             String dbPath = DB_URL.replaceFirst("^jdbc:sqlite:", "");
             File dbFile = new File(dbPath);
             File parentDir = dbFile.getParentFile();
@@ -59,24 +61,41 @@ public class DatabaseManager implements AutoCloseable {
                 parentDir.mkdirs();
             }
 
-            // Initialize connection pool
-            for (int i = 0; i < POOL_SIZE; i++) {
-                Connection conn = DriverManager.getConnection(DB_URL);
-                conn.setAutoCommit(true);
-                connectionPool.add(conn);
-                connectionStatus.add(false); // false = available
-            }
+            connectionPool.clear();
+            leasedConnections.clear();
+            activeConnections.set(0);
 
-            // Create tables using a connection from the pool
-            try (Connection conn = getConnection()) {
-                createTables(conn);
+            for (int i = 0; i < POOL_SIZE; i++) {
+                connectionPool.offer(createConfiguredConnection(i == 0));
             }
 
             initialized = true;
-            logger.info("Database initialized successfully with connection pool");
+            Connection conn = getConnection();
+            try {
+                createTables(conn);
+            } finally {
+                releaseConnection(conn);
+            }
+
+            logger.info("Database initialized successfully with WAL connection pool (size={})", POOL_SIZE);
         } catch (SQLException e) {
+            initialized = false;
+            closeAllConnections();
             throw new DatabaseException("Failed to initialize database", e);
         }
+    }
+
+    private Connection createConfiguredConnection(boolean configureWalMode) throws SQLException {
+        Connection conn = DriverManager.getConnection(DB_URL);
+        conn.setAutoCommit(true);
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute("PRAGMA busy_timeout=5000;");
+            if (configureWalMode) {
+                stmt.execute("PRAGMA journal_mode=WAL;");
+            }
+            stmt.execute("PRAGMA synchronous=NORMAL;");
+        }
+        return conn;
     }
 
     private void createTables(Connection conn) throws SQLException {
@@ -147,47 +166,60 @@ public class DatabaseManager implements AutoCloseable {
     }
 
     /**
-     * Get a connection from the pool. Caller must return it via releaseConnection()
-     * or use executeInTransaction/executeQuery which handle it automatically.
+     * Get a connection from the pool, or an overflow connection if exhausted.
+     * Caller must return it via {@link #releaseConnection(Connection)}.
      */
-    public synchronized Connection getConnection() throws SQLException {
-        for (int i = 0; i < POOL_SIZE; i++) {
-            if (!connectionStatus.get(i)) {
-                connectionStatus.set(i, true);
-                logger.debug("Connection #{} acquired from pool", i);
-                return connectionPool.get(i);
-            }
-        }
-        // If pool exhausted, create a temporary connection
-        long activeCount = getActiveConnectionCount();
-        logger.warn("Connection pool exhausted ({}/{} active), creating temporary connection", 
-                    activeCount, POOL_SIZE);
-        return DriverManager.getConnection(DB_URL);
-    }
-
-    /**
-     * Release a connection back to the pool
-     */
-    public synchronized void releaseConnection(Connection conn) {
-        int index = connectionPool.indexOf(conn);
-        if (index >= 0) {
-            connectionStatus.set(index, false);
-            logger.debug("Connection #{} released back to pool", index);
-        } else {
-            // Temporary connection, close it
+    public Connection getConnection() throws SQLException {
+        Connection conn = connectionPool.poll();
+        if (conn != null) {
             try {
-                conn.close();
-                logger.debug("Temporary connection closed");
+                if (!conn.isClosed()) {
+                    leasedConnections.add(conn);
+                    activeConnections.incrementAndGet();
+                    return conn;
+                }
             } catch (SQLException e) {
-                logger.error("Error closing temporary connection: {}", e.getMessage());
+                logger.warn("Pooled connection check failed, creating replacement: {}", e.getMessage());
             }
         }
+
+        logger.warn("Connection pool exhausted or empty ({}/{} active), creating overflow connection",
+                activeConnections.get(), POOL_SIZE);
+        Connection overflow = createConfiguredConnection(false);
+        leasedConnections.add(overflow);
+        activeConnections.incrementAndGet();
+        return overflow;
     }
 
     /**
-     * Execute code within a transaction. Automatically commits on success, rolls
-     * back on exception.
+     * Release a connection back to the pool, closing overflow connections when the pool is full.
      */
+    public void releaseConnection(Connection conn) {
+        if (conn == null) {
+            return;
+        }
+        leasedConnections.remove(conn);
+        activeConnections.updateAndGet(n -> Math.max(0, n - 1));
+
+        try {
+            if (conn.isClosed()) {
+                return;
+            }
+            if (!conn.getAutoCommit()) {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            logger.warn("Error resetting connection state on release: {}", e.getMessage());
+            closeQuietly(conn);
+            return;
+        }
+
+        if (!initialized || !connectionPool.offer(conn)) {
+            closeQuietly(conn);
+            logger.debug("Overflow or post-close connection closed");
+        }
+    }
+
     public <T> T executeInTransaction(Function<Connection, T> operation) {
         Connection conn = null;
         try {
@@ -219,9 +251,6 @@ public class DatabaseManager implements AutoCloseable {
         }
     }
 
-    /**
-     * Execute a query operation (read-only, no transaction needed)
-     */
     public <T> T executeQuery(Function<Connection, T> operation) {
         Connection conn = null;
         try {
@@ -236,9 +265,6 @@ public class DatabaseManager implements AutoCloseable {
         }
     }
 
-    /**
-     * Execute an update operation within a transaction
-     */
     public void executeUpdate(Consumer<Connection> operation) {
         executeInTransaction(conn -> {
             operation.accept(conn);
@@ -246,37 +272,46 @@ public class DatabaseManager implements AutoCloseable {
         });
     }
 
-    /**
-     * Get connection pool statistics for monitoring
-     */
-    public synchronized String getPoolStats() {
+    public String getPoolStats() {
         long activeCount = getActiveConnectionCount();
-        return String.format("Connection Pool: %d/%d active, %d available", 
-                           activeCount, POOL_SIZE, POOL_SIZE - activeCount);
+        return String.format("Connection Pool: %d/%d active, %d available",
+                activeCount, POOL_SIZE, connectionPool.size());
     }
 
-    /**
-     * Get number of active connections
-     */
-    public synchronized long getActiveConnectionCount() {
-        return connectionStatus.stream().filter(status -> status).count();
+    public long getActiveConnectionCount() {
+        return activeConnections.get();
     }
 
     @Override
-    public void close() {
-        logger.info("Closing database connection pool - {}", getPoolStats());
-        for (Connection conn : connectionPool) {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                logger.error("Error closing connection: {}", e.getMessage());
-            }
+    public synchronized void close() {
+        if (!initialized && connectionPool.isEmpty() && leasedConnections.isEmpty()) {
+            return;
         }
-        connectionPool.clear();
-        connectionStatus.clear();
+        logger.info("Closing database connection pool - {}", getPoolStats());
         initialized = false;
+        closeAllConnections();
+        activeConnections.set(0);
         logger.info("Database connections closed");
+    }
+
+    private void closeAllConnections() {
+        Connection conn;
+        while ((conn = connectionPool.poll()) != null) {
+            closeQuietly(conn);
+        }
+        for (Connection leased : leasedConnections) {
+            closeQuietly(leased);
+        }
+        leasedConnections.clear();
+    }
+
+    private void closeQuietly(Connection conn) {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
+        } catch (SQLException e) {
+            logger.error("Error closing connection: {}", e.getMessage());
+        }
     }
 }

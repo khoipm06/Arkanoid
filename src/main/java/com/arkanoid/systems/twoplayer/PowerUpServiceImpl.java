@@ -60,7 +60,7 @@ public class PowerUpServiceImpl implements PowerUpService {
         if (powerUp != null) {
             powerUp.setVelocityY(velocityY);
             activePowerUps.add(new PowerUpInstance(powerUp, ownerPlayerNumber));
-            logger.debug("Power-up spawned at ({}, {}) for Player {}: {}", String.format("%.2f", brickX), String.format("%.2f", brickY), ownerPlayerNumber,
+            logger.debug("Power-up spawned at ({}, {}) for Player {}: {}", brickX, brickY, ownerPlayerNumber,
                     powerUp.getClass().getSimpleName());
         }
     }
@@ -103,10 +103,7 @@ public class PowerUpServiceImpl implements PowerUpService {
                 applyPickup(instance.ownerPlayerNumber, powerUp);
                 powerUp.setCollected(true);
                 iterator.remove();
-            }
-
-            // Remove if expired or out of bounds
-            if (!powerUp.isActive() || isOutOfBounds(powerUp)) {
+            } else if (!powerUp.isActive() || isOutOfBounds(powerUp)) {
                 iterator.remove();
             }
         }

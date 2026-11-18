@@ -1,6 +1,7 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.GameApplication;
+import com.arkanoid.core.GameConstants;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.components.ToastNotification;
@@ -24,7 +25,7 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 
-public class MainMenuView {
+public class MainMenuView implements SceneLifecycle {
     private static final Logger logger = GameLogger.getLogger(MainMenuView.class);
     private final SoundManager soundManager = SoundManager.getInstance();
 
@@ -49,8 +50,10 @@ public class MainMenuView {
     @FXML
     public void initialize() {
         try {
-            Image logo = new Image(getClass().getResourceAsStream("/images/arkanoid_intro.png"));
-            welcome.setImage(logo);
+            Image logo = ImageLoader.loadImage("/images/arkanoid_intro.png");
+            if (logo != null) {
+                welcome.setImage(logo);
+            }
             applyIntroEffect();
             
             // Preload game sounds asynchronously in background
@@ -97,11 +100,8 @@ public class MainMenuView {
 
     @FXML
     public void onQuitClick(MouseEvent event) {
-
         soundManager.playSound("Accept.wav");
         Platform.exit();
-        System.exit(0);
-
     }
 
     @FXML
@@ -127,8 +127,12 @@ public class MainMenuView {
     @FXML
     public void onStartGameClick(MouseEvent event) {
         soundManager.playSound("Accept.wav");
-        VBox modePopup = createModeSelectPopup();
-        root.getChildren().add(modePopup);
+        if (this.modePopup == null) {
+            this.modePopup = createModeSelectPopup();
+        }
+        if (!root.getChildren().contains(this.modePopup)) {
+            root.getChildren().add(this.modePopup);
+        }
     }
 
     private VBox createModeSelectPopup() {
@@ -188,9 +192,11 @@ public class MainMenuView {
 
         overlay.getChildren().addAll(title, singleBtn, multiBtn, backBtn);
 
-        // Center the overlay
-        AnchorPane.setTopAnchor(overlay, (root.getHeight() - overlayHeight) / 2);
-        AnchorPane.setLeftAnchor(overlay, (root.getWidth() - overlayWidth) / 2);
+        // Center the overlay on the design pane
+        double paneWidth = root.getWidth() > 0 ? root.getWidth() : GameConstants.DEFAULT_DESIGN_WIDTH;
+        double paneHeight = root.getHeight() > 0 ? root.getHeight() : GameConstants.DEFAULT_DESIGN_HEIGHT;
+        AnchorPane.setTopAnchor(overlay, (paneHeight - overlayHeight) / 2);
+        AnchorPane.setLeftAnchor(overlay, (paneWidth - overlayWidth) / 2);
 
         return overlay;
     }
@@ -234,7 +240,16 @@ public class MainMenuView {
 
     public void closeModePopup() {
         soundManager.playSound("Accept.wav");
-        root.getChildren().remove(modePopup);
+        if (modePopup != null) {
+            root.getChildren().remove(modePopup);
+        }
+    }
+
+    @Override
+    public void onExit() {
+        if (modePopup != null) {
+            root.getChildren().remove(modePopup);
+        }
     }
 
     public void onLeaderBoardClick(MouseEvent event) {

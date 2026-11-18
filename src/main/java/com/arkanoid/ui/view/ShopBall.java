@@ -1,7 +1,6 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.core.entities.Ball;
-import com.arkanoid.database.InventoryManager;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.PlayerProfile;
 import com.arkanoid.systems.sound.SoundManager;
@@ -15,7 +14,7 @@ import javafx.scene.input.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShopBall {
+public class ShopBall implements SceneLifecycle {
     private static final Logger logger = GameLogger.getLogger(ShopBall.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
@@ -41,6 +40,11 @@ public class ShopBall {
         for (SkinItem item : skinItems) {
             item.imageView.setImage(Ball.getSkin(item.name));
         }
+    }
+
+    @Override
+    public void onEnter() {
+        updateShopUI();
     }
 
     public void setPlayer(PlayerProfile player, Ball ballInGame) {
@@ -72,27 +76,25 @@ public class ShopBall {
 
     @FXML
     public void onEquip1Click(MouseEvent event) {
-        String selectedSkin = "Fire";
-        SessionManager.setEquippedSkin(selectedSkin);
         equipSkin("Fire");
     }
 
     @FXML
     public void onEquip2Click(MouseEvent event) {
-        String selectedSkin = "Ice";
-        SessionManager.setEquippedSkin(selectedSkin);
         equipSkin("Ice");
     }
 
     @FXML
     public void onEquip3Click(MouseEvent event) {
-        String selectedSkin = "Rainbow";
-        SessionManager.setEquippedSkin(selectedSkin);
         equipSkin("Rainbow");
     }
 
     private void buySkin(String skinName) {
         SessionManager.User user = SessionManager.getCurrentUser();
+        if (user == null) {
+            logger.warn("Cannot buy ball skin without a logged-in user");
+            return;
+        }
         for (SkinItem item : skinItems) {
             if (item.name.equals(skinName)) {
                 if (user.hasBallSkin(skinName)) {
@@ -101,12 +103,14 @@ public class ShopBall {
                 }
 
                 if (user.spendMoney(item.price)) {
-                    // Add to inventory database (prefix with "ball:")
-                    InventoryManager.addItem(user.getId(), "ball:" + skinName, 1);
+                    user.addOwnedBallSkin(skinName);
                     logger.info("Purchase successful ball skin: {} | Price: {}", skinName, item.price);
                     logger.info("Remaining balance: ${}", user.getMoney());
                     lblMoney.setText("Balance: " + user.getMoney() + "$");
-                    ((ShopView) SceneManager.getController("shopView")).refreshMoney();
+                    Object shopController = SceneManager.getController("shopView");
+                    if (shopController instanceof ShopView shopView) {
+                        shopView.refreshMoney();
+                    }
                 } else {
                     logger.warn("Insufficient funds to buy ball skin: {} | Need: {} | Have: {}", skinName, item.price, user.getMoney());
                 }
@@ -118,9 +122,13 @@ public class ShopBall {
 
     private void equipSkin(String skinName) {
         SessionManager.User user = SessionManager.getCurrentUser();
+        if (user == null) {
+            logger.warn("Cannot equip ball skin without a logged-in user");
+            return;
+        }
         if (user.hasBallSkin(skinName)) {
+            SessionManager.setEquippedSkin(skinName);
             SessionManager.setEquippedBallSkin(skinName);
-            Ball.setCurrentSkin(skinName);
             logger.info("Equipped ball skin: {}", skinName);
             if (ballInGame != null) {
                 ballInGame.equipSkin(skinName);

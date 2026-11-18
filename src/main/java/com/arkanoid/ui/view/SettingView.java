@@ -16,7 +16,7 @@ import java.util.Optional;
  * Settings view for adjusting music volume. Volume preference is saved per-user
  * in the database.
  */
-public class SettingView {
+public class SettingView implements SceneLifecycle {
     private static final Logger logger = GameLogger.getLogger(SettingView.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
@@ -30,25 +30,48 @@ public class SettingView {
     private Button cancelButton;
 
     private int currentVolume = 50;
+    private boolean listenerAttached = false;
+    private boolean syncing = false;
 
     @FXML
     public void initialize() {
-        loadUserPreferences();
         setupVolumeListener();
+        syncFromSession();
+    }
+
+    @Override
+    public void onEnter() {
+        syncFromSession();
+    }
+
+    /**
+     * Synchronizes slider and audio volume from the active user session without
+     * re-attaching change listeners.
+     */
+    public void syncFromSession() {
+        syncing = true;
+        try {
+            loadUserPreferences();
+        } finally {
+            syncing = false;
+        }
     }
 
     private void loadUserPreferences() {
         SessionManager.User user = SessionManager.getCurrentUser();
         if (user == null) {
-            // Guest mode - use default
             currentVolume = 50;
         } else {
             Optional<UserPreferences> prefs = UserPreferencesManager.getPreferences(user.getId());
             currentVolume = prefs.map(UserPreferences::getMusicVolume).orElse(50);
         }
 
-        volumeSlider.setValue(currentVolume);
-        valueLabel.setText(currentVolume + "%");
+        if (volumeSlider != null) {
+            volumeSlider.setValue(currentVolume);
+        }
+        if (valueLabel != null) {
+            valueLabel.setText(currentVolume + "%");
+        }
         soundManager.setVolume(currentVolume / 100.0);
     }
 
@@ -62,9 +85,18 @@ public class SettingView {
     }
 
     private void setupVolumeListener() {
+        if (listenerAttached || volumeSlider == null) {
+            return;
+        }
+        listenerAttached = true;
         volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (syncing) {
+                return;
+            }
             int vol = newVal.intValue();
-            valueLabel.setText(vol + "%");
+            if (valueLabel != null) {
+                valueLabel.setText(vol + "%");
+            }
             soundManager.setVolume(vol / 100.0);
         });
     }
@@ -78,8 +110,14 @@ public class SettingView {
 
     @FXML
     private void onCancelClick() {
-        volumeSlider.setValue(currentVolume);
-        soundManager.setVolume(currentVolume / 100.0);
+        syncing = true;
+        try {
+            volumeSlider.setValue(currentVolume);
+            valueLabel.setText(currentVolume + "%");
+            soundManager.setVolume(currentVolume / 100.0);
+        } finally {
+            syncing = false;
+        }
 
         soundManager.playSound("Accept.wav");
         SceneManager.switchTo("mainMenuView");

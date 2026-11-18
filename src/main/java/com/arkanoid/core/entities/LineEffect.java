@@ -9,12 +9,14 @@ import java.util.List;
 import java.util.Random;
 
 public class LineEffect extends GameObject {
-    private double duration;
+    private static final Color LIGHTNING_COLOR = Color.color(0.3, 0.8, 1.0);
+    private static final Random random = new Random();
+
+    private final double duration;
     private double age;
-    private double endX;
-    private double endY;
-    private List<double[]> segments; // each lightning segment
-    private Random random;
+    private final double endX;
+    private final double endY;
+    private final List<double[]> segments;
 
     public LineEffect(double x, double y, double endX, double endY, double duration) {
         super(x, y, 0, 0);
@@ -22,8 +24,7 @@ public class LineEffect extends GameObject {
         this.endY = endY;
         this.duration = duration;
         this.age = 0;
-        this.segments = new ArrayList<>();
-        this.random = new Random();
+        this.segments = new ArrayList<>(20);
         generateLightning();
     }
 
@@ -35,7 +36,6 @@ public class LineEffect extends GameObject {
         double prevY = y;
 
         for (int i = 1; i <= steps; i++) {
-            // make the lightning slightly wavy, but still a single bolt
             double nx = x + dx * i + (random.nextDouble() - 0.5) * 8;
             double ny = y + dy * i + (random.nextDouble() - 0.5) * 6;
             segments.add(new double[] { prevX, prevY, nx, ny });
@@ -54,8 +54,11 @@ public class LineEffect extends GameObject {
 
     @Override
     public void render(GraphicsContext gc) {
-        double alpha = 1.0 - (age / duration); // fade out
-        gc.setStroke(ColorCache.getColor(0.3, 0.8, 1.0, alpha)); // light blue color
+        if (!active || duration <= 0) {
+            return;
+        }
+        double alpha = Math.max(0.0, 1.0 - (age / duration));
+        gc.setStroke(ColorCache.getWithAlpha(LIGHTNING_COLOR, alpha));
         gc.setLineWidth(2);
 
         for (double[] seg : segments) {

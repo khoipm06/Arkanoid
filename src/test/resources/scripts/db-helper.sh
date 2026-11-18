@@ -25,6 +25,7 @@ case $ACTION in
     restore)
         if [ -f "$BACKUP_PATH" ]; then
             echo "[RESTORE] Restoring database from backup..."
+            rm -f "${DB_PATH}-wal" "${DB_PATH}-shm"
             cp "$BACKUP_PATH" "$DB_PATH"
             rm "$BACKUP_PATH"
             echo "[OK] Database restored and backup cleaned up"

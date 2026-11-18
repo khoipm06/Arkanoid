@@ -1,11 +1,9 @@
 package com.arkanoid.core.entities;
 
 import com.arkanoid.systems.logging.GameLogger;
-import javafx.animation.PauseTransition;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
 import org.slf4j.Logger;
 
 public abstract class PowerUp extends MovableObject {
@@ -45,6 +43,7 @@ public abstract class PowerUp extends MovableObject {
     }
 
     public abstract void applyEffect(Paddle paddle);
+
     public abstract void removeEffect(Paddle paddle);
 
     public boolean isCollected() {
@@ -60,21 +59,9 @@ public abstract class PowerUp extends MovableObject {
 
     public boolean checkPaddleCollision(Paddle paddle) {
         if (!collected && intersects(paddle)) {
-            logger.debug("PowerUp collected: {} at ({}, {})", this.getClass().getSimpleName(), String.format("%.2f", x), String.format("%.2f", y));
+            logger.debug("PowerUp collected: {} at ({}, {})", getClass().getSimpleName(), x, y);
             setCollected(true);
             applyEffect(paddle);
-            logger.debug("PowerUp effect applied: {}", this.getClass().getSimpleName());
-            PauseTransition pause = new PauseTransition(Duration.seconds(2));
-
-            // After 2 seconds, remove the effect
-            pause.setOnFinished(e -> {
-                logger.debug("PowerUp effect removed: {}", this.getClass().getSimpleName());
-                removeEffect(paddle);
-                setCollected(false);
-            });
-
-            // Start countdown
-            pause.play();
             return true;
         }
         return false;
