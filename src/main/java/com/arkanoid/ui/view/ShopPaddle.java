@@ -14,7 +14,7 @@ import javafx.scene.input.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShopPaddle {
+public class ShopPaddle implements SceneLifecycle {
     private static final Logger logger = GameLogger.getLogger(ShopPaddle.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
@@ -41,6 +41,11 @@ public class ShopPaddle {
             item.imageView.setImage(Paddle.getSkin(item.name));
         }
 
+        updateShopUI();
+    }
+
+    @Override
+    public void onEnter() {
         updateShopUI();
     }
 
@@ -115,7 +120,6 @@ public class ShopPaddle {
         SessionManager.User user = SessionManager.getCurrentUser();
         if (user.hasPaddleSkin(skinName)) {
             SessionManager.setEquippedPaddleSkin(skinName);
-            Paddle.setCurrentSkin(skinName);
             logger.info("Equipped skin: {}", skinName);
             if (paddleInGame != null) {
                 paddleInGame.equipSkin(skinName);

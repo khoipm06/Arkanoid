@@ -10,6 +10,7 @@ import com.arkanoid.ui.components.ToastNotification;
 import com.arkanoid.ui.GameScene;
 import com.google.gson.JsonSyntaxException;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -53,12 +54,15 @@ public class SaveLoadScene {
     private int currentUserId;
     private StackPane rootPane;
     private GameScene gameScene;
+    private ChangeListener<GameSave> selectionListener;
+    private boolean cleanedUp = false;
 
     /**
      * Initialize the controller with required dependencies.
      */
     public void init(GameSaveManager gameSaveManager, GameManager gameManager, Stage stage, int userId,
             Runnable onBackCallback, StackPane rootPane, GameScene gameScene) {
+        this.cleanedUp = false;
         this.gameSaveManager = gameSaveManager;
         this.gameManager = gameManager;
         this.currentUserId = userId;
@@ -72,12 +76,16 @@ public class SaveLoadScene {
         // Load saves into ListView
         refreshSaveList();
 
-        // Enable/disable buttons based on selection
-        saveListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+        // Enable/disable buttons based on selection (track listener for deterministic cleanup)
+        if (selectionListener != null) {
+            saveListView.getSelectionModel().selectedItemProperty().removeListener(selectionListener);
+        }
+        selectionListener = (obs, oldVal, newVal) -> {
             boolean hasSelection = newVal != null;
             loadButton.setDisable(!hasSelection);
             deleteButton.setDisable(!hasSelection);
-        });
+        };
+        saveListView.getSelectionModel().selectedItemProperty().addListener(selectionListener);
 
         // Add keyboard shortcuts
         setupKeyboardShortcuts();
@@ -102,6 +110,10 @@ public class SaveLoadScene {
                 }
                 event.consume();
                 break;
+            case ESCAPE:
+                onBack(new ActionEvent());
+                event.consume();
+                break;
             default:
                 break;
             }
@@ -109,20 +121,54 @@ public class SaveLoadScene {
     }
 
     /**
+     * Releases listeners, key handlers, and item references when the Save/Load overlay closes.
+     */
+    public void cleanup() {
+        if (cleanedUp) {
+            return;
+        }
+        cleanedUp = true;
+        if (saveListView != null) {
+            if (selectionListener != null) {
+                saveListView.getSelectionModel().selectedItemProperty().removeListener(selectionListener);
+                selectionListener = null;
+            }
+            saveListView.setOnKeyPressed(null);
+            saveListView.setItems(null);
+            saveListView.setCellFactory(null);
+        }
+        onBackCallback = null;
+        gameScene = null;
+        rootPane = null;
+        gameSaveManager = null;
+        gameManager = null;
+    }
+
+    /**
      * Refreshes the save list and updates the save count label.
      */
     private void refreshSaveList() {
+        if (cleanedUp || gameSaveManager == null) {
+            return;
+        }
         // Use async method if available
-        if (gameSaveManager instanceof GameSaveManagerImpl) {
-            GameSaveManagerImpl impl = (GameSaveManagerImpl) gameSaveManager;
+        if (gameSaveManager instanceof GameSaveManagerImpl impl) {
+            final GameSaveManager managerRef = gameSaveManager;
             impl.getAllSavesAsync(currentUserId).thenAccept(saves -> {
                 Platform.runLater(() -> {
+                    if (cleanedUp || saveListView == null) {
+                        return;
+                    }
                     saveListView.setItems(saves);
-                    int saveCount = gameSaveManager.getSaveCount(currentUserId);
+                    int saveCount = managerRef.getSaveCount(currentUserId);
                     saveCountLabel.setText(saveCount + "/100 saves");
                 });
             }).exceptionally(ex -> {
-                Platform.runLater(() -> showError("Failed to load saves: " + ex.getMessage()));
+                Platform.runLater(() -> {
+                    if (!cleanedUp) {
+                        showError("Failed to load saves: " + ex.getMessage());
+                    }
+                });
                 return null;
             });
         } else {
@@ -181,6 +227,9 @@ public class SaveLoadScene {
                 impl.saveCurrentGameAsync(currentUserId, saveName, canvasSnapshot)
                     .thenAccept(savedGame -> {
                         Platform.runLater(() -> {
+                            if (cleanedUp) {
+                                return;
+                            }
                             saveNewButton.setDisable(false);
                             refreshSaveList();
                             showSuccess("Game saved successfully!");
@@ -188,6 +237,9 @@ public class SaveLoadScene {
                     })
                     .exceptionally(ex -> {
                         Platform.runLater(() -> {
+                            if (cleanedUp) {
+                                return;
+                            }
                             saveNewButton.setDisable(false);
                             showError("Failed to save game: " + ex.getMessage());
                         });
@@ -229,14 +281,23 @@ public class SaveLoadScene {
             impl.loadGameAsync(selectedSave.getId())
                 .thenAccept(loadedSave -> {
                     Platform.runLater(() -> {
+                        if (cleanedUp) {
+                            return;
+                        }
                         loadButton.setDisable(false);
                         deleteButton.setDisable(false);
                         saveNewButton.setDisable(false);
+                        if (gameScene != null) {
+                            gameScene.onSaveLoaded(loadedSave.getLevelNumber());
+                        }
                         showSuccess("Game loaded successfully!");
                     });
                 })
                 .exceptionally(ex -> {
                     Platform.runLater(() -> {
+                        if (cleanedUp) {
+                            return;
+                        }
                         loadButton.setDisable(false);
                         deleteButton.setDisable(false);
                         saveNewButton.setDisable(false);
@@ -263,6 +324,9 @@ public class SaveLoadScene {
             // Fallback to synchronous load
             try {
                 gameSaveManager.loadGame(selectedSave.getId());
+                if (gameScene != null) {
+                    gameScene.onSaveLoaded(selectedSave.getLevelNumber());
+                }
                 showSuccess("Game loaded successfully!");
             } catch (JsonSyntaxException e) {
                 showError("Save file is corrupted");
@@ -312,6 +376,9 @@ public class SaveLoadScene {
                 impl.deleteSaveAsync(saveId)
                     .thenAccept(v -> {
                         Platform.runLater(() -> {
+                            if (cleanedUp) {
+                                return;
+                            }
                             // Clear from thumbnail cache
                             GameSaveListCell.removeCachedThumbnail((long) saveId);
                             refreshSaveList();
@@ -320,6 +387,9 @@ public class SaveLoadScene {
                     })
                     .exceptionally(ex -> {
                         Platform.runLater(() -> {
+                            if (cleanedUp) {
+                                return;
+                            }
                             deleteButton.setDisable(false);
                             loadButton.setDisable(false);
                             showError("Failed to delete save: " + ex.getMessage());
@@ -343,8 +413,10 @@ public class SaveLoadScene {
     @FXML
     public void onBack(ActionEvent event) {
         soundManager.playSound("Accept.wav");
-        if (onBackCallback != null) {
-            onBackCallback.run();
+        Runnable callback = onBackCallback;
+        cleanup();
+        if (callback != null) {
+            callback.run();
         }
     }
 

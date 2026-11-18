@@ -1,20 +1,26 @@
 package com.arkanoid.ui.view;
 
+import com.arkanoid.core.GameConstants;
 import com.arkanoid.database.PlayerProfileManager;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.sound.SoundManager;
 import com.arkanoid.ui.GameScene;
-import javafx.animation.*;
+import com.arkanoid.utils.ImageLoader;
+import javafx.animation.Interpolator;
+import javafx.animation.ScaleTransition;
+import javafx.animation.SequentialTransition;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 
 public class GameOver {
     private static final Logger logger = GameLogger.getLogger(GameOver.class);
+    private static final SoundManager soundManager = SoundManager.getInstance();
+
     @FXML
     private Label score;
     @FXML
@@ -23,23 +29,21 @@ public class GameOver {
     private ImageView youLostImage;
 
     private int currentLevel;
-    // private GameScene gameScene;
-    private Stage stage;
-    // private GameManager gameManager;
-    private static final SoundManager soundManager = SoundManager.getInstance();
 
-    public void init(int level, int scoreValue, String timePlyed) {
+    public void init(int level, int scoreValue, String timePlayedText) {
         this.currentLevel = level;
         score.setText("Score: " + scoreValue);
-        timePlayed.setText("Time:" + timePlyed);
+        timePlayed.setText("Time: " + timePlayedText);
 
-        // Save high score to database if user is logged in
         saveHighScore(scoreValue);
 
-        this.stage = (Stage) score.getScene().getWindow();
         soundManager.stopBackground();
         soundManager.playSound("GameOver.wav");
-        youLostImage.setImage(new Image(getClass().getResource("/images/You_Lose.png").toExternalForm()));
+
+        Image loseImg = ImageLoader.loadImage("/images/You_Lose.png");
+        if (loseImg != null) {
+            youLostImage.setImage(loseImg);
+        }
         youLostImage.setTranslateY(-200);
         youLostImage.setOpacity(1);
 
@@ -81,13 +85,13 @@ public class GameOver {
     private void onNewGameClick() {
         soundManager.playSound("Accept.wav");
         soundManager.playBackground("background.mp3", true);
-        if (stage == null) {
-            stage = (Stage) score.getScene().getWindow();
-        }
 
-        GameScene newScene = GameScene.getInstance(stage, stage.getWidth(), stage.getHeight(), currentLevel);
-        stage.setScene(newScene.getScene());
-        stage.show();
+        GameScene newScene = GameScene.getInstance(
+                SceneManager.getStage(),
+                GameConstants.WINDOW_WIDTH,
+                GameConstants.WINDOW_HEIGHT,
+                currentLevel
+        );
         newScene.start();
     }
 }

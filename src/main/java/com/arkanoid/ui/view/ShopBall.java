@@ -1,7 +1,6 @@
 package com.arkanoid.ui.view;
 
 import com.arkanoid.core.entities.Ball;
-import com.arkanoid.database.InventoryManager;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.PlayerProfile;
 import com.arkanoid.systems.sound.SoundManager;
@@ -15,7 +14,7 @@ import javafx.scene.input.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShopBall {
+public class ShopBall implements SceneLifecycle {
     private static final Logger logger = GameLogger.getLogger(ShopBall.class);
     private static final SoundManager soundManager = SoundManager.getInstance();
 
@@ -41,6 +40,11 @@ public class ShopBall {
         for (SkinItem item : skinItems) {
             item.imageView.setImage(Ball.getSkin(item.name));
         }
+    }
+
+    @Override
+    public void onEnter() {
+        updateShopUI();
     }
 
     public void setPlayer(PlayerProfile player, Ball ballInGame) {
@@ -101,8 +105,7 @@ public class ShopBall {
                 }
 
                 if (user.spendMoney(item.price)) {
-                    // Add to inventory database (prefix with "ball:")
-                    InventoryManager.addItem(user.getId(), "ball:" + skinName, 1);
+                    user.addOwnedBallSkin(skinName);
                     logger.info("Purchase successful ball skin: {} | Price: {}", skinName, item.price);
                     logger.info("Remaining balance: ${}", user.getMoney());
                     lblMoney.setText("Balance: " + user.getMoney() + "$");

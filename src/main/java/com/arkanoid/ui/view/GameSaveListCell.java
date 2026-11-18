@@ -3,6 +3,7 @@ package com.arkanoid.ui.view;
 import com.arkanoid.database.entity.GameSave;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.save.impl.ThumbnailCaptureImpl;
+import com.arkanoid.utils.ImageLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -57,13 +58,8 @@ public class GameSaveListCell extends ListCell<GameSave> {
         thumbnailView.setSmooth(true);
         thumbnailView.getStyleClass().add("save-thumbnail");
 
-        // Load default thumbnail
-        try {
-            defaultThumbnail = new Image(getClass().getResourceAsStream("/images/default_thumbnail.png"));
-        } catch (Exception e) {
-            logger.warn("Could not load default thumbnail: {}", e.getMessage());
-            defaultThumbnail = null;
-        }
+        // Load default thumbnail via shared cache
+        defaultThumbnail = ImageLoader.loadImage("/images/default_thumbnail.png");
 
         // Create text labels
         nameLabel = new Label();

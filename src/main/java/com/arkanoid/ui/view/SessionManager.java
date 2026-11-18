@@ -2,31 +2,46 @@ package com.arkanoid.ui.view;
 
 import com.arkanoid.database.InventoryManager;
 import com.arkanoid.database.PlayerProfileManager;
-import com.arkanoid.database.UserSessionStorage;
 import com.arkanoid.database.RepositoryFactory;
+import com.arkanoid.database.UserSessionStorage;
 import com.arkanoid.systems.logging.GameLogger;
 import com.arkanoid.systems.player.PlayerProfile;
 import com.arkanoid.utils.PasswordHasher;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 /**
- * Manages user session state Now works with database for persistent user data
+ * Manages user session state with write-through in-memory caching backed by SQLite.
  */
 public class SessionManager {
     private static final Logger logger = GameLogger.getLogger(SessionManager.class);
     private static Integer currentUserId = null;
     private static String currentUsername = null;
+    private static volatile User currentUser = null;
     private static PlayerProfile activeProfile;
 
     /**
-     * User session wrapper that fetches live data from database
+     * User session wrapper with write-through caching for profile and inventory state.
      */
     public static class User {
         private final int id;
         private final String username;
+
+        private boolean profileLoaded = false;
+        private boolean profileExists = false;
+        private int cachedMoney = 0;
+        private String cachedEquippedSkin = "Default";
+
+        private boolean inventoryLoaded = false;
+        private Set<String> cachedOwnedSkins;
+        private Set<String> cachedOwnedPaddleSkins;
+        private Set<String> cachedOwnedBallSkins;
+        private String cachedEquippedPaddleSkin = "paddle_Default";
+        private String cachedEquippedBallSkin = "Default";
 
         public User(int id, String username) {
             this.id = id;
@@ -41,133 +56,127 @@ public class SessionManager {
             return username;
         }
 
-        /**
-         * Get current money from database
-         */
-        public int getMoney() {
+        private synchronized void ensureProfileLoaded() {
+            if (profileLoaded) {
+                return;
+            }
             PlayerProfileManager.ProfileData profile = PlayerProfileManager.getProfile(id);
-            return profile != null ? profile.money : 0;
-        }
-
-        /**
-         * Set money in database
-         */
-        public void setMoney(int money) {
-            PlayerProfileManager.updateMoney(id, money);
-        }
-
-        /**
-         * Add money to user's balance
-         */
-        public void addMoney(int amount) {
-            PlayerProfileManager.ProfileData profile = PlayerProfileManager.getProfile(id);
+            profileLoaded = true;
             if (profile != null) {
-                PlayerProfileManager.updateMoney(id, profile.money + amount);
+                profileExists = true;
+                cachedMoney = profile.money;
+                cachedEquippedSkin = profile.currentSkin != null ? profile.currentSkin : "Default";
+            } else {
+                profileExists = false;
+                cachedMoney = 0;
+                cachedEquippedSkin = "Default";
             }
         }
 
-        /**
-         * Spend money from user's balance
-         */
-        public boolean spendMoney(int amount) {
-            PlayerProfileManager.ProfileData profile = PlayerProfileManager.getProfile(id);
-            if (profile != null && profile.money >= amount) {
-                PlayerProfileManager.updateMoney(id, profile.money - amount);
+        private synchronized void ensureInventoryLoaded() {
+            if (inventoryLoaded) {
+                return;
+            }
+            List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(id);
+            cachedOwnedSkins = new LinkedHashSet<>();
+            cachedOwnedPaddleSkins = new LinkedHashSet<>();
+            cachedOwnedBallSkins = new LinkedHashSet<>();
+            cachedEquippedPaddleSkin = "paddle_Default";
+            cachedEquippedBallSkin = "Default";
+
+            for (InventoryManager.InventoryItem item : items) {
+                String itemId = item.getItemId();
+                if (itemId.startsWith("skin:equipped:")) {
+                    cachedEquippedBallSkin = itemId.substring("skin:equipped:".length());
+                } else if (itemId.startsWith("skin:")) {
+                    cachedOwnedSkins.add(itemId.substring("skin:".length()));
+                } else if (itemId.startsWith("paddle:equipped:")) {
+                    cachedEquippedPaddleSkin = itemId.substring("paddle:equipped:".length());
+                } else if (itemId.startsWith("paddle:")) {
+                    cachedOwnedPaddleSkins.add(itemId.substring("paddle:".length()));
+                } else if (itemId.startsWith("ball:")) {
+                    cachedOwnedBallSkins.add(itemId.substring("ball:".length()));
+                }
+            }
+            inventoryLoaded = true;
+        }
+
+        public synchronized int getMoney() {
+            ensureProfileLoaded();
+            return cachedMoney;
+        }
+
+        public synchronized void setMoney(int money) {
+            PlayerProfileManager.updateMoney(id, money);
+            ensureProfileLoaded();
+            cachedMoney = money;
+        }
+
+        public synchronized void addMoney(int amount) {
+            ensureProfileLoaded();
+            if (profileExists) {
+                int updated = cachedMoney + amount;
+                PlayerProfileManager.updateMoney(id, updated);
+                cachedMoney = updated;
+            }
+        }
+
+        public synchronized boolean spendMoney(int amount) {
+            ensureProfileLoaded();
+            if (profileExists && cachedMoney >= amount) {
+                int updated = cachedMoney - amount;
+                PlayerProfileManager.updateMoney(id, updated);
+                cachedMoney = updated;
                 return true;
             }
             return false;
         }
 
-        /**
-         * Add a skin to inventory
-         */
-        public void addOwnedSkin(String skin) {
+        public synchronized void addOwnedSkin(String skin) {
             InventoryManager.addItem(id, "skin:" + skin, 1);
+            ensureInventoryLoaded();
+            cachedOwnedSkins.add(skin);
         }
 
-        /**
-         * Check if user owns a skin
-         */
-        public boolean hasSkin(String skin) {
+        public synchronized boolean hasSkin(String skin) {
             if ("Default".equals(skin)) {
-                return true; // Everyone has default skin
+                return true;
             }
-            return InventoryManager.hasItem(id, "skin:" + skin);
+            ensureInventoryLoaded();
+            return cachedOwnedSkins.contains(skin);
         }
 
-        /**
-         * Get equipped skin from database
-         */
-        public String getEquippedSkin() {
-            PlayerProfileManager.ProfileData profile = PlayerProfileManager.getProfile(id);
-            return profile != null ? profile.currentSkin : "Default";
+        public synchronized String getEquippedSkin() {
+            ensureProfileLoaded();
+            return cachedEquippedSkin;
         }
 
-        /**
-         * Set equipped skin in database
-         */
-        public void setEquippedSkin(String skin) {
+        public synchronized void setEquippedSkin(String skin) {
             PlayerProfileManager.updateSkin(id, skin);
+            ensureProfileLoaded();
+            cachedEquippedSkin = skin != null ? skin : "Default";
         }
 
-        /**
-         * Add a paddle skin to inventory
-         */
-        public void addOwnedPaddleSkin(String skin) {
+        public synchronized void addOwnedPaddleSkin(String skin) {
             InventoryManager.addItem(id, "paddle:" + skin, 1);
+            ensureInventoryLoaded();
+            cachedOwnedPaddleSkins.add(skin);
         }
 
-        /**
-         * Check if user owns a paddle skin
-         */
-        public boolean hasPaddleSkin(String skin) {
+        public synchronized boolean hasPaddleSkin(String skin) {
             if ("paddle_Default".equals(skin)) {
-                return true; // Everyone has default paddle
+                return true;
             }
-            return InventoryManager.hasItem(id, "paddle:" + skin);
+            ensureInventoryLoaded();
+            return cachedOwnedPaddleSkins.contains(skin);
         }
 
-        /**
-         * Get equipped paddle skin (stored in inventory as current)
-         */
-        public String getEquippedPaddleSkin() {
-            // For now, use a convention - could be stored in player_profiles
-            List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(id);
-            for (InventoryManager.InventoryItem item : items) {
-                if (item.getItemId().startsWith("paddle:equipped:")) {
-                    return item.getItemId().substring("paddle:equipped:".length());
-                }
-            }
-            return "paddle_Default";
+        public synchronized String getEquippedPaddleSkin() {
+            ensureInventoryLoaded();
+            return cachedEquippedPaddleSkin;
         }
 
-        /**
-         * Check if user owns a ball skin
-         */
-        public boolean hasBallSkin(String skin) {
-            if ("Default".equals(skin)) {
-                return true; // Everyone has default ball
-            }
-            return InventoryManager.hasItem(id, "ball:" + skin);
-        }
-
-        /**
-         * Get equipped ball skin (stored in inventory as current)
-         */
-        public String getEquippedBallSkin() {
-            List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(id);
-            for (InventoryManager.InventoryItem item : items) {
-                if (item.getItemId().startsWith("skin:equipped:")) {
-                    return item.getItemId().substring("skin:equipped:".length());
-                }
-            }
-            return "Default";
-        }
-
-        /**
-         * Set equipped paddle skin
-         */
-        public void setEquippedPaddleSkin(String skin) {
+        public synchronized void setEquippedPaddleSkin(String skin) {
             List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(id);
             for (InventoryManager.InventoryItem item : items) {
                 if (item.getItemId().startsWith("paddle:equipped:")) {
@@ -175,63 +184,68 @@ public class SessionManager {
                 }
             }
             InventoryManager.addItem(id, "paddle:equipped:" + skin, 1);
+            ensureInventoryLoaded();
+            cachedEquippedPaddleSkin = skin;
         }
 
-        /**
-         * Get all owned skins
-         */
-        public List<String> getOwnedSkins() {
-            List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(id);
-            return items.stream()
-                    .filter(item -> item.getItemId().startsWith("skin:") && !item.getItemId().contains("equipped"))
-                    .map(item -> item.getItemId().substring("skin:".length())).collect(Collectors.toList());
+        public synchronized void addOwnedBallSkin(String skin) {
+            InventoryManager.addItem(id, "ball:" + skin, 1);
+            ensureInventoryLoaded();
+            cachedOwnedBallSkins.add(skin);
         }
 
-        /**
-         * Get all owned paddle skins
-         */
-        public List<String> getOwnedPaddleSkins() {
+        public synchronized boolean hasBallSkin(String skin) {
+            if ("Default".equals(skin)) {
+                return true;
+            }
+            ensureInventoryLoaded();
+            return cachedOwnedBallSkins.contains(skin);
+        }
+
+        public synchronized String getEquippedBallSkin() {
+            ensureInventoryLoaded();
+            return cachedEquippedBallSkin;
+        }
+
+        public synchronized void setEquippedBallSkin(String skin) {
             List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(id);
-            return items.stream()
-                    .filter(item -> item.getItemId().startsWith("paddle:") && !item.getItemId().contains("equipped"))
-                    .map(item -> item.getItemId().substring("paddle:".length())).collect(Collectors.toList());
+            for (InventoryManager.InventoryItem item : items) {
+                if (item.getItemId().startsWith("skin:equipped:")) {
+                    InventoryManager.removeItem(id, item.getItemId());
+                }
+            }
+            InventoryManager.addItem(id, "skin:equipped:" + skin, 1);
+            ensureInventoryLoaded();
+            cachedEquippedBallSkin = skin;
+        }
+
+        public synchronized List<String> getOwnedSkins() {
+            ensureInventoryLoaded();
+            return new ArrayList<>(cachedOwnedSkins);
+        }
+
+        public synchronized List<String> getOwnedPaddleSkins() {
+            ensureInventoryLoaded();
+            return new ArrayList<>(cachedOwnedPaddleSkins);
         }
     }
 
-    /**
-     * Check if a user is logged in
-     */
     public static boolean isLoggedIn() {
         return currentUserId != null;
     }
 
-    /**
-     * Log in a user (stores user ID for database queries)
-     */
     public static void login(int userId, String userName, String passwordHash) {
         currentUserId = userId;
         currentUsername = userName;
+        currentUser = new User(userId, userName);
 
-        // Save session
         UserSessionStorage.saveSession(userId, userName, passwordHash);
 
-        // Load and apply user's saved volume preferences
-        // and refresh SettingView UI if it's currently open
-        try {
-            Object controller = SceneManager.getController("settingView");
-            if (controller instanceof SettingView) {
-                ((SettingView) controller).initialize();
-                logger.debug("Refreshed SettingView after login");
-            }
-        } catch (Exception e) {
-            // SettingView not loaded yet, ignore
-            logger.debug("SettingView not available for refresh");
-        }
+        syncSettingViewFromSession();
     }
 
     public static void login(int userId, String userName, String password, boolean isUsingPassword) {
         if (!isUsingPassword) {
-            // Assume password is already hashed
             login(userId, userName, password);
             return;
         }
@@ -240,42 +254,44 @@ public class SessionManager {
         login(userId, userName, hashedPassword);
     }
 
-    /**
-     * Log out the current user
-     */
     public static void logout() {
         currentUserId = null;
         currentUsername = null;
+        currentUser = null;
         activeProfile = null;
-        
-        // Clear saved session from disk
+
         UserSessionStorage.clearSession();
+        syncSettingViewFromSession();
         logger.info("User logged out and session cleared");
     }
 
-    /**
-     * Get the current logged-in user Returns a User wrapper that fetches data from
-     * database
-     */
-    public static User getCurrentUser() {
-        if (currentUserId != null && currentUsername != null) {
-            return new User(currentUserId, currentUsername);
+    private static void syncSettingViewFromSession() {
+        try {
+            Object controller = SceneManager.getController("settingView");
+            if (controller instanceof SettingView settingView) {
+                settingView.syncFromSession();
+                logger.debug("Synced SettingView from session");
+            }
+        } catch (Exception e) {
+            logger.debug("SettingView not available for sync");
         }
-        return null;
+    }
+
+    public static User getCurrentUser() {
+        return currentUser;
     }
 
     public static boolean restoreSession() {
         UserSessionStorage.SessionData sessionData = UserSessionStorage.loadSession();
         if (sessionData != null) {
-            // Verify user still exists in database
             PlayerProfileManager.ProfileData profile = PlayerProfileManager.getProfile(sessionData.getUserId());
             if (profile != null) {
                 currentUserId = sessionData.getUserId();
                 currentUsername = sessionData.getUsername();
+                currentUser = new User(currentUserId, currentUsername);
                 logger.info("Restored session for user: {} (ID: {})", currentUsername, currentUserId);
                 return true;
             } else {
-                // User no longer exists, clear invalid session
                 logger.warn("Saved session user no longer exists, clearing session");
                 UserSessionStorage.clearSession();
             }
@@ -283,99 +299,44 @@ public class SessionManager {
         return false;
     }
 
-    /**
-     * Set equipped skin for current user
-     */
     public static void setEquippedSkin(String skin) {
-        if (currentUserId != null) {
+        if (currentUser != null) {
+            currentUser.setEquippedSkin(skin);
+        } else if (currentUserId != null) {
             PlayerProfileManager.updateSkin(currentUserId, skin);
         }
     }
 
-    /**
-     * Get equipped skin for current user
-     */
     public static String getEquippedSkin() {
-        if (currentUserId != null) {
-            PlayerProfileManager.ProfileData profile = PlayerProfileManager.getProfile(currentUserId);
-            if (profile != null) {
-                return profile.currentSkin;
-            }
+        if (currentUser != null) {
+            return currentUser.getEquippedSkin();
         }
         return "Default";
     }
 
-    /**
-     * Set equipped paddle skin for current user
-     */
     public static void setEquippedPaddleSkin(String skin) {
-        if (currentUserId != null) {
-            // First, remove all old equipped markers
-            List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(currentUserId);
-            for (InventoryManager.InventoryItem item : items) {
-                if (item.getItemId().startsWith("paddle:equipped:")) {
-                    InventoryManager.removeItem(currentUserId, item.getItemId());
-                }
-            }
-            // Then add the new equipped marker
-            InventoryManager.addItem(currentUserId, "paddle:equipped:" + skin, 1);
+        if (currentUser != null) {
+            currentUser.setEquippedPaddleSkin(skin);
         }
     }
 
-    /**
-     * Get equipped paddle skin for current user
-     */
     public static String getEquippedPaddleSkin() {
-        logger.info("getEquippedPaddleSkin: currentUserId = {}", currentUserId);
-        if (currentUserId != null) {
-            List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(currentUserId);
-            logger.info("getEquippedPaddleSkin: Found {} items in inventory", items.size());
-            for (InventoryManager.InventoryItem item : items) {
-                if (item.getItemId().startsWith("paddle:equipped:")) {
-                    String skinName = item.getItemId().substring("paddle:equipped:".length());
-                    logger.info("getEquippedPaddleSkin: Found equipped skin: {}", skinName);
-                    return skinName;
-                }
-            }
-            logger.info("getEquippedPaddleSkin: No equipped paddle found, returning default");
+        if (currentUser != null) {
+            return currentUser.getEquippedPaddleSkin();
         }
         return "paddle_Default";
     }
 
-    /**
-     * Get equipped ball skin for current user
-     */
     public static String getEquippedBallSkin() {
-        logger.info("getEquippedBallSkin: currentUserId = {}", currentUserId);
-        if (currentUserId != null) {
-            List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(currentUserId);
-            logger.info("getEquippedBallSkin: Found {} items in inventory", items.size());
-            for (InventoryManager.InventoryItem item : items) {
-                if (item.getItemId().startsWith("skin:equipped:")) {
-                    String skinName = item.getItemId().substring("skin:equipped:".length());
-                    logger.info("getEquippedBallSkin: Found equipped skin: {}", skinName);
-                    return skinName;
-                }
-            }
-            logger.info("getEquippedBallSkin: No equipped ball found, returning default");
+        if (currentUser != null) {
+            return currentUser.getEquippedBallSkin();
         }
         return "Default";
     }
 
-    /**
-     * Set equipped ball skin for current user
-     */
     public static void setEquippedBallSkin(String skinName) {
-        if (currentUserId != null) {
-            // remove all old equipped markers
-            List<InventoryManager.InventoryItem> items = InventoryManager.getUserInventory(currentUserId);
-            for (InventoryManager.InventoryItem item : items) {
-                if (item.getItemId().startsWith("skin:equipped:")) {
-                    InventoryManager.removeItem(currentUserId, item.getItemId());
-                }
-            }
-            // Then add the new equipped marker
-            InventoryManager.addItem(currentUserId, "skin:equipped:" + skinName, 1);
+        if (currentUser != null) {
+            currentUser.setEquippedBallSkin(skinName);
             logger.info("Equipped ball skin set to: {}", skinName);
         }
     }
@@ -391,16 +352,10 @@ public class SessionManager {
         activeProfile = profile;
     }
 
-    /**
-     * Save player data (for compatibility, now happens automatically via database)
-     */
     public static void savePlayer(PlayerProfile player) {
-        if (currentUserId != null) {
-            User user = getCurrentUser();
-            if (user != null) {
-                logger.info("Saved user: {} | Money: {} | Equipped skin: {}", user.getUsername(), user.getMoney(),
-                        user.getEquippedSkin());
-            }
+        if (currentUser != null) {
+            logger.info("Saved user: {} | Money: {} | Equipped skin: {}", currentUser.getUsername(),
+                    currentUser.getMoney(), currentUser.getEquippedSkin());
         }
     }
 }
