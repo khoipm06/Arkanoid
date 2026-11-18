@@ -1,27 +1,21 @@
 package com.arkanoid.core.entities;
 
-import com.arkanoid.systems.logging.GameLogger;
+import com.arkanoid.utils.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import org.slf4j.Logger;
 
 public class Bullet extends GameObject {
-    private static final Logger logger = GameLogger.getLogger(Bullet.class);
+    private static final String BULLET_IMAGE_PATH = "/images/bullet.png";
     private double speedY;
-    private Image bulletImage;
+    private final Image bulletImage;
 
     public Bullet(double x, double y, double width, double height, double speedY) {
         super(x, y, width, height);
         this.speedY = speedY;
         this.active = true;
-        try {
-            bulletImage = new Image(getClass().getResourceAsStream("/images/bullet.png"));
-        } catch (Exception e) {
-            logger.error("Could not load bullet image: {}", e.getMessage());
-            bulletImage = null;
-        }
+        this.bulletImage = ImageLoader.loadImage(BULLET_IMAGE_PATH);
     }
-    
+
     /**
      * Reset bullet for object pool reuse.
      */
@@ -34,11 +28,12 @@ public class Bullet extends GameObject {
         this.active = true;
     }
 
+    @Override
     public void update(double deltaTime) {
         y += speedY * deltaTime;
-
     }
 
+    @Override
     public void render(GraphicsContext gc) {
         if (bulletImage != null) {
             gc.drawImage(bulletImage, x, y, width, height);

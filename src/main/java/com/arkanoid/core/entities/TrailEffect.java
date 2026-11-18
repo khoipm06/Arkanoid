@@ -15,9 +15,9 @@ public class TrailEffect extends GameObject {
         this.initialRadius = radius;
         this.life = lifeDuration;
         this.maxLife = lifeDuration;
-        this.color = color;
+        this.color = color != null ? color : Color.CYAN;
     }
-    
+
     /**
      * Reset trail effect for object pool reuse.
      */
@@ -29,55 +29,56 @@ public class TrailEffect extends GameObject {
         this.initialRadius = radius;
         this.life = lifeDuration;
         this.maxLife = lifeDuration;
-        this.color = color;
-        this.active = true;
+        this.color = color != null ? color : Color.CYAN;
+        this.active = lifeDuration > 0;
     }
 
+    @Override
     public void update(double deltaTime) {
         life -= deltaTime;
+        if (life <= 0) {
+            active = false;
+        }
     }
 
     @Override
     public void render(GraphicsContext gc) {
-        if (life > 0) {
+        if (life > 0 && maxLife > 0) {
             double progress = life / maxLife;
             double currentRadius = initialRadius * progress;
-            // Slightly more transparent for a smoother look
             double currentOpacity = progress * 0.7;
 
-            // Draw outer glow (larger, more transparent)
             double glowRadius = currentRadius * 1.5;
             double glowOpacity = currentOpacity * 0.3;
             gc.setFill(ColorCache.getWithAlpha(color, glowOpacity));
             gc.fillOval(
-                x + (initialRadius - glowRadius), 
-                y + (initialRadius - glowRadius), 
-                glowRadius * 2, 
-                glowRadius * 2
+                    x + (initialRadius - glowRadius),
+                    y + (initialRadius - glowRadius),
+                    glowRadius * 2,
+                    glowRadius * 2
             );
 
-            // Draw the main trail circle
             gc.setFill(ColorCache.getWithAlpha(color, currentOpacity));
             gc.fillOval(
-                x + (initialRadius - currentRadius), 
-                y + (initialRadius - currentRadius), 
-                currentRadius * 2, 
-                currentRadius * 2
+                    x + (initialRadius - currentRadius),
+                    y + (initialRadius - currentRadius),
+                    currentRadius * 2,
+                    currentRadius * 2
             );
-            
-            // Draw bright center (smaller, more opaque)
+
             double centerRadius = currentRadius * 0.5;
             double centerOpacity = Math.min(currentOpacity * 1.5, 1.0);
-            gc.setFill(ColorCache.getColor(1.0, 1.0, 1.0, centerOpacity)); // White center
+            gc.setFill(ColorCache.getWithAlpha(Color.WHITE, centerOpacity));
             gc.fillOval(
-                x + (initialRadius - centerRadius), 
-                y + (initialRadius - centerRadius), 
-                centerRadius * 2, 
-                centerRadius * 2
+                    x + (initialRadius - centerRadius),
+                    y + (initialRadius - centerRadius),
+                    centerRadius * 2,
+                    centerRadius * 2
             );
         }
     }
 
+    @Override
     public boolean isActive() {
         return life > 0;
     }

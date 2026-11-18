@@ -1,25 +1,24 @@
 package com.arkanoid.core.entities;
 
-import com.arkanoid.systems.logging.GameLogger;
+import com.arkanoid.utils.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import org.slf4j.Logger;
 
 public class StrongBrick extends BaseBrick {
-    private static final Logger logger = GameLogger.getLogger(StrongBrick.class);
     private final Image[] crackImages;
     private int hitCount = 0;
     private boolean destroyed = false;
 
     public StrongBrick(double x, double y, double width, double height, int row, int col, String path) {
-        super(x, y, width, height, 3, null, row, col, path);
+        super(x, y, width, height, 3, Color.PURPLE, row, col, path);
         crackImages = new Image[3];
-        crackImages[0] = loadImage(path);
-        crackImages[1] = loadImage(path.replace(".png", "break1.png"));
-        crackImages[2] = loadImage(path.replace(".png", "break2.png"));
+        if (path != null) {
+            crackImages[0] = ImageLoader.loadImage(path);
+            crackImages[1] = ImageLoader.loadImage(path.replace(".png", "break1.png"));
+            crackImages[2] = ImageLoader.loadImage(path.replace(".png", "break2.png"));
+        }
 
-        // fallback to original image if cracked images not found
         for (int i = 1; i < crackImages.length; i++) {
             if (crackImages[i] == null) {
                 crackImages[i] = crackImages[0];
@@ -42,7 +41,7 @@ public class StrongBrick extends BaseBrick {
     @Override
     public void destroy() {
         this.destroyed = true;
-
+        this.active = false;
     }
 
     @Override
@@ -70,17 +69,5 @@ public class StrongBrick extends BaseBrick {
         super.instantDestroy();
         this.hitCount = 3;
         this.destroyed = true;
-    }
-
-    private Image loadImage(String path) {
-        try {
-            var stream = getClass().getResourceAsStream(path);
-            if (stream != null) {
-                return new Image(stream);
-            }
-        } catch (Exception e) {
-            logger.error("Could not load image: {}", path);
-        }
-        return null;
     }
 }

@@ -1,44 +1,41 @@
 package com.arkanoid.core.entities;
 
 import com.arkanoid.systems.logging.GameLogger;
+import com.arkanoid.utils.ColorCache;
+import com.arkanoid.utils.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
 import org.slf4j.Logger;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
 public class Paddle extends MovableObject {
     private static final Logger logger = GameLogger.getLogger(Paddle.class);
-    private static final Map<String, Image> paddleSkins = new HashMap<>();
-    private static String currentSkin = "paddle_Default";
-
-    static {
-        loadSkins();
-    }
+    private static final String DEFAULT_SKIN = "paddle_Default";
+    private static final Set<String> VALID_SKINS = Set.of(
+            "paddle_Default", "paddle_Wood", "paddle_Metal", "paddle_Neon"
+    );
+    private static final Color HIT_FLASH_OUTER_COLOR = Color.color(0.2, 0.9, 1.0);
+    private static final Color HIT_FLASH_INNER_COLOR = Color.WHITE;
+    private static volatile String defaultSkin = DEFAULT_SKIN;
 
     private final double originalWidth;
     private double minX;
     private double maxX;
-    private Color color;
+    private Color color = Color.WHITE;
     private Image paddleImage;
-    private String equippedSkin = "paddle_Default"; // The skin equipped by the player
-                                                    // but now initially set to default
+    private String currentSkin;
     private boolean gunMode = false;
-    private long gunExpiryNano = -1;
+    private double gunTimerSeconds = 0.0;
+    private double expandTimerSeconds = 0.0;
     private Image gunImage;
     private double collisionX;
     private double collisionY;
-    private double hitFlashTime = 0.0; // New field for hit flash effect
+    private double hitFlashTime = 0.0;
 
     public Paddle(double x, double y, double width, double height) {
-        super(x, y, width, height, 0);
-        this.originalWidth = width;
+        this(x, y, width, height, 0, 0, Double.MAX_VALUE);
     }
 
     public Paddle(double x, double y, double width, double height, double speed, double minX, double maxX) {
@@ -46,47 +43,34 @@ public class Paddle extends MovableObject {
         this.minX = minX;
         this.maxX = maxX;
         this.originalWidth = width;
-        this.paddleImage = getSkin(currentSkin);
-        try (InputStream stream = Paddle.class.getResourceAsStream("/images/gun.png")) {
-            if (stream != null)
-                gunImage = new Image(stream);
-            else
-                logger.warn("Could not find the asset: gun.png");
-        } catch (Exception e) {
-            logger.error("Error loading gun.png: {}", e.getMessage());
-        }
-
-    }
-
-    private static void loadSkins() {
-        String[] skinNames = { "paddle_Default", "paddle_Wood", "paddle_Metal", "paddle_Neon" };
-        for (String name : skinNames) {
-            try (InputStream stream = Paddle.class.getResourceAsStream("/images/" + name + ".png")) {
-                if (stream != null) {
-                    paddleSkins.put(name, new Image(stream));
-                } else {
-                    logger.warn("Could not find the asset: paddle_{}.png", name);
-                }
-            } catch (Exception e) {
-                logger.error("Error loading skin {}: {}", name, e.getMessage());
-            }
-        }
+        this.currentSkin = defaultSkin;
+        this.paddleImage = getSkin(this.currentSkin);
+        this.gunImage = ImageLoader.loadImage("/images/gun.png");
     }
 
     public static Image getSkin(String skinName) {
-        return paddleSkins.getOrDefault(skinName, paddleSkins.get("paddle_Default"));
+        String resolved = (skinName != null && VALID_SKINS.contains(skinName)) ? skinName : DEFAULT_SKIN;
+        Image img = ImageLoader.loadImage("/images/" + resolved + ".png");
+        if (img == null && !DEFAULT_SKIN.equals(resolved)) {
+            img = ImageLoader.loadImage("/images/" + DEFAULT_SKIN + ".png");
+        }
+        return img;
     }
 
-    public static String getCurrentSkin() {
-        return currentSkin;
-    }
-
+    /**
+     * @deprecated Use instance {@link #equipSkin(String)} and {@link #getCurrentSkin()} instead.
+     */
+    @Deprecated
     public static void setCurrentSkin(String skinName) {
-        if (paddleSkins.containsKey(skinName)) {
-            currentSkin = skinName;
+        if (skinName != null && VALID_SKINS.contains(skinName)) {
+            defaultSkin = skinName;
         } else {
             logger.warn("Could not find skin: {}", skinName);
         }
+    }
+
+    public String getCurrentSkin() {
+        return currentSkin;
     }
 
     public void moveLeft(double deltaTime) {
@@ -106,25 +90,33 @@ public class Paddle extends MovableObject {
     }
 
     private void constrainToBounds() {
-        if (x < minX)
+        if (x < minX) {
             x = minX;
-        if (x + width > maxX)
+        }
+        if (x + width > maxX) {
             x = maxX - width;
+        }
     }
 
     @Override
     public void update(double deltaTime) {
         constrainToBounds();
-        if (gunMode && gunExpiryNano != -1 && System.nanoTime() > gunExpiryNano) {
-            gunMode = false;
+        if (expandTimerSeconds > 0.0) {
+            expandTimerSeconds -= deltaTime;
+            if (expandTimerSeconds <= 0.0) {
+                expandTimerSeconds = 0.0;
+                resetSize();
+            }
         }
-        // reset if current skin  differs from equipped skin
-        if (!currentSkin.equals(equippedSkin)) {
-            this.paddleImage = getSkin(equippedSkin);
-            currentSkin = equippedSkin;
+        if (gunMode && gunTimerSeconds > 0.0) {
+            gunTimerSeconds -= deltaTime;
+            if (gunTimerSeconds <= 0.0) {
+                gunTimerSeconds = 0.0;
+                gunMode = false;
+            }
         }
-        if (hitFlashTime > 0) { // Update hit flash timer
-            hitFlashTime -= deltaTime;
+        if (hitFlashTime > 0.0) {
+            hitFlashTime = Math.max(0.0, hitFlashTime - deltaTime);
         }
     }
 
@@ -148,32 +140,21 @@ public class Paddle extends MovableObject {
             gc.drawImage(gunImage, getRightGunX(), getGunY(), gunW, gunH);
         }
 
-        if (hitFlashTime > 0) {
-            double progress = hitFlashTime / 0.4;
+        if (hitFlashTime > 0.0) {
+            double progress = Math.min(1.0, hitFlashTime / 0.4);
             double intensity = Math.pow(progress, 0.7);
-            double maxRadius = width;
-            double currentRadius = maxRadius * (1 - progress);
+            double currentRadius = width * (1.0 - progress);
+            if (currentRadius > 0.0) {
+                gc.setFill(ColorCache.getWithAlpha(HIT_FLASH_OUTER_COLOR, intensity * 0.35));
+                gc.fillOval(collisionX - currentRadius, collisionY - currentRadius,
+                        currentRadius * 2, currentRadius * 2);
 
-            RadialGradient gradient = new RadialGradient(
-                    0, 0,
-                    collisionX, collisionY,
-                    currentRadius,
-                    false,
-                    CycleMethod.NO_CYCLE,
-                    // new Stop(0, Color.color(1, 1, 1, intensity)),
-                    // new Stop(0.4, Color.color(0.5, 0.8, 1.0, intensity * 0.4)),
-                    // new Stop(1, Color.color(0.3, 0.6, 0.9, 0)));
-                    new Stop(0, Color.color(1, 1, 1, intensity)),
-                    new Stop(0.4, Color.color(0.2, 0.9, 1.0, intensity * 0.6)),
-                    new Stop(1, Color.color(0.0, 0.5, 1.0, 0)));
-
-
-            gc.setFill(gradient);
-            // Only fill the immediate area around the collision
-            gc.fillOval(collisionX - currentRadius, collisionY - currentRadius,
-                    currentRadius * 2, currentRadius * 2);
+                double innerRadius = currentRadius * 0.5;
+                gc.setFill(ColorCache.getWithAlpha(HIT_FLASH_INNER_COLOR, intensity * 0.65));
+                gc.fillOval(collisionX - innerRadius, collisionY - innerRadius,
+                        innerRadius * 2, innerRadius * 2);
+            }
         }
-
     }
 
     public void setColor(Color color) {
@@ -186,6 +167,13 @@ public class Paddle extends MovableObject {
         constrainToBounds();
     }
 
+    public void activateExpand(double amount, double durationSeconds) {
+        if (expandTimerSeconds <= 0.0) {
+            expand(amount);
+        }
+        expandTimerSeconds = Math.max(0.0, durationSeconds);
+    }
+
     public void resetSize() {
         double centerX = getCenterX();
         width = originalWidth;
@@ -194,39 +182,53 @@ public class Paddle extends MovableObject {
     }
 
     public void equipSkin(String skinName) {
-        Image skin = getSkin(skinName);
-        this.paddleImage = skin;
+        String resolved = (skinName != null && VALID_SKINS.contains(skinName)) ? skinName : DEFAULT_SKIN;
+        this.currentSkin = resolved;
+        this.paddleImage = getSkin(resolved);
     }
 
     public boolean isGunMode() {
-        return gunMode && (gunExpiryNano == -1 || System.nanoTime() <= gunExpiryNano);
+        return gunMode;
     }
 
     public void setGunMode(boolean mode) {
         this.gunMode = mode;
         if (!mode) {
-            this.gunExpiryNano = -1;
+            this.gunTimerSeconds = 0.0;
         }
     }
 
-    public long getGunExpiry() {
-        return gunExpiryNano;
+    public void activateGun(double durationSeconds) {
+        this.gunMode = true;
+        this.gunTimerSeconds = Math.max(0.0, durationSeconds);
     }
 
-    public void setGunExpiry(long expiryNano) {
-        this.gunExpiryNano = expiryNano;
+    public double getGunTimerSeconds() {
+        return gunTimerSeconds;
+    }
+
+    public void setGunTimerSeconds(double gunTimerSeconds) {
+        this.gunTimerSeconds = Math.max(0.0, gunTimerSeconds);
+    }
+
+    public double getExpandTimerSeconds() {
+        return expandTimerSeconds;
+    }
+
+    public void setExpandTimerSeconds(double expandTimerSeconds) {
+        this.expandTimerSeconds = Math.max(0.0, expandTimerSeconds);
     }
 
     public double getLeftGunX() {
-        return x + 2; // prevent the left gun is in the left margin
+        return x + 2;
     }
 
     public double getRightGunX() {
-        return x + width - 12; // offset: width - margin - bulletWidth
+        return x + width - 12;
     }
 
     public double getGunY() {
-        return y - 10; // above the paddle
+        return y - 10;
     }
 
     public void triggerHitFlash(double duration, double collisionX, double collisionY) {

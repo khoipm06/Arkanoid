@@ -1,5 +1,7 @@
 package com.arkanoid.util;
 
+import com.arkanoid.database.DatabaseManager;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +23,7 @@ public class TestDatabaseHelper {
      * Should be called in @BeforeAll methods.
      */
     public static void backupDatabase() {
+        DatabaseManager.getInstance().close();
         runScript("backup");
     }
     
@@ -29,6 +32,7 @@ public class TestDatabaseHelper {
      * Should be called in @AfterAll methods.
      */
     public static void restoreDatabase() {
+        DatabaseManager.getInstance().close();
         runScript("restore");
     }
     
