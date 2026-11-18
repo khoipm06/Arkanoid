@@ -33,7 +33,7 @@
   -fx-border-radius: 15;
   -fx-border-color: linear-gradient(to bottom right, #00ffff, #0080ff);
   -fx-border-width: 2;
-  -fx-padding: 25;
+  -fx-padding: 14 22 14 22;
   -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 0.5), 20, 0.4, 0, 0);
 }
 
@@ -74,7 +74,7 @@
 .stat-label {
   -fx-text-fill: #e0e0e0;
   -fx-font-size: 16px;
-  -fx-padding: 3 0 3 10;
+  -fx-padding: 1 0 1 10;
 }
 
 #highScoreLabel {
@@ -107,8 +107,8 @@
 .inventory-label {
   -fx-text-fill: #c0c0c0;
   -fx-font-size: 14px;
-  -fx-padding: 10;
-  -fx-line-spacing: 5;
+  -fx-padding: 6 10 6 10;
+  -fx-line-spacing: 2;
 }
 
 /* Back Button */
