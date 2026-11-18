@@ -3,74 +3,69 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.*?>
-<ScrollPane hbarPolicy="NEVER" prefHeight="597.0" prefWidth="868.0" vbarPolicy="AS_NEEDED"
-   pannable="false" fitToWidth="true" xmlns="http://javafx.com/javafx/21"
+<AnchorPane fx:id="root" prefHeight="597.0" prefWidth="868.0"
+   stylesheets="@../ProfileScreen.css"
+   xmlns="http://javafx.com/javafx/21"
    xmlns:fx="http://javafx.com/fxml/1"
    fx:controller="com.arkanoid.ui.view.ProfileScreen">
-   <content>
-      <AnchorPane fx:id="root" minHeight="597.0" prefHeight="700.0" prefWidth="868.0"
-         stylesheets="@../ProfileScreen.css">
+   <children>
+      <!-- Back Button -->
+      <Button fx:id="back" layoutX="33.0" layoutY="20.0" mnemonicParsing="false"
+         onMouseClicked="#onBackClick"
+         prefHeight="54.0" prefWidth="54.0" />
+
+      <!-- Logout Button -->
+      <Button fx:id="logOut" layoutX="751.0" layoutY="20.0" mnemonicParsing="false"
+         onMouseClicked="#onLogOutClick" prefHeight="54.0" prefWidth="93.0"
+         styleClass="logout-button" />
+
+      <!-- Title -->
+      <Label fx:id="thongtin" alignment="CENTER" layoutX="217.0" layoutY="16.0"
+         prefHeight="54.0"
+         prefWidth="434.0" text="PLAYER PROFILE" />
+
+      <!-- Profile Card Container -->
+      <VBox fx:id="profileCard" layoutX="108.0" layoutY="84.0" prefWidth="651.0" spacing="6"
+         styleClass="profile-card">
          <children>
-            <!-- Back Button -->
-            <Button fx:id="back" layoutX="33.0" layoutY="30.0" mnemonicParsing="false"
-               onMouseClicked="#onBackClick"
-               prefHeight="54.0" prefWidth="54.0" />
+            <!-- User Info Section -->
+            <Label fx:id="usernameLabel" styleClass="info-label" text="Username: Guest" />
 
-            <!-- Logout Button -->
-            <Button fx:id="logOut" layoutX="751.0" layoutY="30.0" mnemonicParsing="false"
-               onMouseClicked="#onLogOutClick" prefHeight="54.0" prefWidth="93.0"
-               styleClass="logout-button" />
+            <Label fx:id="userIdLabel" styleClass="info-label" text="User ID: 0" />
 
-            <!-- Title -->
-            <Label fx:id="thongtin" alignment="CENTER" layoutX="217.0" layoutY="20.0"
-               prefHeight="54.0"
-               prefWidth="434.0" text="PLAYER PROFILE" />
+            <Label fx:id="balance" styleClass="balance-label" text="Balance: $0" />
 
-            <!-- Profile Card Container -->
-            <VBox fx:id="profileCard" layoutX="108.0" layoutY="98.0" prefWidth="651.0" spacing="16"
-               styleClass="profile-card">
-               <children>
-                  <!-- User Info Section -->
-                  <Label fx:id="usernameLabel" styleClass="info-label" text="Username: Guest" />
+            <!-- Divider -->
+            <Label styleClass="divider" text="───────────────────────" />
 
-                  <Label fx:id="userIdLabel" styleClass="info-label" text="User ID: 0" />
+            <!-- Game Stats Section -->
+            <Label styleClass="section-title" text="GAME STATISTICS" />
 
-                  <Label fx:id="balance" styleClass="balance-label" text="Balance: $0" />
+            <Label fx:id="highScoreLabel" styleClass="stat-label" text="High Score: 0" />
 
-                  <!-- Divider -->
-                  <Label styleClass="divider" text="───────────────────────" />
+            <Label fx:id="gamesPlayedLabel" styleClass="stat-label" text="Games Played: 0" />
 
-                  <!-- Game Stats Section -->
-                  <Label styleClass="section-title" text="GAME STATISTICS" />
+            <Label fx:id="totalScoreLabel" styleClass="stat-label" text="Total Score: 0" />
 
-                  <Label fx:id="highScoreLabel" styleClass="stat-label" text="High Score: 0" />
+            <Label fx:id="currentSkinLabel" styleClass="stat-label"
+               text="Equipped Skin: Default">
+            </Label>
 
-                  <Label fx:id="gamesPlayedLabel" styleClass="stat-label" text="Games Played: 0" />
+            <!-- Divider -->
+            <Label styleClass="divider" text="───────────────────────" />
 
-                  <Label fx:id="totalScoreLabel" styleClass="stat-label" text="Total Score: 0" />
+            <!-- Inventory Section -->
+            <Label styleClass="section-title" text="INVENTORY" />
 
-                  <Label fx:id="currentSkinLabel" styleClass="stat-label"
-                     text="Equipped Skin: Default">
+            <ScrollPane fitToWidth="true" prefHeight="108.0" prefWidth="629.0"
+               styleClass="inventory-scroll">
+               <content>
+                  <Label fx:id="inventoryLabel" styleClass="inventory-label"
+                     text="No items yet. Visit the shop!" wrapText="true">
                   </Label>
-
-                  <!-- Divider -->
-                  <Label styleClass="divider" text="───────────────────────" />
-
-                  <!-- Inventory Section -->
-                  <Label styleClass="section-title" text="INVENTORY" />
-
-                  <ScrollPane fitToWidth="true" prefHeight="163.0" prefWidth="629.0"
-                     styleClass="inventory-scroll">
-                     <content>
-                        <Label fx:id="inventoryLabel" styleClass="inventory-label"
-                           text="No items yet. Visit the shop!" wrapText="true">
-                        </Label>
-                     </content>
-                  </ScrollPane>
-               </children>
-            </VBox>
+               </content>
+            </ScrollPane>
          </children>
-      </AnchorPane>
-   </content>
-</ScrollPane>
+      </VBox>
+   </children>
+</AnchorPane>
